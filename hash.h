@@ -1,3 +1,7 @@
+#include <stdio.h> 
+#include <stdlib.h>
+#include <string.h>
+
 #define HASH_SIZE 997
 
 typedef struct hash_node
@@ -12,3 +16,4 @@ void hashInitialize(void);
 int hashGetAddress(char *symbol);
 HASH_NODE* hashFind(char *symbol);
 HASH_NODE* hashInsert(char *symbol);
+void hashPrint(void);

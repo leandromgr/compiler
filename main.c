@@ -8,6 +8,8 @@ int main (int argc, char ** argv)
 	FILE *filePointer = NULL;
 	int readToken;
 
+	initMe();
+
 	filePointer = fopen("text.txt", "r");
 	yyin = filePointer;
 

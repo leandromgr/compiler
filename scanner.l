@@ -2,6 +2,7 @@
 %{
 	#include <stdio.h>
 	#include "tokens.h"
+	#include "hash.h"
 	int lineCounter = 0;
     
 	// Execution control
@@ -68,4 +69,9 @@ int yywrap()
 int getLineNumber()
 {
 	return lineCounter;
+}
+
+void initMe()
+{
+	hashInitialize();
 }

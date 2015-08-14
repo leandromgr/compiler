@@ -3,14 +3,16 @@ Regras:
 	X- Caracteres especiais (Lembrar que entre ele há operadores)
 	X- Operadores compostos.
 	X- Identificadores
-	- Tratar comentários.
+	X- Tratar comentários.
 	X- Literais inteiros.
-	X- Literais caracter
+	- Literais caracter
 	- Literais String (usar técnica de comentário).
 	X- Literais TRUE e FALSE.
 	- Analisar processamento de scape.
-	
-	
+
+Implementações à parte:
+	X- Hash table.	
+
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.
 	- Olhar a main do Johann na foto :)
