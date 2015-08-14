@@ -1,0 +1,31 @@
+Regras:
+	- Caracteres simples (retornar ascii).
+	- Caracteres compostos (arquivo tokens.h)
+	- Palavras reservadas.
+	- Caracteres especiais (Lembrar que entre ele há operadores)
+	- Operadores compostos.
+	- Identificadores
+	- Literais inteiros.
+	- Literais caracter
+	- Literais String.
+	- Literais TRUE e FALSE.
+	
+Recomendações:
+	- Usa apenas make, lex ou flex e gcc.
+	- Olhar a main do Johann na foto :)
+	- Implementar a função "void initMe(void)" [OBRIGATÓRIO]
+	- Todos arquivos na mesma parta, i.e não usar diretórios.
+
+Antes de entregar:
+	- Colocar o nome dos componentes do grupo em comentários no início
+	de todos os códigos fonte.
+	- Verificar bem todas as regras (se respeitam a especificação).
+	- Tentar compilar em outro sistema (fora o usado para desenvolver).
+	- Verificar o acesso ao arquivo que disponibilizado no server http.
+	
+	
+Para o Yohann
+	- Enviar email com os nomes da dupla e usuários do INF
+	
+
+	
