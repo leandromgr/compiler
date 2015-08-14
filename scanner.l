@@ -5,7 +5,7 @@
 	int lineCounter = 0;
     
 	// Execution control
-	int isRunning = 1;
+	int flagIsRunning = 1;
 %}
 
 %%
@@ -27,12 +27,12 @@
 "&&"		{ return OPERATOR_AND; }
 "||"		{ return OPERATOR_OR; }
 
-[a-zA-Z][a-zA-Z_]*  { return TK_IDENTIFIER; }
-
-[0-9]+		{ return LIT_INTEGER; }
-[\0-\377]	{ return LIT_CHAR; }
 TRUE		{ return LIT_TRUE; }
 FALSE		{ return LIT_FALSE; }
+[0-9]+		{ return LIT_INTEGER; }
+'[\0-\377]'	{ return LIT_CHAR; }
+
+[a-zA-Z][a-zA-Z_]*  { return TK_IDENTIFIER; }
 
 [-+,;:()\[\]{}*/<>=!&$] { return yytext[0]; }
 
@@ -41,8 +41,18 @@ FALSE		{ return LIT_FALSE; }
 .			{ return TOKEN_ERROR; }
 %%
 
+int isRunning()
+{
+	return flagIsRunning;
+}
+
 int yywrap()
 {
-	isRunning = 0;
+	flagIsRunning = 0;
 	return 1;
+}
+
+int getLineNumber()
+{
+	return lineCounter;
 }

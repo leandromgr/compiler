@@ -11,12 +11,12 @@ int main (int argc, char ** argv)
 	filePointer = fopen("text.txt", "r");
 	yyin = filePointer;
 
-	while (isRunning)
+	while (isRunning())
 	{
 		readToken = yylex();
 
 		// Check if it is not EOF
-		if (!isRunning)
+		if (!isRunning())
 		{
 			break;
 		}
@@ -84,6 +84,6 @@ int main (int argc, char ** argv)
 		}
 	}
 	
-	printf("Number of lines in the parsed file: %i\n", lineCounter);
+	printf("Number of lines in the parsed file: %i\n", getLineNumber());
 	return 0;
 }
