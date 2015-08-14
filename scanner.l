@@ -1,16 +1,28 @@
 
 %{
 	#include <stdio.h>
+	#include <string.h>
 	#include "tokens.h"
 	#include "hash.h"
+	// Physical line counter
 	int lineCounter = 0;
+
+	// Buffer for strings
+	char stringBuffer[4097];
+	int stringOffset;
     
 	// Execution control
 	int flagIsRunning = 1;
+
+	// Generate function prototypes
+	void copyStringToBuffer(char * newString);
+	void resetStringBuffer();
+	char processEscapeChar(char escapeChar);
 %}
 
 %x COMMENT
 %x STRING
+%x STRING_ESCAPE
 
 %%
 "int"			{ return KW_INT; }
@@ -33,10 +45,10 @@
 
 TRUE			{ return LIT_TRUE; }
 FALSE			{ return LIT_FALSE; }
-[0-9]+			{ return LIT_INTEGER; }
-'[\00-\377]'	{ return LIT_CHAR; }
+[0-9]+			{ hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
+'[\00-\377]'	{ hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
 
-[a-zA-Z][a-zA-Z_]*  { return TK_IDENTIFIER; }
+[a-zA-Z][a-zA-Z_]*  { hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
 
 [-+,;:()\[\]{}*/<>=!&$] { return yytext[0]; }
 
@@ -46,9 +58,18 @@ FALSE			{ return LIT_FALSE; }
 <COMMENT>"\n"	{ lineCounter++; }
 <COMMENT>"*/"	{ BEGIN(INITIAL); }
 
-\"[^"]			{ BEGIN(STRING); }
-<STRING>.		{  }
-<STRING>[^\\]\"	{ BEGIN(INITIAL); return LIT_STRING; }
+\"				{ resetStringBuffer(); BEGIN(STRING); }
+<STRING>[^"\\]*	{ copyStringToBuffer(yytext); }
+<STRING>\\		{ BEGIN(STRING_ESCAPE); }
+<STRING>\"		{ hashInsert(stringBuffer, LIT_STRING); 
+				  printf("buffer: %s\n", stringBuffer);
+				  BEGIN(INITIAL); 
+				  return LIT_STRING; }
+
+<STRING_ESCAPE>.	{ char processedChar[2] = {'\0', '\0'};
+					  processedChar[0] = processEscapeChar(yytext[0]);
+					  copyStringToBuffer(processedChar);
+					  BEGIN(STRING); }
 
 "\n"			{ lineCounter++; }
 " "				{ }
@@ -71,7 +92,37 @@ int getLineNumber()
 	return lineCounter;
 }
 
+void resetStringBuffer()
+{
+	memset(stringBuffer, 0, 4097);
+	stringOffset = 0;
+}
+
+void copyStringToBuffer(char * newString)
+{
+	int newStringLength = strlen(newString);
+
+	// Copyt the new string to the buffer already filled up to the offset
+	strncpy((char *) (stringBuffer + stringOffset), newString, newStringLength);
+
+	stringOffset += newStringLength;
+}
+
+char processEscapeChar(char escapeChar)
+{
+	switch(escapeChar)
+	{
+		case 'n':
+			return '\n';
+		case 't':
+			return '\t';
+		default:
+			return escapeChar; 
+	}
+}
+
 void initMe()
 {
+	resetStringBuffer();
 	hashInitialize();
 }

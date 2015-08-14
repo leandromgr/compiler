@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "tokens.h"
 #include "lex.yy.h"
+#include "hash.h"
 
 int main (int argc, char ** argv)
 {
@@ -93,5 +94,7 @@ int main (int argc, char ** argv)
 	}
 	
 	printf("Number of lines in the parsed file: %i\n", getLineNumber());
+
+	hashPrint();
 	return 0;
 }
