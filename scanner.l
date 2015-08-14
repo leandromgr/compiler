@@ -9,11 +9,11 @@
 %}
 
 %%
-"word"		{ return KW_WORD; }
+"int"		{ return KW_INT; }
+"real"		{ return KW_CHAR; }
 "bool"		{ return KW_BOOL; }
-"byte"		{ return KW_BYTE; }
+"char"		{ return KW_CHAR; }
 "if"		{ return KW_IF; }
-"then"		{ return KW_THEN; }
 "else"		{ return KW_ELSE; }
 "loop"		{ return KW_LOOP; }
 "input"		{ return KW_INPUT; }
@@ -27,11 +27,14 @@
 "&&"		{ return OPERATOR_AND; }
 "||"		{ return OPERATOR_OR; }
 
-[a-zA-Z_][a-zA-Z_0-9]*  { return TK_IDENTIFIER; }
+[-+,;:()\[\]{}*/<>=!&$] { return yytext[0]; }
+
+[a-zA-Z][a-zA-Z_]*  { return TK_IDENTIFIER; }
 
 [0-9]+		{ return LIT_INTEGER; }
-
-[-+,;:()\[\]{}*/<>=!&$] { return yytext[0]; }
+'[\0-\377]'	{ return LIT_CHAR; }
+TRUE		{ return LIT_TRUE; }
+FALSE		{ return LIT_FALSE; }
 
 "\n"		{ lineCounter++; }
 " "			{ }
@@ -64,12 +67,36 @@ int main (int argc, char ** argv)
 				printf("Identifier: %s\n", yytext);
 				break;
 			}
+
+			case LIT_CHAR:
+			{
+				printf("Literal char: %c\n", yytext[0]);
+				break;
+			}
+	
+			case LIT_TRUE:
+			{
+				printf("Literal TRUE: %s\n", yytext);
+				break;
+			}
 			
-			case KW_WORD:
+			case LIT_FALSE:
+			{
+				printf("Literal FALSE: %s\n", yytext);
+				break;
+			}
+			
+			case LIT_INTEGER:
+			{
+				printf("Literal number: %s\n", yytext);
+				break;
+			}
+			
+			case KW_INT:
+			case KW_REAL:
 			case KW_BOOL:
-			case KW_BYTE:
+			case KW_CHAR:
 			case KW_IF:
-			case KW_THEN:
 			case KW_ELSE:
 			case KW_LOOP:
 			case KW_INPUT:
@@ -86,11 +113,6 @@ int main (int argc, char ** argv)
 				break;
 			}
 
-			case LIT_INTEGER:
-			{
-				printf("Literal number: %s\n", yytext);
-				break;
-			}
 
 			default:
 			{
