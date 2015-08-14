@@ -9,6 +9,7 @@
 %}
 
 %x COMMENT
+%x STRING
 
 %%
 "int"			{ return KW_INT; }
@@ -43,6 +44,10 @@ FALSE			{ return LIT_FALSE; }
 <COMMENT>.		{ }
 <COMMENT>"\n"	{ lineCounter++; }
 <COMMENT>"*/"	{ BEGIN(INITIAL); }
+
+\"[^"]			{ BEGIN(STRING); }
+<STRING>.		{  }
+<STRING>[^\\]\"	{ BEGIN(INITIAL); return LIT_STRING; }
 
 "\n"			{ lineCounter++; }
 " "				{ }

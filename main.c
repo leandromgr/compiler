@@ -54,6 +54,12 @@ int main (int argc, char ** argv)
 				break;
 			}
 			
+			case LIT_STRING:
+			{
+				printf("Literal String: %s\n", yytext);
+				break;
+			}
+
 			case KW_INT:
 			case KW_REAL:
 			case KW_BOOL:

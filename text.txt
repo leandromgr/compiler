@@ -1,4 +1,5 @@
 'n'
+'	'
 TRUE
 true
 FALSE
@@ -10,5 +11,6 @@ fdpgojsef
 fbçn 
 çnmçdgml hd
 */
-
+"lala lala lele lele lililililili"
+"oidsjfoid\"dsfjsoidj"
 int
