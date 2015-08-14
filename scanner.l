@@ -9,11 +9,11 @@
 %}
 
 %%
-"word"		{ return KW_WORD; }
+"int"		{ return KW_INT; }
+"real"		{ return KW_REAL; }
 "bool"		{ return KW_BOOL; }
-"byte"		{ return KW_BYTE; }
+"char"		{ return KW_CHAR; }
 "if"		{ return KW_IF; }
-"then"		{ return KW_THEN; }
 "else"		{ return KW_ELSE; }
 "loop"		{ return KW_LOOP; }
 "input"		{ return KW_INPUT; }
@@ -27,9 +27,12 @@
 "&&"		{ return OPERATOR_AND; }
 "||"		{ return OPERATOR_OR; }
 
-[a-zA-Z_][a-zA-Z_0-9]*  { return TK_IDENTIFIER; }
+[a-zA-Z][a-zA-Z_]*  { return TK_IDENTIFIER; }
 
 [0-9]+		{ return LIT_INTEGER; }
+[\0-\377]	{ return LIT_CHAR; }
+TRUE		{ return LIT_TRUE; }
+FALSE		{ return LIT_FALSE; }
 
 [-+,;:()\[\]{}*/<>=!&$] { return yytext[0]; }
 
