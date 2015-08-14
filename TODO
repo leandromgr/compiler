@@ -7,14 +7,19 @@ Regras:
 	X- Literais inteiros.
 	X- Literais caracter
 	- Literais String (usar técnica de comentário).
-	- Literais TRUE e FALSE.
-	- Verificar se o tokens.h foi completamente implementado.
+	X- Literais TRUE e FALSE.
+	- Analisar processamento de scape.
+	
 	
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.
 	- Olhar a main do Johann na foto :)
 	- Implementar a função "void initMe(void)" [OBRIGATÓRIO]
 	- Todos arquivos na mesma parta, i.e não usar diretórios.
+
+Verificações:
+	- Verificar se o tokens.h foi completamente implementado.
+	- Verificar toda lista de regras.
 
 Antes de entregar:
 	- Colocar o nome dos componentes do grupo em comentários no início
