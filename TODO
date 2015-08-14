@@ -12,6 +12,7 @@ Regras:
 
 Implementações à parte:
 	X- Hash table.	
+	- Implemenar tipo na Hash.
 
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.

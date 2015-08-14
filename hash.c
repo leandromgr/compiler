@@ -11,10 +11,18 @@ void hashInitialize(void)
 
 int hashGetAddress(char *symbol)
 {
+	int i;
+	int address = 1;
 
+	for(i=0 ; i<strlen(symbol) ; i++)
+	{
+		address = (address * symbol[i])%HASH_SIZE;
+	}
+
+	return address;
 }
 
-HASH_NODE* hashFind(char *symbol)
+HASH_NODE* hashFind(char *symbol, int symbolType)
 {
 	int nodeAddress;
 
@@ -22,9 +30,11 @@ HASH_NODE* hashFind(char *symbol)
 	nodeAddress = hashGetAddress(symbol);
 
 	HASH_NODE *currentNode;
-	for(currentNode = symbolTable[nodeAddress] ; currentNode ; currentNode = currentNode->nextNode)
-	{
-		int foundSymbol = !strcmp(currentNode->symbol, symbol);
+	for(currentNode = symbolTable[nodeAddress] ; currentNode ; currentNode = currentNode->nextNode
+)	{
+		int foundSymbol = !strcmp(currentNode->symbol, symbol) &&
+						  (currentNode->symbolType == symbolType);
+
 		if(foundSymbol)
 		{
 			//Found the symbol in the table
@@ -35,12 +45,12 @@ HASH_NODE* hashFind(char *symbol)
 	return NULL;
 }
 
-HASH_NODE* hashInsert(char *symbol)
+HASH_NODE* hashInsert(char *symbol, int symbolType)
 {
 	int newNodeAddress;
 	HASH_NODE *newNode;
 
-	newNode = hashFind(symbol);
+	newNode = hashFind(symbol, symbolType);
 
 	if(newNode==NULL)
 	{
@@ -50,6 +60,7 @@ HASH_NODE* hashInsert(char *symbol)
 
 		//Filling the node information content
 		strcpy(newNode->symbol, symbol);
+		newNode->symbolType=symbolType;
 
 		//The address of the new symbol
 		newNodeAddress = hashGetAddress(symbol);

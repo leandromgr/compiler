@@ -7,6 +7,7 @@
 typedef struct hash_node
 {
 	char *symbol;
+	int symbolType;
 	struct hash_node *nextNode;
 } HASH_NODE;
 
@@ -14,6 +15,6 @@ HASH_NODE* symbolTable[HASH_SIZE];
 
 void hashInitialize(void);
 int hashGetAddress(char *symbol);
-HASH_NODE* hashFind(char *symbol);
-HASH_NODE* hashInsert(char *symbol);
+HASH_NODE* hashFind(char *symbol, int symbolType);
+HASH_NODE* hashInsert(char *symbol, int symbolType);
 void hashPrint(void);
