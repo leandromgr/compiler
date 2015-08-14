@@ -1,14 +1,14 @@
 Regras:
-	- Caracteres simples (retornar ascii).
-	- Caracteres compostos (arquivo tokens.h)
-	- Palavras reservadas.
-	- Caracteres especiais (Lembrar que entre ele há operadores)
-	- Operadores compostos.
-	- Identificadores
-	- Literais inteiros.
-	- Literais caracter
-	- Literais String.
+	X- Palavras reservadas.
+	X- Caracteres especiais (Lembrar que entre ele há operadores)
+	X- Operadores compostos.
+	X- Identificadores
+	- Tratar comentários.
+	X- Literais inteiros.
+	X- Literais caracter
+	- Literais String (usar técnica de comentário).
 	- Literais TRUE e FALSE.
+	- Verificar se o tokens.h foi completamente implementado.
 	
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.
@@ -26,6 +26,5 @@ Antes de entregar:
 	
 Para o Yohann
 	- Enviar email com os nomes da dupla e usuários do INF
-	
 
 	
