@@ -9,3 +9,6 @@ lex.yy.o: lex.yy.c
 
 lex.yy.c: scanner.l
 	lex --header-file=lex.yy.h scanner.l
+
+clean:
+	rm -rf *.o lex* 

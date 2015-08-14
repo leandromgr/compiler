@@ -32,7 +32,7 @@ int main (int argc, char ** argv)
 
 			case LIT_CHAR:
 			{
-				printf("Literal char: %c\n", yytext[0]);
+				printf("Literal char: %c\n", yytext[1]);
 				break;
 			}
 	

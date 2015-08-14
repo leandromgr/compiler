@@ -30,7 +30,7 @@
 TRUE		{ return LIT_TRUE; }
 FALSE		{ return LIT_FALSE; }
 [0-9]+		{ return LIT_INTEGER; }
-'[\0-\377]'	{ return LIT_CHAR; }
+'[\00-\377]'	{ return LIT_CHAR; }
 
 [a-zA-Z][a-zA-Z_]*  { return TK_IDENTIFIER; }
 
