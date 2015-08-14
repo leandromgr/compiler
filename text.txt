@@ -1,0 +1,28 @@
+
+
+a
+abadf134
+
+bool
+byte if
+then
+else
+loop
+return
+input return output
+
+
+23124a
+ad532
+_23
+352
+
+_asdas124;
+(A <= 13)
+c==b_
+deux >> 2
+
+if (((var1 != 45) || (var2 >= 23)) && (var3 == var4))
+if:
+
+45 / (3 * (var1 + 5) - 8)
