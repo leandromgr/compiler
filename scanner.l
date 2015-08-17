@@ -49,7 +49,7 @@ FALSE			{ return LIT_FALSE; }
 '[\00-\377]'	{ char processedChar[2] = {yytext[1], '\0'};
 				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 '\\[\00-\377]'	{ char processedChar[2] = {'\0', '\0'};
-				  processedChar[0] = processEscapeChar(yytext[0]);
+				  processedChar[0] = processEscapeChar(yytext[2]);
 				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 
 [a-zA-Z][a-zA-Z_]*  { hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
