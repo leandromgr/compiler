@@ -5,17 +5,18 @@ Regras:
 	K- Identificadores
 	K- Tratar comentários.
 	K- Literais inteiros.
-	- Literais caracter
+	K - Literais caracter
 	K- Literais String (usar técnica de comentário).
 	K- Literais TRUE e FALSE.
 	K- Analizar processamento de escape.
-		- Extender.
+		K- Extender.
 
 
 Implementações à parte:
 	K- Hash table.
 	K- Implemenar tipo na Hash.
 	K- Contar as linhas.
+	- String e char vazios.
 
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.
@@ -37,7 +38,3 @@ Antes de entregar:
 	
 Para o Yohann
 	- Enviar email com os nomes da dupla e usuários do INF
-
-QUESTÕES
-'meu pirou' = dois literais
-'\y' = o que?

@@ -21,6 +21,7 @@
 %}
 
 %x COMMENT
+%x LCHAR
 %x STRING
 %x STRING_ESCAPE
 
@@ -46,6 +47,9 @@
 TRUE			{ return LIT_TRUE; }
 FALSE			{ return LIT_FALSE; }
 [0-9]+			{ hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
+
+''				{ char processedChar[1] = {'\0'};
+				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR;	}
 '[\00-\377]'	{ char processedChar[2] = {yytext[1], '\0'};
 				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 '\\[\00-\377]'	{ char processedChar[2] = {'\0', '\0'};

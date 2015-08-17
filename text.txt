@@ -1,6 +1,7 @@
 '\n'
 '	'
 'lala meu piru'
+'b'
 TRUE
 true
 FALSE
