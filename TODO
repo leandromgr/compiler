@@ -1,23 +1,26 @@
 Regras:
-	X- Palavras reservadas.
-	X- Caracteres especiais (Lembrar que entre ele há operadores)
-	X- Operadores compostos.
-	X- Identificadores
-	X- Tratar comentários.
-	X- Literais inteiros.
+	K- Palavras reservadas.
+	K- Caracteres especiais (Lembrar que entre ele há operadores)
+	K- Operadores compostos.
+	K- Identificadores
+	K- Tratar comentários.
+	K- Literais inteiros.
 	- Literais caracter
-	- Literais String (usar técnica de comentário).
-	X- Literais TRUE e FALSE.
-	- Analisar processamento de scape.
+	K- Literais String (usar técnica de comentário).
+	K- Literais TRUE e FALSE.
+	K- Analizar processamento de escape.
+		- Extender.
+
 
 Implementações à parte:
-	X- Hash table.	
-	- Implemenar tipo na Hash.
+	K- Hash table.
+	K- Implemenar tipo na Hash.
+	K- Contar as linhas.
 
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.
 	- Olhar a main do Johann na foto :)
-	- Implementar a função "void initMe(void)" [OBRIGATÓRIO]
+	K- Implementar a função "void initMe(void)" [OBRIGATÓRIO]
 	- Todos arquivos na mesma parta, i.e não usar diretórios.
 
 Verificações:

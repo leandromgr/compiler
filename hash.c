@@ -82,7 +82,15 @@ void hashPrint(void)
 	{
 		for(currentNode=symbolTable[i] ; currentNode ; currentNode = currentNode->nextNode)
 		{
-			printf("symbolTable[%d]: %s\n", i, currentNode->symbol);
+			printf("symbolTable[%d]: %s", i, currentNode->symbol);
+			switch(currentNode->symbolType)
+			{
+				case TK_IDENTIFIER: printf("TK_IDENTIFIER\n"); break;
+				case LIT_INTEGER: printf("LIT_INTEGER\n"); break;
+				case LIT_CHAR: printf("LIT_CHAR\n"); break;
+				case LIT_STRING: printf("LIT_STRING\n"); break;
+				default: printf("UNKNOWN TYPE\n");
+			}
 		}
 	}
 }
