@@ -1,3 +1,7 @@
+#****INSTITUTO DE INFORMATICA UFRGS****
+#Leandro Mateus Giacomini Rocha
+#Luciano Farias Puhl
+
 etapa1: lex.yy.o hash.o main.o
 	gcc main.o lex.yy.o hash.o -o etapa1
 
@@ -14,4 +18,4 @@ hash.o: hash.c
 	gcc -c hash.c
 
 clean:
-	rm -rf *.o lex* 
+	rm -rf *.o lex* etapa[1-9]

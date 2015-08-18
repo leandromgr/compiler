@@ -1,8 +1,14 @@
+/****INSTITUTO DE INFORMATICA UFRGS****
+Leandro Mateus Giacomini Rocha
+Luciano Farias Puhl
+*/
 
 #include <stdio.h>
 #include "tokens.h"
-#include "lex.yy.h"
-#include "hash.h"
+
+extern FILE* yyin;
+extern int yylex();
+extern char* yytext;
 
 int main (int argc, char ** argv)
 {
@@ -11,7 +17,7 @@ int main (int argc, char ** argv)
 
 	initMe();
 
-	filePointer = fopen("test.txt", "r");
+	filePointer = fopen("test2.txt", "r");
 	yyin = filePointer;
 
 	while (isRunning())
@@ -95,6 +101,6 @@ int main (int argc, char ** argv)
 	
 	printf("Number of lines in the parsed file: %i\n", getLineNumber());
 
-	hashPrint();
+	//hashPrint();
 	return 0;
 }

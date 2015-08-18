@@ -19,13 +19,13 @@ Implementações à parte:
 	K- String e char vazios.
 
 Recomendações:
-	- Usa apenas make, lex ou flex e gcc.
-	- Olhar a main do Johann na foto :)
+	K- Usa apenas make, lex ou flex e gcc.
+	K- Olhar a main do Johann na foto :)
 	K- Implementar a função "void initMe(void)" [OBRIGATÓRIO]
-	- Todos arquivos na mesma parta, i.e não usar diretórios.
+	K- Todos arquivos na mesma parta, i.e não usar diretórios.
 
 Verificações:
-	- Verificar se o tokens.h foi completamente implementado.
+	K- Verificar se o tokens.h foi completamente implementado.
 	- Verificar toda lista de regras.
 
 Antes de entregar:

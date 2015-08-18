@@ -1,3 +1,8 @@
+/****INSTITUTO DE INFORMATICA UFRGS****
+Leandro Mateus Giacomini Rocha
+Luciano Farias Puhl
+*/
+
 #include "hash.h"
 
 void hashInitialize(void)
