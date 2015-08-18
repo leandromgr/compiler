@@ -1,0 +1,48 @@
+/* Taylor de Oliveira Antes - 207114
+   Matheus Marrone Castanho - 207269
+   UFRGS 2015/2 
+*/
+
+int real bool
+char if else
+loop input return
+output
+
+WORD THEN
+
+- , ;
+: ( )
+[ ] {
+} + *
+/ < >
+= ! &
+$
+
+%a@
+
+<= >= ==
+!= && ||
+
+TRUE FALSE
+true FalSe
+
+a b c
+
+// comment 1 - fly
+
+[var]
+
+/* aksjdhaksdhaksdhaksd
+
+comment 2 - ground
+*/
+
+
+12 12654162461 124abc
+
+_id_ehNois N_bri12_12c
+
+'a' 'ab'
+
+"hello12\n \"\t\aworld" " "
+""
