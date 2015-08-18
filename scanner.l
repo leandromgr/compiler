@@ -21,7 +21,6 @@
 %}
 
 %x COMMENT
-%x LCHAR
 %x STRING
 %x STRING_ESCAPE
 
@@ -44,12 +43,11 @@
 "&&"			{ return OPERATOR_AND; }
 "||"			{ return OPERATOR_OR; }
 
-TRUE			{ return LIT_TRUE; }
-FALSE			{ return LIT_FALSE; }
+TRUE			{ hashInsert(yytext, LIT_TRUE); return LIT_TRUE; }
+FALSE			{ hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 [0-9]+			{ hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
 
-''				{ char processedChar[1] = {'\0'};
-				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR;	}
+''
 '[\00-\377]'	{ char processedChar[2] = {yytext[1], '\0'};
 				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 '\\[\00-\377]'	{ char processedChar[2] = {'\0', '\0'};
@@ -67,12 +65,24 @@ FALSE			{ return LIT_FALSE; }
 <COMMENT>"*/"	{ BEGIN(INITIAL); }
 
 \"				{ resetStringBuffer(); BEGIN(STRING); }
-<STRING>[^"\\]*	{ copyStringToBuffer(yytext); }
+<STRING>[^"\\\n]*	{ copyStringToBuffer(yytext); }
 <STRING>\\		{ BEGIN(STRING_ESCAPE); }
 <STRING>\"		{ hashInsert(stringBuffer, LIT_STRING); 
 				  printf("buffer: %s\n", stringBuffer);
 				  BEGIN(INITIAL); 
 				  return LIT_STRING; }
+<STRING>"\n"	{ int bufferIndex;
+				  int bufferSize = strlen(stringBuffer);
+				  unput('\n');
+				  for(bufferIndex = bufferSize-1 ; bufferIndex >= 0 ; bufferIndex--)
+				  {
+				  	//printf("devolvendo: %c, %d\n", stringBuffer[bufferIndex], bufferIndex);
+				  	unput(stringBuffer[bufferIndex]);
+				  }
+				  lineCounter++;
+				  BEGIN(INITIAL);
+				  return TOKEN_ERROR;
+				}
 
 <STRING_ESCAPE>.	{ char processedChar[2] = {'\0', '\0'};
 					  processedChar[0] = processEscapeChar(yytext[0]);

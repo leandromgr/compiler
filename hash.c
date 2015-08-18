@@ -85,11 +85,13 @@ void hashPrint(void)
 			printf("symbolTable[%d]: %s", i, currentNode->symbol);
 			switch(currentNode->symbolType)
 			{
-				case TK_IDENTIFIER: printf("\n\tTK_IDENTIFIER\n"); break;
-				case LIT_INTEGER: printf("\n\tLIT_INTEGER\n"); break;
-				case LIT_CHAR: printf("\n\tLIT_CHAR\n"); break;
-				case LIT_STRING: printf("\n\tLIT_STRING\n"); break;
-				default: printf("\n\tUNKNOWN TYPE\n");
+				case TK_IDENTIFIER: printf("\t\tTK_IDENTIFIER\n"); break;
+				case LIT_INTEGER: printf("\t\tLIT_INTEGER\n"); break;
+				case LIT_CHAR: printf("\t\tLIT_CHAR\n"); break;
+				case LIT_STRING: printf("\t\tLIT_STRING\n"); break;
+				case LIT_TRUE: printf("\t\tLIT_TRUE\n"); break;
+				case LIT_FALSE: printf("\t\tLIT_FALSE\n"); break;
+				default: printf("\t\tUNKNOWN TYPE\n");
 			}
 		}
 	}

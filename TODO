@@ -16,7 +16,7 @@ Implementações à parte:
 	K- Hash table.
 	K- Implemenar tipo na Hash.
 	K- Contar as linhas.
-	- String e char vazios.
+	K- String e char vazios.
 
 Recomendações:
 	- Usa apenas make, lex ou flex e gcc.

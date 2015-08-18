@@ -11,13 +11,13 @@ int main (int argc, char ** argv)
 
 	initMe();
 
-	filePointer = fopen("text.txt", "r");
+	filePointer = fopen("test.txt", "r");
 	yyin = filePointer;
 
 	while (isRunning())
 	{
 		readToken = yylex();
-
+		//printf("yytext: %s\n", yytext);
 		// Check if it is not EOF
 		if (!isRunning())
 		{
