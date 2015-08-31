@@ -56,6 +56,10 @@ Linguagem:
 			- expressão =: varíavel
 			- vetor[expressão] := expressão
 			- expressão =: vetor[expressão]
+		- varíavel := expressão
+		- expressão =: varíavel
+		- vetor[expressão] := expressão
+		- expressão =: vetor[expressão]
 		- input
 			- input VARIABLE_NAME
 			- Se disponível e compatível, será colocado [WTF?]
