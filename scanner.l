@@ -95,7 +95,7 @@ FALSE			{ hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 					  BEGIN(STRING); }
 
 "\n"			{ lineCounter++; }
-" "				{ }
+[ \t]			{ }
 .				{ return TOKEN_ERROR; }
 %%
 
