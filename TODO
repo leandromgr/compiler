@@ -1,3 +1,96 @@
+
+///////////////////// ETAPA 2 ///////////////////////
+
+Specificação:
+	- Uma única chamada da yyparse()
+		- exit(0) se sucesso
+		- exit(3) se falha
+
+Linguagem:
+	- Composta por um conjunto de FUNÇÕES e por um conjunto de DECLARAÇÃO
+	DE VARIAVEIS GLOBAIS, respectivamente[!]
+
+	- Declaração de variáveis globais
+		- Sempre terminadas por ';'
+		- Varíaveis (Não vetores)
+			- TIPO NOME : VALOR_INICIAL;
+				- Inicializaao obrigatória
+			- int, real, char ou bool
+
+		- Vetores
+			- TIPO NOME[TAM_INT] : VI1 VI2 VI3 VI4 VI5 VI6;
+			- TIPO NOME[TAM_INT];
+				- Inicilização opcional
+			- - int, real, char ou bool
+				
+	- Função
+		- Sempre terminadas por ';', pois também é uma declaração global
+		- cabeçalho -> corpo (comando) [Começo do doc]
+		- Cabeçalho -> Lista de variáveis locais -> corpo [Definição de funções]
+		- Cabeçalho
+			- RETURN_VALUE FUNCTION_NAME (P1,P2,P3,P4/nada)
+			- Parâmetros (Pn acima):
+				- TIPO NOME
+				- Não pode ser Vetor
+		- Lista de variáveis locais
+			- Mesmo modelo das globais, mas NÃO pode haver vetores.
+		- Comando
+
+	- Comando [Começo do doc][Desconsiderar?]
+		- Atribuição, controle de fluxo ou os comandos de input, output e
+		return
+		- Blocos são considerados sintaticamente como comandos, podendo
+		aparecer no lugar de qualquer comando
+
+	- Bloco de comandos
+		- {CMD;CMD;CMD;CMD}
+		- entre '{' '}'
+		- Possívelmente vazio
+		- Considerado um comando simples
+
+	- Comando simples (é um comando)
+		- Atribuição, controle de fluxo ou os comandos de input, output,
+		return e vazio.
+		- Atribuição
+			- varíavel := expressão
+			- expressão =: varíavel
+			- vetor[expressão] := expressão
+			- expressão =: vetor[expressão]
+		- input
+			- input VARIABLE_NAME
+			- Se disponível e compatível, será colocado [WTF?]
+		- output
+			- output E1,E2,E3
+			- Elemento (En acima)
+				- String ou expressão aritmética a ser impressa
+		- return
+			- return EXPRESSAO
+				- Expressão que contém o valor de retorno
+
+	- Expressão aritmética (é um comando)
+		- Identificadores como folhas (opcionalmente com o [INDEX] p/ vetores), 
+		literais numéricos e ASCII.
+		- Podem ser formadas recursivamente com operadores aritméticos [WTF?]
+		- Permitem o uso de parênteses para associatividade [WTF?]
+
+	- Expressão Lógica (Booleana) (é um comando)
+		- Formada atraves de:
+			- Operadores relacionais aplicados à expressões aritméticas
+			- Operadores lógicos aplicados à expressões lógicas
+			- Recursivamente [SOLTO NO FINAL DA FRASE DO DOC :)]
+
+	- Comandos para controle de fluxo (é um comando)
+		- if (expressão) COMANDO
+		- if (expressão) COMANDO else COMANDO
+		- if (expressão) COMANDO loop
+		- ALGO IMPORTANTE SOBRE O ';' AQUI [Ler doc (sublinhado)]
+
+		FRASE SOLTA NO PARÁGRAFO: "Expressões Aritméticas e Lógicas"
+		Finalmente, um operando possível de expressão é uma chamada de função, feita pelo seu nome, seguido de argumentos entre parênteses.	
+
+
+///////////////////// ETAPA 1 ///////////////////////
+
 Regras:
 	K- Palavras reservadas.
 	K- Caracteres especiais (Lembrar que entre ele há operadores)
@@ -26,14 +119,14 @@ Recomendações:
 
 Verificações:
 	K- Verificar se o tokens.h foi completamente implementado.
-	- Verificar toda lista de regras.
+	K - Verificar toda lista de regras.
 
 Antes de entregar:
-	- Colocar o nome dos componentes do grupo em comentários no início
+	K - Colocar o nome dos componentes do grupo em comentários no início
 	de todos os códigos fonte.
-	- Verificar bem todas as regras (se respeitam a especificação).
-	- Tentar compilar em outro sistema (fora o usado para desenvolver).
-	- Verificar o acesso ao arquivo que disponibilizado no server http.
+	K - Verificar bem todas as regras (se respeitam a especificação).
+	K - Tentar compilar em outro sistema (fora o usado para desenvolver).
+	K - Verificar o acesso ao arquivo que disponibilizado no server http.
 	
 	
 Para o Yohann
