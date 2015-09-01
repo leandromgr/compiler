@@ -6,7 +6,7 @@ Luciano Farias Puhl
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
-#include "tokens.h"
+#include "y.tab.h"
 
 #define HASH_SIZE 997
 

@@ -2,11 +2,17 @@
 #Leandro Mateus Giacomini Rocha
 #Luciano Farias Puhl
 
-etapa1: lex.yy.o hash.o main.o
-	gcc main.o lex.yy.o hash.o -o etapa1
+etapa2: y.tab.o lex.yy.o hash.o main.o
+	gcc main.o lex.yy.o hash.o y.tab.o -o etapa2
 
 main.o: main.c 
 	gcc -c main.c
+
+y.tab.o: y.tab.c
+	gcc -c y.tab.c
+
+y.tab.c: parser.y
+	yacc -d -v -t parser.y
 
 lex.yy.o: lex.yy.c
 	gcc -c lex.yy.c

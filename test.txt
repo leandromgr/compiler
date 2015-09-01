@@ -1,7 +1,16 @@
-"batatax
-int
-bool
-variavel
-''
+int potato()
+int fries:0;
+real shityFries:'d';
+bool dedao:TRUE;
+;
 
-""
+int taylor(bool grande, int tamanho)
+char me:0;
+bool tetas:TRUE;
+;
+bool
+ shit(bool isReal);
+
+char mindingo();
+
+real euro(bool convert, real pila);

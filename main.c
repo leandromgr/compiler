@@ -17,10 +17,12 @@ int main (int argc, char ** argv)
 
 	initMe();
 
-	filePointer = fopen("test2.txt", "r");
+	filePointer = fopen("test.txt", "r");
 	yyin = filePointer;
 
-	while (isRunning())
+	printf("Parsing result: %d\n ", yyparse());
+
+	/*while (isRunning())
 	{
 		readToken = yylex();
 		//printf("yytext: %s\n", yytext);
@@ -98,9 +100,9 @@ int main (int argc, char ** argv)
 			}
 		}
 	}
-	
+	*/	
 	printf("Number of lines in the parsed file: %i\n", getLineNumber());
 
-	//hashPrint();
+	hashPrint();
 	return 0;
 }
