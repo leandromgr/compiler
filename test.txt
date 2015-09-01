@@ -12,12 +12,31 @@ bool shit(bool isReal)
 {
 	if (oi)
 	{
-		return piru
+		return piru;
+    i + 1 =: i
 	}
 	else
 	{
-		output erro1, erro2, "lalala"
+		output erroA, erroB, "lalala"
 	}
+};
+
+int main()
+int i:0;
+int j:1;
+{
+  output "Digite um numero: ";
+  if (i<10)
+  {
+    a := incn(a,1);
+    i + 1 =: i
+  } loop;
+  output "Incrementado algumas vezes fica ",a,"\n"
+};
+
+int incn (int x, int n)
+{
+  return x+n
 };
 
 char mindingo()

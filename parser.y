@@ -34,7 +34,7 @@
 
 // ------------ The definition of lang152 ---------------
 lang152: function_group 
-		|
+		| %empty
 		;
 
 
@@ -42,7 +42,7 @@ lang152: function_group
 function_group: function optional_function_group
 				;
 optional_function_group: function_group
-						|
+						| %empty
 						;
 
 function: function_header function_variable_list command ';'
@@ -54,13 +54,13 @@ function_header: KW_INT TK_IDENTIFIER '(' function_parameters ')'
 				;
 
 function_parameters: list_parameters
-					|
+					| %empty
 					;
 
 list_parameters: parameter optional_parameter_list
 						;
 optional_parameter_list: ',' list_parameters
-						|
+						| %empty
 						;
 
 parameter: KW_INT TK_IDENTIFIER
@@ -70,13 +70,14 @@ parameter: KW_INT TK_IDENTIFIER
 		 ;
 
 function_variable_list: function_variable function_variable_list
-						|
+						| %empty
 						;
 
 function_variable:    KW_INT TK_IDENTIFIER  ':' initial_value ';'
 		 			| KW_BOOL TK_IDENTIFIER ':' initial_value ';'
 					| KW_CHAR TK_IDENTIFIER ':' initial_value ';'
 		 			| KW_REAL TK_IDENTIFIER ':' initial_value ';'
+
 
 
 // ------------ Command parsing ---------------
@@ -89,27 +90,31 @@ simple_command: attribution_command
 				| input_command
 				| output_command
 				| return_command
-				|
+				| %empty
 				;
-
-command_variable: TK_IDENTIFIER optional_variable_index
-				;
-optional_variable_index: '[' expression ']'
-					   	|
-						;
 
 attribution_command: command_variable ':' '=' expression
 		   			| expression '=' ':' command_variable
 		   			;
 
+command_variable: TK_IDENTIFIER optional_variable_index
+				;
+optional_variable_index: '[' expression ']'
+					   	| %empty
+						;
+
+
 input_command: KW_INPUT TK_IDENTIFIER
 			 ;
 
-output_command: KW_OUTPUT output_element optional_output_list
+output_command: KW_OUTPUT output_list
 			  ;
 
-optional_output_list : ',' output_element
-					 |
+output_list: output_element optional_output_list
+		   ;
+
+optional_output_list : ',' output_list
+					 | %empty
 					 ;
 
 output_element: LIT_STRING
@@ -119,11 +124,11 @@ output_element: LIT_STRING
 return_command: KW_RETURN expression
 			  ;
 
-flow_control: KW_INT '(' expression ')' command optional_flow_control
+flow_control: KW_IF '(' expression ')' command optional_flow_control
 			;
 optional_flow_control: KW_ELSE command
 					 | KW_LOOP
-					 |
+					 | %empty
 					 ;
 
 command_block: '{' optional_command_block
@@ -141,8 +146,49 @@ optional_command: ';' command_block_list
 				;
 
 // ------------ Expression parsing -----------------
-expression: TK_IDENTIFIER
-		  ;
+
+expression: expression '+' expression
+		 | expression '-' expression
+		 | expression '*' expression
+		 | expression '/' expression
+		 | expression '>' expression
+		 | expression '<' expression
+		 | expression OPERATOR_LE expression
+		 | expression OPERATOR_GE expression
+		 | expression OPERATOR_EQ expression
+		 | expression OPERATOR_NE expression
+		 | expression OPERATOR_AND expression
+		 | expression OPERATOR_OR expression
+		 | '(' expression ')'
+		 | LIT_INTEGER
+		 | LIT_TRUE
+		 | LIT_FALSE
+		 | LIT_CHAR
+		 | parse_tk_identifier
+		 ;
+
+parse_tk_identifier: TK_IDENTIFIER possible_function_call
+			;
+
+possible_function_call: '(' function_arguments ')'
+					  | %empty
+					  ;
+
+function_arguments: list_arguments
+					| %empty
+					;
+
+list_arguments: argument optional_argument_list
+						;
+optional_argument_list: ',' list_arguments
+						| %empty
+						;
+argument: TK_IDENTIFIER
+		| LIT_INTEGER
+		| LIT_TRUE
+		| LIT_FALSE
+		| LIT_CHAR
+		;
 
 // ------------ General purpose -----------------
 initial_value: LIT_INTEGER

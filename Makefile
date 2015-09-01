@@ -12,7 +12,7 @@ y.tab.o: y.tab.c
 	gcc -c y.tab.c
 
 y.tab.c: parser.y
-	yacc -d -v -t parser.y
+	yacc -d -v -t -Wall parser.y
 
 lex.yy.o: lex.yy.c
 	gcc -c lex.yy.c
@@ -24,4 +24,4 @@ hash.o: hash.c
 	gcc -c hash.c
 
 clean:
-	rm -rf *.o lex* etapa[1-9]
+	rm -rf *.o lex* y.tab* etapa[1-9]
