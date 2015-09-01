@@ -42,52 +42,48 @@ Linguagem:
 		- Blocos são considerados sintaticamente como comandos, podendo
 		aparecer no lugar de qualquer comando
 
-	- Bloco de comandos
-		- {CMD;CMD;CMD;CMD}
-		- entre '{' '}'
-		- Possívelmente vazio
-		- Considerado um comando simples
+	X Bloco de comandos
+		X {CMD;CMD;CMD;CMD}
+		X entre '{' '}'
+		X Possívelmente vazio
+		X Considerado um comando simples
 
-	- Comando simples (é um comando)
+	X Comando simples (é um comando)
 		- Atribuição, controle de fluxo ou os comandos de input, output,
 		return e vazio.
-		- Atribuição
-			- varíavel := expressão
-			- expressão =: varíavel
-			- vetor[expressão] := expressão
-			- expressão =: vetor[expressão]
-		- varíavel := expressão
-		- expressão =: varíavel
-		- vetor[expressão] := expressão
-		- expressão =: vetor[expressão]
-		- input
-			- input VARIABLE_NAME
-			- Se disponível e compatível, será colocado [WTF?]
-		- output
-			- output E1,E2,E3
-			- Elemento (En acima)
-				- String ou expressão aritmética a ser impressa
-		- return
-			- return EXPRESSAO
-				- Expressão que contém o valor de retorno
+		X Atribuição
+			X varíavel := expressão
+			X expressão =: varíavel
+			X vetor[expressão] := expressão
+			X expressão =: vetor[expressão]
+		X input
+			X input VARIABLE_NAME
+			[?]- Se disponível e compatível, será colocado [WTF?] (What?)
+		X output
+			X output E1,E2,E3
+			X Elemento (En acima)
+				[?]- String ou expressão aritmética a ser impressa (Consideramos expressão em geral)
+		X return
+			X return EXPRESSAO
+				[?]- Expressão que contém o valor de retorno (Consideramos expressão em geral)
+
+		X Comandos para controle de fluxo (é um comando)
+			X if (expressão) COMANDO
+			X if (expressão) COMANDO else COMANDO
+			X if (expressão) COMANDO loop
+			X ALGO IMPORTANTE SOBRE O ';' AQUI [Ler doc (sublinhado)]
 
 	- Expressão aritmética (é um comando)
-		- Identificadores como folhas (opcionalmente com o [INDEX] p/ vetores), 
-		literais numéricos e ASCII.
-		- Podem ser formadas recursivamente com operadores aritméticos [WTF?]
-		- Permitem o uso de parênteses para associatividade [WTF?]
+			- Identificadores como folhas (opcionalmente com o [INDEX] p/ vetores), 
+			literais numéricos e ASCII.
+			- Podem ser formadas recursivamente com operadores aritméticos [WTF?]
+			- Permitem o uso de parênteses para associatividade [WTF?]
 
 	- Expressão Lógica (Booleana) (é um comando)
-		- Formada atraves de:
-			- Operadores relacionais aplicados à expressões aritméticas
-			- Operadores lógicos aplicados à expressões lógicas
-			- Recursivamente [SOLTO NO FINAL DA FRASE DO DOC :)]
-
-	- Comandos para controle de fluxo (é um comando)
-		- if (expressão) COMANDO
-		- if (expressão) COMANDO else COMANDO
-		- if (expressão) COMANDO loop
-		- ALGO IMPORTANTE SOBRE O ';' AQUI [Ler doc (sublinhado)]
+			- Formada atraves de:
+				- Operadores relacionais aplicados à expressões aritméticas
+				- Operadores lógicos aplicados à expressões lógicas
+				- Recursivamente [SOLTO NO FINAL DA FRASE DO DOC :)]
 
 		FRASE SOLTA NO PARÁGRAFO: "Expressões Aritméticas e Lógicas"
 		Finalmente, um operando possível de expressão é uma chamada de função, feita pelo seu nome, seguido de argumentos entre parênteses.	
