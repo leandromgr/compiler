@@ -78,11 +78,71 @@ function_variable:    KW_INT TK_IDENTIFIER  ':' initial_value ';'
 					| KW_CHAR TK_IDENTIFIER ':' initial_value ';'
 		 			| KW_REAL TK_IDENTIFIER ':' initial_value ';'
 
-command: ;
 
+// ------------ Command parsing ---------------
+command: simple_command
+	   	| command_block
+		;
 
+simple_command: attribution_command
+			  	| flow_control
+				| input_command
+				| output_command
+				| return_command
+				|
+				;
 
-// ------------ Function processing ---------------
+command_variable: TK_IDENTIFIER optional_variable_index
+				;
+optional_variable_index: '[' expression ']'
+					   	|
+						;
+
+attribution_command: command_variable ':' '=' expression
+		   			| expression '=' ':' command_variable
+		   			;
+
+input_command: KW_INPUT TK_IDENTIFIER
+			 ;
+
+output_command: KW_OUTPUT output_element optional_output_list
+			  ;
+
+optional_output_list : ',' output_element
+					 |
+					 ;
+
+output_element: LIT_STRING
+			  | expression
+			  ;
+
+return_command: KW_RETURN expression
+			  ;
+
+flow_control: KW_INT '(' expression ')' command optional_flow_control
+			;
+optional_flow_control: KW_ELSE command
+					 | KW_LOOP
+					 |
+					 ;
+
+command_block: '{' optional_command_block
+			 ;
+
+optional_command_block: command_block_list 
+					  | '}'
+					  ;
+
+command_block_list: command optional_command
+				  ;
+
+optional_command: ';' command_block_list
+				| '}'
+				;
+
+// ------------ Expression parsing -----------------
+expression: TK_IDENTIFIER
+		  ;
 
 // ------------ General purpose -----------------
 initial_value: LIT_INTEGER

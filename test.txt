@@ -8,9 +8,22 @@ int taylor(bool grande, int tamanho)
 char me:0;
 bool tetas:TRUE;
 ;
-bool
- shit(bool isReal);
+bool shit(bool isReal)
+{
+	if (oi)
+	{
+		return piru
+	}
+	else
+	{
+		output erro1, erro2, "lalala"
+	}
+};
 
-char mindingo();
+char mindingo()
+{
+};
 
-real euro(bool convert, real pila);
+real euro(bool convert, real pila)
+input A
+;
