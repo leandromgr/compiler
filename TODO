@@ -24,16 +24,16 @@ Linguagem:
 			- - int, real, char ou bool
 				
 	- Função
-		- Sempre terminadas por ';', pois também é uma declaração global
-		- cabeçalho -> corpo (comando) [Começo do doc]
-		- Cabeçalho -> Lista de variáveis locais -> corpo [Definição de funções]
-		- Cabeçalho
-			- RETURN_VALUE FUNCTION_NAME (P1,P2,P3,P4/nada)
-			- Parâmetros (Pn acima):
-				- TIPO NOME
-				- Não pode ser Vetor
-		- Lista de variáveis locais
-			- Mesmo modelo das globais, mas NÃO pode haver vetores.
+		X Sempre terminadas por ';', pois também é uma declaração global
+		X cabeçalho -> corpo (comando) [Começo do doc]
+		X Cabeçalho -> Lista de variáveis locais -> corpo [Definição de funções]
+		X Cabeçalho
+			X RETURN_VALUE FUNCTION_NAME (P1,P2,P3,P4/nada)
+			X Parâmetros (Pn acima):
+				X TIPO NOME
+				X Não pode ser Vetor
+		X Lista de variáveis locais
+			X Mesmo modelo das globais, mas NÃO pode haver vetores.
 		- Comando
 
 	- Comando [Começo do doc][Desconsiderar?]
