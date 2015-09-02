@@ -35,17 +35,12 @@
 %%
 
 // ------------ The definition of lang152 ---------------
-lang152: optional_function_group optional_global_variable_list
-		;
 
 
 // ------------ Function processing ---------------
-//function_group: function optional_function_group
-//				| %empty
-//				;
-optional_function_group: function optional_function_group
-						| %empty
-						;
+lang152: function lang152
+		| global_variable_list
+		;
 
 function: function_header function_variable_list command ';'
 		;
@@ -131,6 +126,7 @@ flow_control: KW_IF '(' expression ')' command optional_flow_control
 			;
 optional_flow_control: KW_ELSE command
 					 | KW_LOOP
+					 | %empty
 					 ;
 
 command_block: '{' optional_command_block
@@ -193,13 +189,10 @@ argument: TK_IDENTIFIER
 		;
 
 // ------------ Global variables parsing -----------------
-//global_variables_group: global_variable optional_global_variable_list
-//						| %empty
-//						;
 
-optional_global_variable_list: global_variable optional_global_variable_list
-							|  %empty
-							;
+global_variable_list: global_variable global_variable_list
+					| %empty
+					;
 
 
 
