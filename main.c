@@ -20,7 +20,7 @@ int main (int argc, char ** argv)
 	filePointer = fopen("test.txt", "r");
 	yyin = filePointer;
 
-	printf("Parsing result: %d\n ", yyparse());
+	printf("====================--------------------------->Parsing result: %d\n ", yyparse());
 
 	/*while (isRunning())
 	{

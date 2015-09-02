@@ -1,25 +1,4 @@
-int potato()
-int fries:0;
-real shityFries:'d';
-bool dedao:TRUE;
-;
-
-int taylor(bool grande, int tamanho)
-char me:0;
-bool tetas:TRUE;
-;
-bool shit(bool isReal)
-{
-	if (oi)
-	{
-		return piru;
-    i + 1 =: i
-	}
-	else
-	{
-		output erroA, erroB, "lalala"
-	}
-};
+// UFRGS - Compiladores - Marcelo Johann - 2015/2
 
 int main()
 int i:0;
@@ -31,18 +10,15 @@ int j:1;
     a := incn(a,1);
     i + 1 =: i
   } loop;
-  output "Incrementado algumas vezes fica ",a,"\n"
+  output "Incrementado algumas vezes fica ",a,"\n";
 };
 
 int incn (int x, int n)
 {
   return x+n
 };
-
-char mindingo()
-{
-};
-
-real euro(bool convert, real pila)
-input A
-;
+  
+int a:0;
+real v[10]: 0 0 0 0 0 0 0 0 0 0; 
+bool mat[1000];
+char c:0;

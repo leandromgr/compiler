@@ -1,7 +1,22 @@
 
 ///////////////////// ETAPA 2 ///////////////////////
 
-Specificação:
+
+	PARA QUARTA:
+		X - Implementar a parte das declarações globais.
+		- Implementar comando vazio.
+		- Possiblidade de não ter funções ou de não ter declarações de variáveis globais.
+		- Criar o %union com symbol para guardar o & dos nodos da hash.
+		- Podemos deixar as recursões em um linha só como o professor
+			- Com isso fica mais fácil implementar o segundo tópico (de não haver funçẽs ou decl. de var. global).
+	BUG[!]:
+		- Possivelmente mesmo bug do Taylor.
+		- Funciona com funções e funciona com declaraçãoes, porém não simultaneamente.
+		
+
+
+
+Especificação:
 	- Uma única chamada da yyparse()
 		- exit(0) se sucesso
 		- exit(3) se falha
@@ -19,6 +34,7 @@ Linguagem:
 
 		- Vetores
 			- TIPO NOME[TAM_INT] : VI1 VI2 VI3 VI4 VI5 VI6;
+				- Separados por espaços
 			- TIPO NOME[TAM_INT];
 				- Inicilização opcional
 			- - int, real, char ou bool
@@ -73,20 +89,21 @@ Linguagem:
 			X if (expressão) COMANDO loop
 			X ALGO IMPORTANTE SOBRE O ';' AQUI [Ler doc (sublinhado)]
 
-	- Expressão aritmética (é um comando)
+	X- Expressão aritmética (é um comando)
 			- Identificadores como folhas (opcionalmente com o [INDEX] p/ vetores), 
 			literais numéricos e ASCII.
 			- Podem ser formadas recursivamente com operadores aritméticos [WTF?]
 			- Permitem o uso de parênteses para associatividade [WTF?]
 
-	- Expressão Lógica (Booleana) (é um comando)
+	X- Expressão Lógica (Booleana) (é um comando)
 			- Formada atraves de:
 				- Operadores relacionais aplicados à expressões aritméticas
 				- Operadores lógicos aplicados à expressões lógicas
 				- Recursivamente [SOLTO NO FINAL DA FRASE DO DOC :)]
 
-		FRASE SOLTA NO PARÁGRAFO: "Expressões Aritméticas e Lógicas"
-		Finalmente, um operando possível de expressão é uma chamada de função, feita pelo seu nome, seguido de argumentos entre parênteses.	
+	X- FRASE SOLTA NO PARÁGRAFO: "Expressões Aritméticas e Lógicas"
+	Finalmente, um operando possível de expressão é uma chamada de função, feita pelo seu nome, seguido de argumentos entre parênteses.	
+
 
 
 ///////////////////// ETAPA 1 ///////////////////////

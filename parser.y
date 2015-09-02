@@ -33,21 +33,21 @@
 %%
 
 // ------------ The definition of lang152 ---------------
-lang152: function_group 
-		| %empty
+lang152: function_group global_variables_group
 		;
 
 
 // ------------ Function processing ---------------
 function_group: function optional_function_group
+				| %empty
 				;
-optional_function_group: function_group
+optional_function_group: function optional_function_group
 						| %empty
 						;
 
 function: function_header function_variable_list command ';'
 
-function_header: KW_INT TK_IDENTIFIER '(' function_parameters ')'
+function_header:  KW_INT TK_IDENTIFIER '(' function_parameters ')'
 				| KW_BOOL TK_IDENTIFIER '(' function_parameters ')'
 				| KW_CHAR TK_IDENTIFIER '(' function_parameters ')'
 				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'
@@ -190,12 +190,42 @@ argument: TK_IDENTIFIER
 		| LIT_CHAR
 		;
 
+// ------------ Global variables parsing -----------------
+global_variables_group: global_variable optional_global_variable_list
+						| %empty
+						;
+
+optional_global_variable_list: global_variables_group
+							|  %empty
+							;
+
+
+
+global_variable:  KW_INT TK_IDENTIFIER  normalOrVector
+		 		| KW_BOOL TK_IDENTIFIER normalOrVector
+				| KW_CHAR TK_IDENTIFIER normalOrVector
+		 		| KW_REAL TK_IDENTIFIER normalOrVector
+		 		;
+
+normalOrVector:	':' initial_value ';'
+			  |  '[' LIT_INTEGER ']' global_vector_initialization
+			  ;
+
+global_vector_initialization: ':' global_vector_initial_values ';'
+							| ';'
+							;
+
+global_vector_initial_values: initial_value global_vector_initial_values
+							| %empty
+							;
+
 // ------------ General purpose -----------------
 initial_value: LIT_INTEGER
 			 | LIT_TRUE
 			 | LIT_FALSE
 			 | LIT_CHAR
 			 ;
+
 
 
 %%
