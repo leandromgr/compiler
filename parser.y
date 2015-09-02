@@ -30,22 +30,25 @@
 
 %token TOKEN_ERROR   290
 
+%left  '+'  '-'
+%left  '*'  '/'
 %%
 
 // ------------ The definition of lang152 ---------------
-lang152: function_group global_variables_group
+lang152: optional_function_group optional_global_variable_list
 		;
 
 
 // ------------ Function processing ---------------
-function_group: function optional_function_group
-				| %empty
-				;
+//function_group: function optional_function_group
+//				| %empty
+//				;
 optional_function_group: function optional_function_group
 						| %empty
 						;
 
 function: function_header function_variable_list command ';'
+		;
 
 function_header:  KW_INT TK_IDENTIFIER '(' function_parameters ')'
 				| KW_BOOL TK_IDENTIFIER '(' function_parameters ')'
@@ -128,7 +131,6 @@ flow_control: KW_IF '(' expression ')' command optional_flow_control
 			;
 optional_flow_control: KW_ELSE command
 					 | KW_LOOP
-					 | %empty
 					 ;
 
 command_block: '{' optional_command_block
@@ -191,11 +193,11 @@ argument: TK_IDENTIFIER
 		;
 
 // ------------ Global variables parsing -----------------
-global_variables_group: global_variable optional_global_variable_list
-						| %empty
-						;
+//global_variables_group: global_variable optional_global_variable_list
+//						| %empty
+//						;
 
-optional_global_variable_list: global_variables_group
+optional_global_variable_list: global_variable optional_global_variable_list
 							|  %empty
 							;
 
