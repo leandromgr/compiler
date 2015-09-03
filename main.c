@@ -4,6 +4,7 @@ Luciano Farias Puhl
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "tokens.h"
 
 extern FILE* yyin;
@@ -13,96 +14,30 @@ extern char* yytext;
 int main (int argc, char ** argv)
 {
 	FILE *filePointer = NULL;
-	int readToken;
+	
+	if (argc != 2)
+	{
+		fprintf(stderr, "ERROR! No file was specified! \nUsage: etapa2 testFile\n");
+		exit(2);
+	}
 
 	initMe();
 
-	filePointer = fopen("test1.txt", "r");
-	yyin = filePointer;
+	filePointer = fopen(argv[1], "r");
 
-	printf("====================--------------------------->Parsing result: %d\n ", yyparse());
-
-	/*while (isRunning())
+	if (filePointer == NULL)
 	{
-		readToken = yylex();
-		//printf("yytext: %s\n", yytext);
-		// Check if it is not EOF
-		if (!isRunning())
-		{
-			break;
-		}
-
-		// Check which token was read
-		switch (readToken)
-		{
-			case TK_IDENTIFIER:
-			{
-				printf("Identifier: %s\n", yytext);
-				break;
-			}
-
-			case LIT_CHAR:
-			{
-				printf("Literal char: %c\n", yytext[1]);
-				break;
-			}
-	
-			case LIT_TRUE:
-			{
-				printf("Literal TRUE: %s\n", yytext);
-				break;
-			}
-			
-			case LIT_FALSE:
-			{
-				printf("Literal FALSE: %s\n", yytext);
-				break;
-			}
-			
-			case LIT_INTEGER:
-			{
-				printf("Literal number: %s\n", yytext);
-				break;
-			}
-			
-			case LIT_STRING:
-			{
-				printf("Literal String: %s\n", yytext);
-				break;
-			}
-
-			case KW_INT:
-			case KW_REAL:
-			case KW_BOOL:
-			case KW_CHAR:
-			case KW_IF:
-			case KW_ELSE:
-			case KW_LOOP:
-			case KW_INPUT:
-			case KW_RETURN:
-			case KW_OUTPUT:
-			{
-				printf("Reserved word found: %s\n", yytext);
-				break;
-			}
-
-			case TOKEN_ERROR:
-			{
-				printf("Invalid token: %s\n", yytext);
-				break;
-			}
-
-
-			default:
-			{
-				printf("Symbol: %c\n", yytext[0]);
-				break;
-			}
-		}
+		fprintf(stderr, "ERROR! The file could not be opened! \nUsage: etapa2 testFile\n");
+		exit(2);
 	}
-	*/	
-	printf("Number of lines in the parsed file: %i\n", getLineNumber());
-
-	hashPrint();
-	return 0;
+	
+	yyin = filePointer;
+	if (yyparse() != 0)
+	{
+		fprintf(stderr, "Syntax error in line: %i\n\n", getLineNumber()+1);
+		exit(3);
+	}
+	
+	printf("Program sucessful!\n\n");
+	exit(0);
 }

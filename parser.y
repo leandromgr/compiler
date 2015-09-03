@@ -233,6 +233,5 @@ initial_value: LIT_INTEGER
 
 int yyerror(char *s)
 {
-	fprintf(stderr, "%s\n", s);
-	exit(3);
+	return 1;
 }
