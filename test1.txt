@@ -1,0 +1,161 @@
+/////////Testing functions
+
+int funcA();
+
+int funcB()
+	input abc;
+
+int funcC()
+{
+	
+};
+
+int funcD()
+{
+	{
+		{
+			{
+			}
+		}
+	}
+};
+
+int funcE()
+bool lvar:TRUE;;
+
+int funcF()
+bool lvar:TRUE;
+{
+	{
+		input abc;
+	}
+};
+
+int funcG()
+int lvarA:FALSE;
+bool lvarB:TRUE;
+char lvarC:174;
+real lvarD:'c';
+;
+
+int funcH(int paramA);
+
+int funcI(int paramB)
+int lvarA:FALSE;
+bool lvarB:TRUE;
+char lvarC:174;
+real lvarD:'c';;
+
+int funcK(int paramA, bool paramB, char paramC, real paramD)
+int lvarA:FALSE;
+bool lvarB:TRUE;
+char lvarC:174;
+real lvarD:'c';
+;
+
+
+///////////Testing commands
+
+int funcmdA()
+  return 1337
+;
+
+int funcmdB()
+{
+  input abc;
+  output "pingpong";
+  return 27
+};
+
+int funcmdC()
+{
+  varA:=expressao;
+  expressao=:varB;
+  varC[expressao]:=expressao;
+  expressao=:varD[expressao];
+  output "estringue";
+  output expressao;
+  output "pingpong", "lengalenga", zoeira
+};
+
+int funcmdD()
+{
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+};
+
+//////////Testing Expressions
+
+int funexA()
+{
+  varA:=9+9;
+  varA:=9+(9*((8-7)/3));
+  varA:= a&&c;
+  varA:= (a==b)||(c>=d);
+  varA:= (e<=f)&&(m>n);
+  varA:= funcA();
+  varA:= funcA(paramA);
+  varA:= funcA(paramA, paramB);
+  funcA(paramA) =: varA;
+  funcA(paramA, paramB) =: varA;
+  funcA() =: varA;
+
+  varA[26] := 9;
+
+};
+
+///////////Testing IF
+
+int funifA()
+{
+	if(a)
+};
+
+int funifB()
+{
+	if(a)
+	{
+
+	};
+
+	if(b)
+		if(c)
+};
+
+int funifC()
+{
+	if(a) else;
+
+	if(b)
+		if(c)
+		else
+			a:=2
+	else;
+
+	if(a) loop
+};
+
+// UFRGS - Compiladores - Marcelo Johann - 2015/2
+
+int main()
+int i:0;
+int j:1;
+{
+  output "Digite um numero: ";
+  if (i<10)
+  {
+    a := incn(a,1);
+    i + 1 =: i
+  } loop;
+  output "Incrementado algumas vezes fica ",a,"\n";
+};
+
+int incn (int x, int n)
+{
+  return x+n
+};
+  
+int a:0;
+real v[10]: 0 0 0 0 0 0 0 0 0 0; 
+bool mat[1000];
+char c:0;
+

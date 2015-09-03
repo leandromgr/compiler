@@ -1,6 +1,7 @@
 %{
 	#include <stdio.h>
-	int yydebug = 1;
+	#include "hash.h"
+	//int yydebug = 1;
 %}
 
 %token KW_INT        256
@@ -196,7 +197,7 @@ global_variable_list: global_variable global_variable_list
 
 
 
-global_variable:  KW_INT TK_IDENTIFIER  normalOrVector
+global_variable:  KW_INT  TK_IDENTIFIER  normalOrVector
 		 		| KW_BOOL TK_IDENTIFIER normalOrVector
 				| KW_CHAR TK_IDENTIFIER normalOrVector
 		 		| KW_REAL TK_IDENTIFIER normalOrVector
@@ -228,4 +229,5 @@ initial_value: LIT_INTEGER
 int yyerror(char *s)
 {
 	fprintf(stderr, "%s\n", s);
+	exit(3);
 }
