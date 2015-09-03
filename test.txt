@@ -15,8 +15,18 @@ int j:1;
 
 int incn (int x, int n)
 {
+	if (i<10)
+  {
+    a := incn(a,1);
+    i + 1 =: i
+  };
   return x+n
 };
+  
+int a:0;
+real v[10]: 0 0 0 0 0 0 0 0 0 0; 
+bool mat[1000];
+char c:0;
 
   
 int a:0;
