@@ -5,7 +5,6 @@ Luciano Farias Puhl
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "tokens.h"
 
 extern FILE* yyin;
 extern int yylex();
