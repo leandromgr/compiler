@@ -73,18 +73,9 @@ FALSE			{ hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 <STRING>[^"\\\n]*	{ copyStringToBuffer(yytext); }
 <STRING>\\		{ BEGIN(STRING_ESCAPE); }
 <STRING>\"		{ hashInsert(stringBuffer, LIT_STRING); 
-				  printf("buffer: %s\n", stringBuffer);
 				  BEGIN(INITIAL); 
 				  return LIT_STRING; }
-<STRING>"\n"	{ int bufferIndex;
-				  int bufferSize = strlen(stringBuffer);
-				  unput('\n');
-				  for(bufferIndex = bufferSize-1 ; bufferIndex >= 0 ; bufferIndex--)
-				  {
-				  	//printf("devolvendo: %c, %d\n", stringBuffer[bufferIndex], bufferIndex);
-				  	unput(stringBuffer[bufferIndex]);
-				  }
-				  lineCounter++;
+<STRING>"\n"	{ lineCounter++;
 				  BEGIN(INITIAL);
 				  return TOKEN_ERROR;
 				}
