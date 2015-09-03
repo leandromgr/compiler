@@ -11,8 +11,8 @@ main.o: main.c
 y.tab.o: y.tab.c
 	gcc -c y.tab.c
 
-y.tab.c: parser.y
-	yacc -d -v -t -Wall parser.y
+y.tab.c: parser2.y
+	yacc -d -v -t -Wall parser2.y
 
 lex.yy.o: lex.yy.c
 	gcc -c lex.yy.c

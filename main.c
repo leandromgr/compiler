@@ -17,7 +17,7 @@ int main (int argc, char ** argv)
 
 	initMe();
 
-	filePointer = fopen("test.txt", "r");
+	filePointer = fopen("test1.txt", "r");
 	yyin = filePointer;
 
 	printf("====================--------------------------->Parsing result: %d\n ", yyparse());
