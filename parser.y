@@ -5,7 +5,7 @@ Luciano Farias Puhl
 
 %{
 	#include <stdio.h>
-	#include "hash.h"
+    #include "hash.h"
 	//int yydebug = 1;
 %}
 
