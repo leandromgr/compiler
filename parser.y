@@ -6,8 +6,14 @@ Luciano Farias Puhl
 %{
 	#include <stdio.h>
     #include "hash.h"
+    #include "ast.h"
 	//int yydebug = 1;
 %}
+
+%union{
+    HASH_NODE * hashNode;
+    AST_NODE * astNode;
+}
 
 %token KW_INT        256
 %token KW_REAL       257
@@ -27,17 +33,21 @@ Luciano Farias Puhl
 %token OPERATOR_AND  274
 %token OPERATOR_OR   275
 
-%token TK_IDENTIFIER 280
-%token LIT_INTEGER   281
-%token LIT_FALSE     283
-%token LIT_TRUE	  	 284
-%token LIT_CHAR      285
-%token LIT_STRING    286
+%token <hashNode>TK_IDENTIFIER  280
+%token <hashNode>LIT_INTEGER    281
+%token <hashNode>LIT_FALSE      283
+%token <hashNode>LIT_TRUE       284
+%token <hashNode>LIT_CHAR       285
+%token <hashNode>LIT_STRING    286
 
 %token TOKEN_ERROR   290
 
 %left  '+'  '-'
 %left  '*'  '/'
+
+%type <astNode>expression
+%type <astNode>attribution_command
+
 %%
 
 // ------------ The definition of lang152 ---------------
@@ -97,8 +107,8 @@ simple_command: attribution_command
 				| %empty
 				;
 
-attribution_command: command_variable ':' '=' expression
-		   			| expression '=' ':' command_variable
+attribution_command: command_variable ':' '=' expression    { $$ = 0; }
+                    | expression '=' ':' command_variable   { $$ = 0; }
 		   			;
 
 command_variable: TK_IDENTIFIER optional_variable_index
@@ -151,24 +161,24 @@ optional_command: ';' command_block_list
 
 // ------------ Expression parsing -----------------
 
-expression: expression '+' expression
-		 | expression '-' expression
-		 | expression '*' expression
-		 | expression '/' expression
-		 | expression '>' expression
-		 | expression '<' expression
-		 | expression OPERATOR_LE expression
-		 | expression OPERATOR_GE expression
-		 | expression OPERATOR_EQ expression
-		 | expression OPERATOR_NE expression
-		 | expression OPERATOR_AND expression
-		 | expression OPERATOR_OR expression
-		 | '(' expression ')'
-		 | LIT_INTEGER
-		 | LIT_TRUE
-		 | LIT_FALSE
-		 | LIT_CHAR
-		 | parse_tk_identifier
+expression: expression '+' expression       { $$ = astCreate(AST_SUM, 0, $1, $3, 0, 0); astPrint($$);}
+         | expression '-' expression        { $$ = 0; }
+         | expression '*' expression        { $$ = 0; }
+         | expression '/' expression        { $$ = 0; }
+         | expression '>' expression        { $$ = 0; }
+         | expression '<' expression        { $$ = 0; }
+         | expression OPERATOR_LE expression{ $$ = 0; }
+         | expression OPERATOR_GE expression{ $$ = 0; }
+         | expression OPERATOR_EQ expression{ $$ = 0; }
+         | expression OPERATOR_NE expression{ $$ = 0; }
+         | expression OPERATOR_AND expression{ $$ = 0; }
+         | expression OPERATOR_OR expression{ $$ = 0; }
+         | '(' expression ')'               { $$ = 0; }
+         | LIT_INTEGER                      { $$ = astCreate(AST_INTEGER, $1, 0, 0, 0, 0);}
+         | LIT_TRUE                         { $$ = 0; }
+         | LIT_FALSE                        { $$ = 0; }
+         | LIT_CHAR                         { $$ = 0; }
+         | parse_tk_identifier              { $$ = 0; }
 		 ;
 
 parse_tk_identifier: TK_IDENTIFIER possible_function_call

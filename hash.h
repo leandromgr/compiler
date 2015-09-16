@@ -2,6 +2,8 @@
 Leandro Mateus Giacomini Rocha
 Luciano Farias Puhl
 */
+#ifndef HASH_H
+#define HASH_H
 
 #include <stdio.h> 
 #include <stdlib.h>
@@ -24,3 +26,5 @@ int hashGetAddress(char *symbol);
 HASH_NODE* hashFind(char *symbol, int symbolType);
 HASH_NODE* hashInsert(char *symbol, int symbolType);
 void hashPrint(void);
+
+#endif
