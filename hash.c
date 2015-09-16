@@ -4,6 +4,8 @@ Luciano Farias Puhl
 */
 
 #include "hash.h"
+#include "ast.h"
+#include "y.tab.h"
 
 void hashInitialize(void)
 {

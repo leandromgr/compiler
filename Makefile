@@ -2,13 +2,13 @@
 #Leandro Mateus Giacomini Rocha
 #Luciano Farias Puhl
 
-etapa3: y.tab.o lex.yy.o hash.o ast.o main.o
+etapa3: y.tab.o lex.yy.o main.o
 	gcc main.o lex.yy.o hash.o ast.o y.tab.o -o etapa3
 
 main.o: main.c 
 	gcc -c main.c
 
-y.tab.o: y.tab.c
+y.tab.o: y.tab.c hash.o ast.o 
 	gcc -c y.tab.c
 
 y.tab.c: parser.y

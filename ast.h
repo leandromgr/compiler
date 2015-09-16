@@ -1,8 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
-#include "hash.h"
 #include <stdlib.h>
+#include "hash.h"
 
 #define MAX_CHILDREN 4
 

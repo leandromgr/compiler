@@ -4,7 +4,7 @@ Luciano Farias Puhl
 */
 
 %{
-	#include <stdio.h>
+    #include <stdio.h>
     #include "hash.h"
     #include "ast.h"
 	//int yydebug = 1;
@@ -107,8 +107,8 @@ simple_command: attribution_command
 				| %empty
 				;
 
-attribution_command: command_variable ':' '=' expression    { $$ = 0; }
-                    | expression '=' ':' command_variable   { $$ = 0; }
+attribution_command: command_variable ':' '=' expression    { $$ = NULL; }
+                    | expression '=' ':' command_variable   { $$ = NULL; }
 		   			;
 
 command_variable: TK_IDENTIFIER optional_variable_index
@@ -161,24 +161,24 @@ optional_command: ';' command_block_list
 
 // ------------ Expression parsing -----------------
 
-expression: expression '+' expression       { $$ = astCreate(AST_SUM, 0, $1, $3, 0, 0); astPrint($$);}
-         | expression '-' expression        { $$ = 0; }
-         | expression '*' expression        { $$ = 0; }
-         | expression '/' expression        { $$ = 0; }
-         | expression '>' expression        { $$ = 0; }
-         | expression '<' expression        { $$ = 0; }
-         | expression OPERATOR_LE expression{ $$ = 0; }
-         | expression OPERATOR_GE expression{ $$ = 0; }
-         | expression OPERATOR_EQ expression{ $$ = 0; }
-         | expression OPERATOR_NE expression{ $$ = 0; }
-         | expression OPERATOR_AND expression{ $$ = 0; }
-         | expression OPERATOR_OR expression{ $$ = 0; }
-         | '(' expression ')'               { $$ = 0; }
-         | LIT_INTEGER                      { $$ = astCreate(AST_INTEGER, $1, 0, 0, 0, 0);}
-         | LIT_TRUE                         { $$ = 0; }
-         | LIT_FALSE                        { $$ = 0; }
-         | LIT_CHAR                         { $$ = 0; }
-         | parse_tk_identifier              { $$ = 0; }
+expression: expression '+' expression       { $$ = astCreate(AST_SUM, NULL, $1, $3, NULL, NULL); astPrint($$, 0);}
+         | expression '-' expression        { $$ = NULL; }
+         | expression '*' expression        { $$ = NULL; }
+         | expression '/' expression        { $$ = NULL; }
+         | expression '>' expression        { $$ = NULL; }
+         | expression '<' expression        { $$ = NULL; }
+         | expression OPERATOR_LE expression{ $$ = NULL; }
+         | expression OPERATOR_GE expression{ $$ = NULL; }
+         | expression OPERATOR_EQ expression{ $$ = NULL; }
+         | expression OPERATOR_NE expression{ $$ = NULL; }
+         | expression OPERATOR_AND expression{ $$ = NULL; }
+         | expression OPERATOR_OR expression{ $$ = NULL; }
+         | '(' expression ')'               { $$ = NULL; }
+         | LIT_INTEGER                      { $$ = astCreate(AST_INTEGER, $1, NULL, NULL, NULL, NULL);}
+         | LIT_TRUE                         { $$ = NULL; }
+         | LIT_FALSE                        { $$ = NULL; }
+         | LIT_CHAR                         { $$ = NULL; }
+         | parse_tk_identifier              { $$ = NULL; }
 		 ;
 
 parse_tk_identifier: TK_IDENTIFIER possible_function_call
