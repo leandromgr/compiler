@@ -38,18 +38,17 @@ void astPrint(AST_NODE *node, int currentLevel)
         case AST_DIV:   fprintf(stderr, "DIV"); break;
         case AST_TKID:  fprintf(stderr, "TKID"); break;
         case AST_ASST:  fprintf(stderr, "AST_ASST"); break;
-
-        if (node->hashNode)
-        {
-            if (node->hashNode->symbol)
-            {
-                fprintf(stderr, ", %s", node->hashNode->symbol);
-            }
-        }
-        fprintf(stderr, ")\n");
-
-        int indexChild;
-        for (indexChild = 0; indexChild < MAX_CHILDREN; indexChild++)
-            astPrint(node->children[indexChild], currentLevel+1);
     }
+    if (node->hashNode)
+    {
+        if (node->hashNode->symbol)
+        {
+            fprintf(stderr, ", %s", node->hashNode->symbol);
+        }
+    }
+    fprintf(stderr, ")\n");
+
+    int indexChild;
+    for (indexChild = 0; indexChild < MAX_CHILDREN; indexChild++)
+        astPrint(node->children[indexChild], currentLevel+1);
 }
