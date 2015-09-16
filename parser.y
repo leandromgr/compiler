@@ -175,6 +175,7 @@ parse_tk_identifier: TK_IDENTIFIER possible_function_call
 			;
 
 possible_function_call: '(' function_arguments ')'
+					  | '[' expression ']'
 					  | %empty
 					  ;
 
