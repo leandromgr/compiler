@@ -48,19 +48,19 @@ Luciano Farias Puhl
 "&&"			{ return OPERATOR_AND; }
 "||"			{ return OPERATOR_OR; }
 
-TRUE			{ hashInsert(yytext, LIT_TRUE); return LIT_TRUE; }
-FALSE			{ hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
-[0-9]+			{ hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
+TRUE			{ yylval.hashNode = hashInsert(yytext, LIT_TRUE); return LIT_TRUE; }
+FALSE			{ yylval.hashNode = hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
+[0-9]+			{ yylval.hashNode = hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
 
 ''				{ char processedChar[1] = {'\0'};
-				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
+				  yylval.hashNode = hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 '[\00-\377]'	{ char processedChar[2] = {yytext[1], '\0'};
-				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
+				  yylval.hashNode = hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 '\\[\00-\377]'	{ char processedChar[2] = {'\0', '\0'};
 				  processedChar[0] = processEscapeChar(yytext[2]);
-				  hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
+				  yylval.hashNode = hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 
-[a-zA-Z][a-zA-Z_]*  { hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
+[a-zA-Z][a-zA-Z_]*  { yylval.hashNode = hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
 
 [-+,;:()\[\]{}*/<>=!&$] { return yytext[0]; }
 
@@ -73,7 +73,7 @@ FALSE			{ hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 \"				{ resetStringBuffer(); BEGIN(STRING); }
 <STRING>[^"\\\n]*	{ copyStringToBuffer(yytext); }
 <STRING>\\		{ BEGIN(STRING_ESCAPE); }
-<STRING>\"		{ hashInsert(stringBuffer, LIT_STRING); 
+<STRING>\"		{ yylval.hashNode = hashInsert(stringBuffer, LIT_STRING); 
 				  BEGIN(INITIAL); 
 				  return LIT_STRING; }
 <STRING>"\n"	{ lineCounter++;

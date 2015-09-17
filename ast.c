@@ -32,12 +32,20 @@ void astPrint(AST_NODE *node, int currentLevel)
 
     switch(node->type)
     {
-        case AST_SUM:   fprintf(stderr, "SUM"); break;
-        case AST_SUB:   fprintf(stderr, "SUB"); break;
-        case AST_MULT:  fprintf(stderr, "MULT"); break;
-        case AST_DIV:   fprintf(stderr, "DIV"); break;
-        case AST_TKID:  fprintf(stderr, "TKID"); break;
-        case AST_ASST:  fprintf(stderr, "AST_ASST"); break;
+        case AST_SUM:       fprintf(stderr, "SUM"); break;
+        case AST_SUB:       fprintf(stderr, "SUB"); break;
+        case AST_MULT:      fprintf(stderr, "MULT"); break;
+        case AST_DIV:       fprintf(stderr, "DIV"); break;
+        case AST_SYMBOL:    fprintf(stderr, "SYMBOL"); break;
+        case AST_ATTRIBUTION:  fprintf(stderr, "AST_ATTRIBUTION"); break;
+        case AST_LT:        fprintf(stderr, "LT"); break;
+        case AST_GT:        fprintf(stderr, "GT"); break;
+        case AST_LET:       fprintf(stderr, "LET"); break;
+        case AST_GET:       fprintf(stderr, "GET"); break;
+        case AST_EQ:        fprintf(stderr, "EQ"); break;
+        case AST_NE:        fprintf(stderr, "NE"); break;
+        case AST_AND:       fprintf(stderr, "AND"); break;
+        case AST_OR:        fprintf(stderr, "OR"); break;
     }
     if (node->hashNode)
     {

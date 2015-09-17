@@ -1,5 +1,8 @@
 ///////////////////// ETAPA 3 ///////////////////////
 
+    - Retirar o -Wall
+    - Retirar todos os %empty dos simbolos vazios usados.
+    - Aceitamos o programa vazio?
 
 
 ///////////////////// ETAPA 2 ///////////////////////

@@ -38,7 +38,7 @@ Luciano Farias Puhl
 %token <hashNode>LIT_FALSE      283
 %token <hashNode>LIT_TRUE       284
 %token <hashNode>LIT_CHAR       285
-%token <hashNode>LIT_STRING    286
+%token <hashNode>LIT_STRING     286
 
 %token TOKEN_ERROR   290
 
@@ -47,6 +47,8 @@ Luciano Farias Puhl
 
 %type <astNode>expression
 %type <astNode>attribution_command
+%type <astNode>parse_tk_identifier
+//%type <astNode>flow_control
 
 %%
 
@@ -70,10 +72,10 @@ function_header:  KW_INT TK_IDENTIFIER '(' function_parameters ')'
 function_parameters: list_parameters
 					| %empty
 					;
-
+//Modif
 list_parameters: parameter optional_parameter_list
 						;
-optional_parameter_list: ',' list_parameters
+optional_parameter_list: ',' parameter optional_parameter_list
 						| %empty
 						;
 
@@ -138,56 +140,52 @@ output_element: LIT_STRING
 return_command: KW_RETURN expression
 			  ;
 
-flow_control: KW_IF '(' expression ')' command optional_flow_control
+flow_control: KW_IF '(' expression ')' command  
+			| KW_IF '(' expression ')' command KW_ELSE command 
+			| KW_IF '(' expression ')' command KW_LOOP 
 			;
-optional_flow_control: KW_ELSE command
-					 | KW_LOOP
-					 | %empty
-					 ;
 
-command_block: '{' optional_command_block
+/*
+{ $$ = astCreate(AST_IF, NULL, $3, $5, NULL, NULL); astPrint($$, 0);}
+{ $$ = astCreate(AST_IFELSE, NULL, $3, $5, $7, NULL); astPrint($$, 0);}
+{ $$ = astCreate(AST_LOOP, NULL, $3, $5, NULL, NULL); astPrint($$, 0);}
+*/
+
+command_block: '{' command_block_list '}'
 			 ;
-
-optional_command_block: command_block_list 
-					  | '}'
-					  ;
-
+//Modif
 command_block_list: command optional_command
 				  ;
-
-optional_command: ';' command_block_list
-				| '}'
+optional_command: ';'  command optional_command
+				| %empty
 				;
 
 // ------------ Expression parsing -----------------
 
 expression: expression '+' expression       { $$ = astCreate(AST_SUM, NULL, $1, $3, NULL, NULL); astPrint($$, 0);}
-         | expression '-' expression        { $$ = NULL; }
-         | expression '*' expression        { $$ = NULL; }
-         | expression '/' expression        { $$ = NULL; }
-         | expression '>' expression        { $$ = NULL; }
-         | expression '<' expression        { $$ = NULL; }
-         | expression OPERATOR_LE expression{ $$ = NULL; }
-         | expression OPERATOR_GE expression{ $$ = NULL; }
-         | expression OPERATOR_EQ expression{ $$ = NULL; }
-         | expression OPERATOR_NE expression{ $$ = NULL; }
-         | expression OPERATOR_AND expression{ $$ = NULL; }
-         | expression OPERATOR_OR expression{ $$ = NULL; }
-         | '(' expression ')'               { $$ = NULL; }
-         | LIT_INTEGER                      { $$ = astCreate(AST_INTEGER, $1, NULL, NULL, NULL, NULL);}
-         | LIT_TRUE                         { $$ = NULL; }
-         | LIT_FALSE                        { $$ = NULL; }
-         | LIT_CHAR                         { $$ = NULL; }
-         | parse_tk_identifier              { $$ = NULL; }
+         | expression '-' expression        { $$ = astCreate(AST_SUB, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression '*' expression        { $$ = astCreate(AST_MULT, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression '/' expression        { $$ = astCreate(AST_DIV, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression '>' expression        { $$ = astCreate(AST_GT, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression '<' expression        { $$ = astCreate(AST_LT, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression OPERATOR_LE expression{ $$ = astCreate(AST_LET, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression OPERATOR_GE expression{ $$ = astCreate(AST_GET, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression OPERATOR_EQ expression{ $$ = astCreate(AST_EQ, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression OPERATOR_NE expression{ $$ = astCreate(AST_NE, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression OPERATOR_AND expression{ $$ = astCreate(AST_AND, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | expression OPERATOR_OR expression{ $$ = astCreate(AST_OR, NULL, $1, $3, NULL, NULL); astPrint($$, 0); }
+         | '(' expression ')'               { $$ = $2; }
+         | LIT_INTEGER                      { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL);}
+         | LIT_TRUE                         { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+         | LIT_FALSE                        { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+         | LIT_CHAR                         { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+         | parse_tk_identifier              { $$ = $1; }
 		 ;
 
-parse_tk_identifier: TK_IDENTIFIER possible_function_call
+parse_tk_identifier: TK_IDENTIFIER '(' function_arguments ')' { $$ = astCreate(AST_FUNCALL, $1, NULL, NULL, NULL, NULL); } 
+				   | TK_IDENTIFIER '[' expression ']' { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+				   | TK_IDENTIFIER 			{ $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
 			;
-
-possible_function_call: '(' function_arguments ')'
-					  | '[' expression ']'
-					  | %empty
-					  ;
 
 function_arguments: list_arguments
 					| %empty
@@ -213,7 +211,7 @@ global_variable_list: global_variable global_variable_list
 
 
 
-global_variable:  KW_INT  TK_IDENTIFIER  normalOrVector
+global_variable:  KW_INT  TK_IDENTIFIER normalOrVector
 		 		| KW_BOOL TK_IDENTIFIER normalOrVector
 				| KW_CHAR TK_IDENTIFIER normalOrVector
 		 		| KW_REAL TK_IDENTIFIER normalOrVector
