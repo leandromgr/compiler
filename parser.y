@@ -50,6 +50,17 @@ Luciano Farias Puhl
 %type <astNode>parse_tk_identifier
 //%type <astNode>flow_control
 
+
+//FRIDAY
+%type <astNode>global_variable_list
+%type <astNode>global_variable
+%type <astNode>normal_or_vector
+%type <astNode>global_vector_initial_values
+%type <astNode>global_vector_initialization
+%type <hashNode>initial_value
+
+
+
 %%
 
 // ------------ The definition of lang152 ---------------
@@ -69,12 +80,11 @@ function_header:  KW_INT TK_IDENTIFIER '(' function_parameters ')'
 				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'
 				;
 
-function_parameters: list_parameters
+//Modif
+function_parameters: parameter optional_parameter_list
 					| %empty
 					;
-//Modif
-list_parameters: parameter optional_parameter_list
-						;
+
 optional_parameter_list: ',' parameter optional_parameter_list
 						| %empty
 						;
@@ -205,35 +215,36 @@ argument: TK_IDENTIFIER
 
 // ------------ Global variables parsing -----------------
 
-global_variable_list: global_variable global_variable_list
-					| %empty
+global_variable_list: global_variable global_variable_list 	{ $$ = astCreate(AST_GLOBAL_VAR_LIST, NULL, $1, $2, NULL, NULL); astPrint($$,0);}
+					| %empty								{ $$ = NULL;}
 					;
 
 
 
-global_variable:  KW_INT  TK_IDENTIFIER normalOrVector
-		 		| KW_BOOL TK_IDENTIFIER normalOrVector
-				| KW_CHAR TK_IDENTIFIER normalOrVector
-		 		| KW_REAL TK_IDENTIFIER normalOrVector
+global_variable:  KW_INT  TK_IDENTIFIER normal_or_vector 	{$$ = astCreate(AST_INT, $2, $3, NULL, NULL, NULL);}
+		 		| KW_BOOL TK_IDENTIFIER normal_or_vector	{$$ = astCreate(AST_BOOL, $2, $3, NULL, NULL, NULL);}
+				| KW_CHAR TK_IDENTIFIER normal_or_vector	{$$ = astCreate(AST_CHAR, $2, $3, NULL, NULL, NULL);}
+		 		| KW_REAL TK_IDENTIFIER normal_or_vector	{$$ = astCreate(AST_REAL, $2, $3, NULL, NULL, NULL);}
 		 		;
 
-normalOrVector:	':' initial_value ';'
-			  |  '[' LIT_INTEGER ']' global_vector_initialization
-			  ;
 
-global_vector_initialization: ':' global_vector_initial_values ';'
-							| ';'
+normal_or_vector:	':' initial_value ';' 								{$$ = astCreate(AST_SYMBOL, $2, NULL, NULL, NULL, NULL);}
+			  	|  	'[' LIT_INTEGER ']' global_vector_initialization 	{$$ = astCreate(AST_GLOBAL_VECTOR, $2, $4, NULL, NULL, NULL);}
+			  	;
+
+global_vector_initialization: ':' global_vector_initial_values ';' 	{$$ = $2;}
+							| ';'									{$$ = NULL;}
 							;
 
-global_vector_initial_values: initial_value global_vector_initial_values
-							| %empty
+global_vector_initial_values: initial_value global_vector_initial_values {$$ = astCreate(AST_SYMBOL, $1, $2, NULL, NULL, NULL);}
+							| %empty									 {$$ = NULL;}
 							;
 
 // ------------ General purpose -----------------
-initial_value: LIT_INTEGER
-			 | LIT_TRUE
-			 | LIT_FALSE
-			 | LIT_CHAR
+initial_value: LIT_INTEGER	{$$ = $1;}
+			 | LIT_TRUE		{$$ = $1;}
+			 | LIT_FALSE	{$$ = $1;}
+			 | LIT_CHAR		{$$ = $1;}
 			 ;
 
 

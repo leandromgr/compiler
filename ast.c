@@ -46,6 +46,15 @@ void astPrint(AST_NODE *node, int currentLevel)
         case AST_NE:        fprintf(stderr, "NE"); break;
         case AST_AND:       fprintf(stderr, "AND"); break;
         case AST_OR:        fprintf(stderr, "OR"); break;
+                
+        //Friday
+        case AST_GLOBAL_VAR_LIST:   fprintf(stderr, "GLOBAL_VAR_LIST"); break;
+        case AST_GLOBAL_VECTOR:     fprintf(stderr, "GLOBAL_VECTOR"); break;
+        case AST_INT:       fprintf(stderr, "INT"); break;
+        case AST_CHAR:      fprintf(stderr, "CHAR"); break;
+        case AST_BOOL:      fprintf(stderr, "BOOL"); break;
+        case AST_REAL:      fprintf(stderr, "REAL"); break;
+
     }
     if (node->hashNode)
     {

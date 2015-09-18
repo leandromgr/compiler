@@ -25,6 +25,17 @@
 #define AST_OR 		14
 #define AST_FUNCALL	15
 
+//Friday
+#define AST_GLOBAL_VAR_LIST 18
+
+#define AST_GLOBAL_VECTOR 19
+
+#define AST_INT		21
+#define AST_CHAR 	22
+#define AST_BOOL	23
+#define AST_REAL	24
+
+
 typedef struct ast_node
 {
     int type;
