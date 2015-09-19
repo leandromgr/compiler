@@ -56,8 +56,10 @@ void astPrint(AST_NODE *node, int currentLevel)
         case AST_REAL:      fprintf(stderr, "REAL"); break;
 
         //Saturday
+        case AST_FUNCTION:          fprintf(stderr, "FUNCTION"); break;
         case AST_FUNCTION_LIST:     fprintf(stderr, "FUNCTION_LIST"); break;
         case AST_PARAMETER_LIST:    fprintf(stderr, "PARAMETER_LIST"); break;
+        case AST_LOCAL_VAR_LIST:    fprintf(stderr, "LOCAL_VAR_LIST"); break;
 
     }
     if (node->hashNode)

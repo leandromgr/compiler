@@ -60,11 +60,16 @@ Luciano Farias Puhl
 %type <hashNode>initial_value
 
 //SATURDAY
+%type <astNode>lang152
+
 %type <astNode>function
 %type <astNode>function_header
 %type <astNode>function_parameters
 %type <astNode>optional_parameter_list
 %type <astNode>parameter
+
+%type <astNode>function_variable
+%type <astNode>function_variable_list
 
 
 
@@ -74,11 +79,12 @@ Luciano Farias Puhl
 
 
 // ------------ Function processing ---------------
-lang152: function lang152 
-		| global_variable_list
+lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); astPrint($$,0);}
+		| global_variable_list {$$ = $1;}
 		;
 
-function: function_header function_variable_list command ';'	{astPrint($1, 0);}
+//TODO include COMMAND in the structure
+function: function_header function_variable_list command ';'	{$$ = astCreate(AST_FUNCTION,  NULL, $1, $2, NULL, NULL);}
 		;
 
 function_header:  KW_INT  TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_INT,  $2, $4, NULL, NULL, NULL);}
@@ -101,14 +107,18 @@ parameter: KW_INT  TK_IDENTIFIER 	{$$ = astCreate(AST_INT, $2, NULL, NULL, NULL,
 		 | KW_REAL TK_IDENTIFIER 	{$$ = astCreate(AST_REAL, $2, NULL, NULL, NULL, NULL);}
 		 ;
 
-function_variable_list: function_variable function_variable_list
-						| %empty
+function_variable_list: function_variable function_variable_list	{$$ = astCreate(AST_LOCAL_VAR_LIST, NULL, $1, $2, NULL, NULL);}
+						| %empty									{$$ = NULL;}
 						;
 
-function_variable:    KW_INT TK_IDENTIFIER  ':' initial_value ';'
-		 			| KW_BOOL TK_IDENTIFIER ':' initial_value ';'
-					| KW_CHAR TK_IDENTIFIER ':' initial_value ';'
-		 			| KW_REAL TK_IDENTIFIER ':' initial_value ';'
+function_variable:    KW_INT TK_IDENTIFIER  ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
+																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
+		 			| KW_BOOL TK_IDENTIFIER ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
+																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
+					| KW_CHAR TK_IDENTIFIER ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
+																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
+		 			| KW_REAL TK_IDENTIFIER ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
+																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
 
 
 

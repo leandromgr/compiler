@@ -37,7 +37,10 @@
 
 //Saturday
 #define AST_FUNCTION_LIST	25
-#define AST_PARAMETER_LIST	26
+#define AST_FUNCTION		26
+#define AST_PARAMETER_LIST	27
+
+#define AST_LOCAL_VAR_LIST 28
 
 
 typedef struct ast_node
