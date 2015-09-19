@@ -35,6 +35,10 @@
 #define AST_BOOL	23
 #define AST_REAL	24
 
+//Saturday
+#define AST_FUNCTION_LIST	25
+#define AST_PARAMETER_LIST	26
+
 
 typedef struct ast_node
 {

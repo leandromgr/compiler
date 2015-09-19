@@ -59,6 +59,13 @@ Luciano Farias Puhl
 %type <astNode>global_vector_initialization
 %type <hashNode>initial_value
 
+//SATURDAY
+%type <astNode>function
+%type <astNode>function_header
+%type <astNode>function_parameters
+%type <astNode>optional_parameter_list
+%type <astNode>parameter
+
 
 
 %%
@@ -67,32 +74,31 @@ Luciano Farias Puhl
 
 
 // ------------ Function processing ---------------
-lang152: function lang152
+lang152: function lang152 
 		| global_variable_list
 		;
 
-function: function_header function_variable_list command ';'
+function: function_header function_variable_list command ';'	{astPrint($1, 0);}
 		;
 
-function_header:  KW_INT TK_IDENTIFIER '(' function_parameters ')'
-				| KW_BOOL TK_IDENTIFIER '(' function_parameters ')'
-				| KW_CHAR TK_IDENTIFIER '(' function_parameters ')'
-				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'
+function_header:  KW_INT  TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_INT,  $2, $4, NULL, NULL, NULL);}
+				| KW_BOOL TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_BOOL, $2, $4, NULL, NULL, NULL);}
+				| KW_CHAR TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_REAL, $2, $4, NULL, NULL, NULL);}
+				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_CHAR, $2, $4, NULL, NULL, NULL);}
 				;
 
 //Modif
-function_parameters: parameter optional_parameter_list
-					| %empty
+function_parameters: parameter optional_parameter_list			{$$ = astCreate(AST_PARAMETER_LIST, NULL, $1, $2, NULL, NULL);}
+					| %empty									{$$ = NULL;}
 					;
-
-optional_parameter_list: ',' parameter optional_parameter_list
-						| %empty
+optional_parameter_list: ',' parameter optional_parameter_list	{$$ = astCreate(AST_PARAMETER_LIST, NULL, $2, $3, NULL, NULL);}
+						| %empty								{$$ = NULL;}
 						;
 
-parameter: KW_INT TK_IDENTIFIER
-		 | KW_BOOL TK_IDENTIFIER
-		 | KW_CHAR TK_IDENTIFIER
-		 | KW_REAL TK_IDENTIFIER
+parameter: KW_INT  TK_IDENTIFIER 	{$$ = astCreate(AST_INT, $2, NULL, NULL, NULL, NULL);}
+		 | KW_BOOL TK_IDENTIFIER 	{$$ = astCreate(AST_BOOL, $2, NULL, NULL, NULL, NULL);}
+		 | KW_CHAR TK_IDENTIFIER 	{$$ = astCreate(AST_CHAR, $2, NULL, NULL, NULL, NULL);}
+		 | KW_REAL TK_IDENTIFIER 	{$$ = astCreate(AST_REAL, $2, NULL, NULL, NULL, NULL);}
 		 ;
 
 function_variable_list: function_variable function_variable_list
