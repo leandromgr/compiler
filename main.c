@@ -16,7 +16,7 @@ int main (int argc, char ** argv)
 	
 	if (argc != 2)
 	{
-		fprintf(stderr, "ERROR! No file was specified! \nUsage: etapa2 testFile\n");
+		fprintf(stderr, "ERROR! No file was specified! \nUsage: etapa3 testFile\n");
 		exit(2);
 	}
 
@@ -26,7 +26,7 @@ int main (int argc, char ** argv)
 
 	if (filePointer == NULL)
 	{
-		fprintf(stderr, "ERROR! The file could not be opened! \nUsage: etapa2 testFile\n");
+		fprintf(stderr, "ERROR! The file could not be opened! \nUsage: etapa3 testFile\n");
 		exit(2);
 	}
 	

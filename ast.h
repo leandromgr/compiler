@@ -11,36 +11,42 @@
 #define AST_SUB   	2
 #define AST_MULT    3
 #define AST_DIV		4
-#define AST_IF 		5
-#define AST_IFELSE 	16
-#define AST_LOOP 	17
-#define AST_ATTRIBUTION	6
-#define AST_LT 		7
-#define AST_GT 		8
-#define AST_LET 	9
-#define AST_GET 	10
-#define AST_EQ 		11
-#define AST_NE 		12
-#define AST_AND 	13
-#define AST_OR 		14
-#define AST_FUNCALL	15
+#define AST_LT 		5
+#define AST_GT 		6
+#define AST_LET 	7
+#define AST_GET 	8
+#define AST_EQ 		9
+#define AST_NE 		10
+#define AST_AND 	11
+#define AST_OR 		12
+#define AST_FUNCALL	13
 
 //Friday
-#define AST_GLOBAL_VAR_LIST 18
+#define AST_GLOBAL_VAR_LIST 14
+#define AST_GLOBAL_VECTOR 15
 
-#define AST_GLOBAL_VECTOR 19
-
-#define AST_INT		21
-#define AST_CHAR 	22
-#define AST_BOOL	23
-#define AST_REAL	24
+#define AST_INT		16
+#define AST_CHAR 	17
+#define AST_BOOL	18
+#define AST_REAL	19
 
 //Saturday
-#define AST_FUNCTION_LIST	25
-#define AST_FUNCTION		26
-#define AST_PARAMETER_LIST	27
+#define AST_FUNCTION_LIST	20
+#define AST_FUNCTION		21
+#define AST_PARAMETER_LIST	22
 
-#define AST_LOCAL_VAR_LIST 28
+#define AST_LOCAL_VAR_LIST	23
+
+#define AST_ATTRIBUTION		24
+#define AST_INPUT_CMD		25
+#define AST_OUTPUT_CMD		26
+#define AST_RETURN_CMD		27
+#define AST_OUTPUT_LIST		28
+#define AST_IF 				29
+#define AST_IFELSE 			30
+#define AST_LOOP 			31
+#define AST_CMD_LIST		32
+
 
 
 typedef struct ast_node

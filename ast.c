@@ -37,7 +37,6 @@ void astPrint(AST_NODE *node, int currentLevel)
         case AST_MULT:      fprintf(stderr, "MULT"); break;
         case AST_DIV:       fprintf(stderr, "DIV"); break;
         case AST_SYMBOL:    fprintf(stderr, "SYMBOL"); break;
-        case AST_ATTRIBUTION:  fprintf(stderr, "AST_ATTRIBUTION"); break;
         case AST_LT:        fprintf(stderr, "LT"); break;
         case AST_GT:        fprintf(stderr, "GT"); break;
         case AST_LET:       fprintf(stderr, "LET"); break;
@@ -60,6 +59,17 @@ void astPrint(AST_NODE *node, int currentLevel)
         case AST_FUNCTION_LIST:     fprintf(stderr, "FUNCTION_LIST"); break;
         case AST_PARAMETER_LIST:    fprintf(stderr, "PARAMETER_LIST"); break;
         case AST_LOCAL_VAR_LIST:    fprintf(stderr, "LOCAL_VAR_LIST"); break;
+        case AST_INPUT_CMD:         fprintf(stderr, "INPUT_CMD"); break;
+        case AST_OUTPUT_CMD:        fprintf(stderr, "OUTPUT_CMD"); break;
+        case AST_OUTPUT_LIST:       fprintf(stderr, "OUTPUT_LIST"); break;
+        case AST_RETURN_CMD:        fprintf(stderr, "RETURN_CMD"); break;
+        case AST_ATTRIBUTION:       fprintf(stderr, "ATTRIBUTION"); break;
+        case AST_IF:                fprintf(stderr, "IF"); break;
+        case AST_IFELSE:            fprintf(stderr, "IFELSE"); break;
+        case AST_LOOP:              fprintf(stderr, "IFLOOP"); break;
+        case AST_CMD_LIST:          fprintf(stderr, "CMD_LIST"); break;
+
+
 
     }
     if (node->hashNode)
