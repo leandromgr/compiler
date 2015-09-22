@@ -5,6 +5,7 @@ Luciano Farias Puhl
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "ast.h"
 
 extern FILE* yyin;
 extern int yylex();
@@ -12,31 +13,42 @@ extern char* yytext;
 
 int main (int argc, char ** argv)
 {
-	FILE *filePointer = NULL;
+	FILE *srcFilePointer = NULL;
+	FILE *dstFilePointer = NULL;
 	
 	if (argc != 2)
 	{
-		fprintf(stderr, "ERROR! No file was specified! \nUsage: etapa3 testFile\n");
+		fprintf(stderr, "ERROR! Input and output files must be defined! \nUsage: etapa3 inputFile outputFile\n");
 		exit(2);
 	}
 
 	initMe();
 
-	filePointer = fopen(argv[1], "r");
+	srcFilePointer = fopen(argv[1], "r");
 
-	if (filePointer == NULL)
+	if (srcFilePointer == NULL)
 	{
-		fprintf(stderr, "ERROR! The file could not be opened! \nUsage: etapa3 testFile\n");
+		fprintf(stderr, "ERROR! The input file could not be opened! \nUsage: etapa3 inputFile outputFile\n");
 		exit(2);
 	}
 	
-	yyin = filePointer;
+	yyin = srcFilePointer;
 	if (yyparse() != 0)
 	{
 		fprintf(stderr, "Syntax error in line: %i\n\n", getLineNumber()+1);
 		exit(3);
 	}
-	
+
+	/*dstFilePointer = fopen(argv[2], "w");
+
+	if (dstFilePointer == NULL)
+	{
+		fprintf(stderr, "ERROR! The output file could not be opened! \nUsage: etapa3 inputFile outputFile\n");
+		exit(2);
+	}*/
+
+	descompileTree(astTree);
+
 	printf("Program sucessful!\n\n");
 	exit(0);
 }

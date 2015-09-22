@@ -42,6 +42,8 @@ Luciano Farias Puhl
 
 %token TOKEN_ERROR   290
 
+%left OPERATOR_AND OPERATOR_OR
+%nonassoc '>' '<' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
 %left  '+'  '-'
 %left  '*'  '/'
 
@@ -88,15 +90,18 @@ Luciano Farias Puhl
 %type <astNode>optional_argument_list
 %type <hashNode>argument
 
+%type <astNode>attribution_variable
+%type <astNode>optional_variable_index
+
 
 
 %%
 
 // ------------ The definition of lang152 ---------------
-
+initial_symbol: lang152 {astTree = $1; astPrint(astTree, 0);}
 
 // ------------ Function processing ---------------
-lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); astPrint($$, 0);}
+lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); }
 		| global_variable_list {$$ = $1;}
 		;
 
@@ -131,11 +136,11 @@ function_variable_list: function_variable function_variable_list	{$$ = astCreate
 function_variable:    KW_INT TK_IDENTIFIER  ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
 																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
 		 			| KW_BOOL TK_IDENTIFIER ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
-																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
+																 	 $$ = astCreate(AST_BOOL, $2, newSymbol, NULL, NULL, NULL);}
 					| KW_CHAR TK_IDENTIFIER ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
-																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
+																 	 $$ = astCreate(AST_CHAR, $2, newSymbol, NULL, NULL, NULL);}
 		 			| KW_REAL TK_IDENTIFIER ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
-																 	 $$ = astCreate(AST_INT, $2, newSymbol, NULL, NULL, NULL);}
+																 	 $$ = astCreate(AST_REAL, $2, newSymbol, NULL, NULL, NULL);}
 
 
 
@@ -149,17 +154,17 @@ simple_command:   attribution_command	{$$ = $1;}
 				| input_command			{$$ = $1;}
 				| output_command		{$$ = $1;}
 				| return_command		{$$ = $1;}
-				| %empty				{$$ = NULL;}	//TODO: NULL ou AST_NULL_CMD
+				| %empty				{$$ = NULL;}
 				;
 
-attribution_command: attribution_variable ':' '=' expression 	{$$ = NULL;}
-                    | expression '=' ':' attribution_variable 	{$$ = NULL;}
+attribution_command: attribution_variable ':' '=' expression 	{$$ = astCreate(AST_ATTRIBUTION, NULL, $1, $4, NULL, NULL);}
+                    | expression '=' ':' attribution_variable 	{$$ = astCreate(AST_ATTRIBUTION, NULL, $4, $1, NULL, NULL);}
 		   			;
 
-attribution_variable: TK_IDENTIFIER optional_variable_index
+attribution_variable: TK_IDENTIFIER optional_variable_index		{$$ = astCreate(AST_SYMBOL, $1, $2, NULL, NULL, NULL);}
 				;
-optional_variable_index: '[' expression ']'
-					   	| %empty
+optional_variable_index: '[' expression ']'	{$$ = $2;}
+					   	| %empty			{$$ = NULL;}
 						;
 
 
@@ -198,33 +203,33 @@ optional_command: ';'  command optional_command {$$ = astCreate(AST_CMD_LIST, NU
 
 // ------------ Expression parsing -----------------
 
-expression: expression '+' expression       { $$ = astCreate(AST_SUM, NULL, $1, $3, NULL, NULL);}
-         | expression '-' expression        { $$ = astCreate(AST_SUB, NULL, $1, $3, NULL, NULL); }
-         | expression '*' expression        { $$ = astCreate(AST_MULT, NULL, $1, $3, NULL, NULL); }
-         | expression '/' expression        { $$ = astCreate(AST_DIV, NULL, $1, $3, NULL, NULL); }
-         | expression '>' expression        { $$ = astCreate(AST_GT, NULL, $1, $3, NULL, NULL); }
-         | expression '<' expression        { $$ = astCreate(AST_LT, NULL, $1, $3, NULL, NULL); }
-         | expression OPERATOR_LE expression{ $$ = astCreate(AST_LET, NULL, $1, $3, NULL, NULL); }
-         | expression OPERATOR_GE expression{ $$ = astCreate(AST_GET, NULL, $1, $3, NULL, NULL); }
-         | expression OPERATOR_EQ expression{ $$ = astCreate(AST_EQ, NULL, $1, $3, NULL, NULL); }
-         | expression OPERATOR_NE expression{ $$ = astCreate(AST_NE, NULL, $1, $3, NULL, NULL); }
-         | expression OPERATOR_AND expression{ $$ = astCreate(AST_AND, NULL, $1, $3, NULL, NULL); }
-         | expression OPERATOR_OR expression{ $$ = astCreate(AST_OR, NULL, $1, $3, NULL, NULL); }
-         | '(' expression ')'               { $$ = $2; }
-         | LIT_INTEGER                      { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL);}
-         | LIT_TRUE                         { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
-         | LIT_FALSE                        { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
-         | LIT_CHAR                         { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
-         | parse_tk_identifier              { $$ = $1; }
-		 ;
+expression: expression '+' expression        { $$ = astCreate(AST_SUM, NULL, $1, $3, NULL, NULL);}
+          | expression '-' expression        { $$ = astCreate(AST_SUB, NULL, $1, $3, NULL, NULL); }
+          | expression '*' expression        { $$ = astCreate(AST_MULT, NULL, $1, $3, NULL, NULL); }
+          | expression '/' expression        { $$ = astCreate(AST_DIV, NULL, $1, $3, NULL, NULL); }
+          | expression '>' expression        { $$ = astCreate(AST_GT, NULL, $1, $3, NULL, NULL); }
+          | expression '<' expression        { $$ = astCreate(AST_LT, NULL, $1, $3, NULL, NULL); }
+          | expression OPERATOR_LE expression{ $$ = astCreate(AST_LET, NULL, $1, $3, NULL, NULL); }
+          | expression OPERATOR_GE expression{ $$ = astCreate(AST_GET, NULL, $1, $3, NULL, NULL); }
+          | expression OPERATOR_EQ expression{ $$ = astCreate(AST_EQ, NULL, $1, $3, NULL, NULL); }
+          | expression OPERATOR_NE expression{ $$ = astCreate(AST_NE, NULL, $1, $3, NULL, NULL); }
+          | expression OPERATOR_AND expression{ $$ = astCreate(AST_AND, NULL, $1, $3, NULL, NULL); }
+          | expression OPERATOR_OR expression{ $$ = astCreate(AST_OR, NULL, $1, $3, NULL, NULL); }
+          | '(' expression ')'               { $$ = $2; }
+          | LIT_INTEGER                      { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL);}
+          | LIT_TRUE                         { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+          | LIT_FALSE                        { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+          | LIT_CHAR                         { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+          | parse_tk_identifier              { $$ = $1; }
+		  ;
 
-parse_tk_identifier: TK_IDENTIFIER '(' function_arguments ')' { $$ = astCreate(AST_FUNCALL, $1, NULL, NULL, NULL, NULL); } 
-				   | TK_IDENTIFIER '[' expression ']' { $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
+parse_tk_identifier: TK_IDENTIFIER '(' function_arguments ')' { $$ = astCreate(AST_FUNCALL, $1, $3, NULL, NULL, NULL); } 
+				   | TK_IDENTIFIER '[' expression ']' { $$ = astCreate(AST_SYMBOL, $1, $3, NULL, NULL, NULL); }
 				   | TK_IDENTIFIER 			{ $$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL); }
 			;
 
 function_arguments: argument optional_argument_list	{$$ = astCreate(AST_SYMBOL, $1, $2, NULL, NULL, NULL);}
-					| %empty
+					| %empty						{$$ = NULL;}
 					;
 
 optional_argument_list: ',' argument optional_argument_list {$$ = astCreate(AST_SYMBOL, $2, $3, NULL, NULL, NULL);}

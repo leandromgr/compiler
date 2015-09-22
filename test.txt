@@ -1,7 +1,4 @@
-int a:0;
-real v[10]: 0 0 0 0 0 0 0 0 0 0; 
-bool mat[1000];
-char c:0;
+
 int funcA();
 
 int funcB()
@@ -9,5 +6,10 @@ int funcB()
 
 int funcC()
 {
-	
+	a := c + d;
 };
+
+int a:0;
+real v[10]: 0 0 0 0 0 0 0 0 0 0; 
+bool mat[1000];
+char c:0;
