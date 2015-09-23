@@ -1,5 +1,6 @@
 
 #include "ast.h"
+#include "y.tab.h"
 
 AST_NODE * astCreate(int type, HASH_NODE *hashNode, AST_NODE *child0, AST_NODE *child1, AST_NODE *child2, AST_NODE *child3)
 {
@@ -94,79 +95,55 @@ void descompileTree(AST_NODE *node)
 
     switch(node->type)
     {
-        case AST_SUM:
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " + ");
-            descompileTree(node->children[1]);
+        case AST_SUM: 
+            printArithmeticExpression(node, "+");
             break;
         case AST_SUB:       
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " - ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "-");
             break;
         case AST_MULT:     
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " * ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "*");
             break;
         case AST_DIV:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " / ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "/");
             break;
         case AST_LT:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " < ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "<");
             break;
         case AST_GT:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " > ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, ">");
             break;
         case AST_LET:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " <= ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "<=");
             break;
         case AST_GET:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " >= ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, ">=");
             break;
         case AST_EQ:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " == ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "==");
             break;
         case AST_NE:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " != ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "!=");
             break;
         case AST_AND:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " && ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "&&");
             break;
         case AST_OR:      
-            descompileTree(node->children[0]); 
-            fprintf(stderr, " || ");
-            descompileTree(node->children[1]);
+            printArithmeticExpression(node, "||");
             break;
         
         case AST_FUNCALL:
             if (node->hashNode->symbol)
-                fprintf(stderr, "%s(", node->hashNode->symbol);
+                fprintf(DEST_FILE, "%s(", node->hashNode->symbol);
             parseSymbolPrint(node->children[0], COMMA_SEPARATOR);
-            fprintf(stderr, ")\n");
+            fprintf(DEST_FILE, ")");
             break;
 
         case AST_FUNCTION_LIST:
             descompileTree(node->children[0]);  // Current function
             if (node->children[1])
             {
-                fprintf(stderr, ";\n\n");
+                fprintf(DEST_FILE, ";\n\n");
                 descompileTree(node->children[1]);  // Next function
             }
             break;
@@ -174,29 +151,42 @@ void descompileTree(AST_NODE *node)
         case AST_FUNCTION:
             descompileTree(node->children[0]);  // Function header
             descompileTree(node->children[1]);  // Local variable list
-            descompileTree(node->children[2]);  // Commands
+            parseCommandList(node->children[2]);
             break;
 
         case AST_INT:
             if (node->hashNode->symbol)
-                fprintf(stderr, "int %s", node->hashNode->symbol);
+                fprintf(DEST_FILE, "int %s", node->hashNode->symbol);
 
             if (node->children[0])
             {
                 if (node->children[0]->type == AST_SYMBOL)
                     parseSymbolPrint(node->children[0], COLON_SEPARATOR);
+                else if(node->children[0]->type == AST_PARAMETER_LIST)
+                {
+                    fprintf(DEST_FILE, "(");
+                    descompileTree(node->children[0]);
+                    fprintf(DEST_FILE, ")\n");
+                }
                 else
                     descompileTree(node->children[0]);
             }
             break;
+
         case AST_CHAR:
             if (node->hashNode->symbol)
-                fprintf(stderr, "char %s", node->hashNode->symbol);
+                fprintf(DEST_FILE, "char %s", node->hashNode->symbol);
                         
             if (node->children[0])
             {
                 if (node->children[0]->type == AST_SYMBOL)
                     parseSymbolPrint(node->children[0], COLON_SEPARATOR);
+                else if(node->children[0]->type == AST_PARAMETER_LIST)
+                {
+                    fprintf(DEST_FILE, "(");
+                    descompileTree(node->children[0]);
+                    fprintf(DEST_FILE, ")\n");
+                }
                 else
                     descompileTree(node->children[0]);
             }
@@ -204,12 +194,18 @@ void descompileTree(AST_NODE *node)
         
         case AST_BOOL:
             if (node->hashNode->symbol)
-                fprintf(stderr, "bool %s", node->hashNode->symbol);
+                fprintf(DEST_FILE, "bool %s", node->hashNode->symbol);
                         
             if (node->children[0])
             {
                 if (node->children[0]->type == AST_SYMBOL)
                     parseSymbolPrint(node->children[0], COLON_SEPARATOR);
+                else if(node->children[0]->type == AST_PARAMETER_LIST)
+                {
+                    fprintf(DEST_FILE, "(");
+                    descompileTree(node->children[0]);
+                    fprintf(DEST_FILE, ")\n");
+                }
                 else
                     descompileTree(node->children[0]);
             }
@@ -217,12 +213,18 @@ void descompileTree(AST_NODE *node)
 
         case AST_REAL:
             if (node->hashNode->symbol)
-                fprintf(stderr, "real %s", node->hashNode->symbol);
+                fprintf(DEST_FILE, "real %s", node->hashNode->symbol);
                         
             if (node->children[0])
             {
                 if (node->children[0]->type == AST_SYMBOL)
                     parseSymbolPrint(node->children[0], COLON_SEPARATOR);
+                else if(node->children[0]->type == AST_PARAMETER_LIST)
+                {
+                    fprintf(DEST_FILE, "(");
+                    descompileTree(node->children[0]);
+                    fprintf(DEST_FILE, ")\n");
+                }
                 else
                     descompileTree(node->children[0]);
             }
@@ -232,47 +234,34 @@ void descompileTree(AST_NODE *node)
             descompileTree(node->children[0]);  // Current parameter
             if (node->children[1])
             {
-                fprintf(stderr, ", ");
+                fprintf(DEST_FILE, ", ");
                 descompileTree(node->children[1]);  // Next parameter
             }
             break;
 
         case AST_LOCAL_VAR_LIST:
             descompileTree(node->children[0]);  // Current variable
-            if (node->children[1])
-            {
-                fprintf(stderr, ";\n");
-                descompileTree(node->children[1]);  // Next variable
-            }
+            fprintf(DEST_FILE, ";\n");
+            descompileTree(node->children[1]);  // Next variable
             break;
 
         case AST_CMD_LIST:
-            if (node->children[0])
-            {
-                if (node->children[0]->type == AST_CMD_LIST)
-                {
-                    fprintf(stderr, "{\n");
-                    descompileTree(node->children[0]);  // Current command
-                    fprintf(stderr, "}\n");
-                }
-                else
-                    descompileTree(node->children[0]);  // Current command
-            }
+            parseCommandList(node->children[0]);  // Current command
             
             if (node->children[1])
             {
-                fprintf(stderr, ";\n");
+                fprintf(DEST_FILE, ";\n");
                 descompileTree(node->children[1]);  // Next command
             }
             break;
 
         case AST_INPUT_CMD:
             if (node->hashNode->symbol)
-                fprintf(stderr, "input %s", node->hashNode->symbol);
+                fprintf(DEST_FILE, "input %s", node->hashNode->symbol);
             break;
         
         case AST_OUTPUT_CMD:
-            fprintf(stderr, "output ");
+            fprintf(DEST_FILE, "output ");
             descompileTree(node->children[0]);
             break;
         
@@ -280,58 +269,55 @@ void descompileTree(AST_NODE *node)
             descompileTree(node->children[0]);
             if (node->children[1])
             {
-                fprintf(stderr, ", ");
+                fprintf(DEST_FILE, ", ");
                 descompileTree(node->children[1]);  // Next command
             }
             break;
 
         case AST_RETURN_CMD:
-            fprintf(stderr, "return ");
+            fprintf(DEST_FILE, "return ");
             descompileTree(node->children[0]);
             break;
 
         case AST_ATTRIBUTION:
             parseSymbolPrint(node->children[0], NO_SEPARATOR);
-            fprintf(stderr, " := ");
+            fprintf(DEST_FILE, " := ");
             descompileTree(node->children[1]);
             break;
 
         case AST_IF:
-            fprintf(stderr, "if (");
+            fprintf(DEST_FILE, "if (");
             descompileTree(node->children[0]);
-            fprintf(stderr, ")\n");
-            descompileTree(node->children[1]);
+            fprintf(DEST_FILE, ")\n");
+            parseCommandList(node->children[1]);
             break;
 
         case AST_IFELSE:
-            fprintf(stderr, "if (");
+            fprintf(DEST_FILE, "if (");
             descompileTree(node->children[0]);
-            fprintf(stderr, ")\n");
-            descompileTree(node->children[1]);
-            fprintf(stderr, "\nelse\n");
-            descompileTree(node->children[2]);
+            fprintf(DEST_FILE, ")\n");
+            parseCommandList(node->children[1]);
+            fprintf(DEST_FILE, "\nelse\n");
+            parseCommandList(node->children[2]);
             break;
 
         case AST_LOOP:
-            fprintf(stderr, "if (");
+            fprintf(DEST_FILE, "if (");
             descompileTree(node->children[0]);
-            fprintf(stderr, ")\n");
-            descompileTree(node->children[1]);
-            fprintf(stderr, "\nloop");
+            fprintf(DEST_FILE, ")\n");
+            parseCommandList(node->children[1]);
+            fprintf(DEST_FILE, "\nloop");
             break;
 
         case AST_GLOBAL_VAR_LIST:
             descompileTree(node->children[0]);
-            if (node->children[1])
-            {
-                fprintf(stderr, ";\n");
-                descompileTree(node->children[1]);
-            }
+            fprintf(DEST_FILE, ";\n");
+            descompileTree(node->children[1]);
             break;
 
         case AST_GLOBAL_VECTOR:
             if (node->hashNode->symbol)
-                fprintf(stderr, "[%s]", node->hashNode->symbol);
+                fprintf(DEST_FILE, "[%s]", node->hashNode->symbol);
 
             parseSymbolPrint(node->children[0], COLON_SEPARATOR);
             break;
@@ -345,6 +331,56 @@ void descompileTree(AST_NODE *node)
     }
 }
 
+void printArithmeticExpression(AST_NODE * currentNode, char * arithmeticSymbol)
+{
+    if (!currentNode)
+        return;
+
+    fprintf(DEST_FILE, "(");
+    descompileTree(currentNode->children[0]); 
+    fprintf(DEST_FILE, " %s ", arithmeticSymbol);
+    descompileTree(currentNode->children[1]);
+    fprintf(DEST_FILE, ")");
+}
+
+void parseCommandList(AST_NODE* firstCmdList)
+{
+    if (!firstCmdList)
+        return;
+
+    if(firstCmdList->type == AST_CMD_LIST)
+    {
+        fprintf(DEST_FILE, "{\n");
+        descompileTree(firstCmdList);  // Commands
+        fprintf(DEST_FILE, "\n}");
+    }
+    else
+        descompileTree(firstCmdList);  // Command
+
+}
+
+void printSymbol(HASH_NODE *symbolHashNode)
+{
+    if(!symbolHashNode)
+        return;
+
+    switch(symbolHashNode->symbolType)
+    {
+        case LIT_CHAR: 
+            fprintf(DEST_FILE, "'%s'", symbolHashNode->symbol);
+            break;
+
+        case LIT_STRING: 
+            fprintf(DEST_FILE, "\"%s\"", symbolHashNode->symbol);
+            break;
+
+        default: 
+            fprintf(DEST_FILE, "%s", symbolHashNode->symbol);
+            break;
+
+    }
+
+}
 
 void parseSymbolPrint(AST_NODE * symbolNode, int processingCode)
 {
@@ -354,19 +390,18 @@ void parseSymbolPrint(AST_NODE * symbolNode, int processingCode)
     switch(processingCode)
     {
         case COMMA_SEPARATOR:
-            if (symbolNode->hashNode->symbol)
-                fprintf(stderr, "%s", symbolNode->hashNode->symbol);
+            printSymbol(symbolNode->hashNode);
             
             if (symbolNode->children[0])
             {
-                fprintf(stderr, ", ");
+                fprintf(DEST_FILE, ", ");
                 parseSymbolPrint(symbolNode->children[0], processingCode);
             }
             break;
 
         case COLON_SEPARATOR:
-            if (symbolNode->hashNode->symbol)
-                fprintf(stderr, ": %s", symbolNode->hashNode->symbol);
+            fprintf(DEST_FILE, ": ");
+            printSymbol(symbolNode->hashNode);
 
             if (symbolNode->children[0])
             {
@@ -375,8 +410,8 @@ void parseSymbolPrint(AST_NODE * symbolNode, int processingCode)
             break;
 
         case VECTOR_INIT:
-            if (symbolNode->hashNode->symbol)
-                fprintf(stderr, " %s", symbolNode->hashNode->symbol);
+            fprintf(DEST_FILE, " ");
+            printSymbol(symbolNode->hashNode);
 
             if (symbolNode->children[0])
             {
@@ -385,8 +420,7 @@ void parseSymbolPrint(AST_NODE * symbolNode, int processingCode)
             break;
 
         case NO_SEPARATOR:
-            if (symbolNode->hashNode->symbol)
-                fprintf(stderr, "%s", symbolNode->hashNode->symbol);
+            printSymbol(symbolNode->hashNode);
             
             if (symbolNode->children[0])
             {
@@ -395,9 +429,9 @@ void parseSymbolPrint(AST_NODE * symbolNode, int processingCode)
             break;
 
         case VECTOR_INDEX:
-            fprintf(stderr, "[");
+            fprintf(DEST_FILE, "[");
             descompileTree(symbolNode);
-            fprintf(stderr, "]");
+            fprintf(DEST_FILE, "]");
             break;
 
         default:

@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include "hash.h"
+extern FILE* DEST_FILE;
 
 #define MAX_CHILDREN 4
 
@@ -63,7 +64,13 @@ AST_NODE * astCreate(int type, HASH_NODE * hashNode, AST_NODE * child0, AST_NODE
 
 void astPrint(AST_NODE * node, int currentLevel);
 
+void printArithmeticExpression(AST_NODE * currentNode, char * arithmeticSymbol);
+
+void parseCommandList(AST_NODE* firstCmdList);
+
 void descompileTree(AST_NODE *node);
+
+void printSymbol(HASH_NODE *symbolHashNode);
 
 void parseSymbolPrint(AST_NODE * symbolNode, int processingCode);
 

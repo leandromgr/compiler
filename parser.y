@@ -98,7 +98,7 @@ Luciano Farias Puhl
 %%
 
 // ------------ The definition of lang152 ---------------
-initial_symbol: lang152 {astTree = $1; astPrint(astTree, 0);}
+initial_symbol: lang152 {astTree = $1;}
 
 // ------------ Function processing ---------------
 lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); }
@@ -115,9 +115,8 @@ function_header:  KW_INT  TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCre
 				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_CHAR, $2, $4, NULL, NULL, NULL);}
 				;
 
-//Modif
 function_parameters: parameter optional_parameter_list			{$$ = astCreate(AST_PARAMETER_LIST, NULL, $1, $2, NULL, NULL);}
-					| %empty									{$$ = NULL;}
+					| %empty									{$$ = astCreate(AST_PARAMETER_LIST, NULL, NULL, NULL, NULL, NULL);}
 					;
 optional_parameter_list: ',' parameter optional_parameter_list	{$$ = astCreate(AST_PARAMETER_LIST, NULL, $2, $3, NULL, NULL);}
 						| %empty								{$$ = NULL;}
@@ -194,7 +193,6 @@ flow_control: KW_IF '(' expression ')' command  				{$$ = astCreate(AST_IF, NULL
 
 command_block: '{' command_block_list '}' {$$ = $2;}
 			 ;
-//Modif
 command_block_list: command optional_command {$$ = astCreate(AST_CMD_LIST, NULL, $1, $2, NULL, NULL);}
 				  ;
 optional_command: ';'  command optional_command {$$ = astCreate(AST_CMD_LIST, NULL, $2, $3, NULL, NULL);}

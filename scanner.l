@@ -56,8 +56,7 @@ FALSE			{ yylval.hashNode = hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 				  yylval.hashNode = hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 '[\00-\377]'	{ char processedChar[2] = {yytext[1], '\0'};
 				  yylval.hashNode = hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
-'\\[\00-\377]'	{ char processedChar[2] = {'\0', '\0'};
-				  processedChar[0] = processEscapeChar(yytext[2]);
+'\\[\00-\377]'	{ char processedChar[2] = {'\\', yytext[2]};
 				  yylval.hashNode = hashInsert(processedChar, LIT_CHAR); return LIT_CHAR; }
 
 [a-zA-Z][a-zA-Z_]*  { yylval.hashNode = hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
@@ -81,8 +80,7 @@ FALSE			{ yylval.hashNode = hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 				  return TOKEN_ERROR;
 				}
 
-<STRING_ESCAPE>.	{ char processedChar[2] = {'\0', '\0'};
-					  processedChar[0] = processEscapeChar(yytext[0]);
+<STRING_ESCAPE>.	{ char processedChar[2] = {'\\', yytext[0]};
 					  copyStringToBuffer(processedChar);
 					  BEGIN(STRING); }
 
@@ -121,19 +119,6 @@ void copyStringToBuffer(char * newString)
 	strncpy((char *) (stringBuffer + stringOffset), newString, newStringLength);
 
 	stringOffset += newStringLength;
-}
-
-char processEscapeChar(char escapeChar)
-{
-	switch(escapeChar)
-	{
-		case 'n':
-			return '\n';
-		case 't':
-			return '\t';
-		default:
-			return escapeChar; 
-	}
 }
 
 void initMe()

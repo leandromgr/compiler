@@ -31,6 +31,14 @@ bool lvar:TRUE;
 	}
 };
 
+int funcFX()
+bool lvar:TRUE;
+{
+  {
+    input abc
+  }
+};
+
 int funcG()
 int lvarA:FALSE;
 bool lvarB:TRUE;
@@ -84,6 +92,24 @@ int funcmdD()
 };
 
 //////////Testing Expressions
+int funexAA()
+{
+  varA:=9+9;
+  varA:=9+(9*((8-7)/3));
+  varA:= a&&c;
+  varA:= (a==b[3+3])||(c>=d);
+  varA:= (e<=f)&&(m>n);
+  if (funcA())
+    a := v[p[7*8]];
+  varA:= funcA(paramA);
+  varA:= funcA(paramA, paramB);
+  funcA(paramA) =: varA;
+  funcA(paramA, paramB) =: varA;
+  funcA() =: varA;
+
+  varA[26] := 9;
+
+};
 
 int funexA()
 {

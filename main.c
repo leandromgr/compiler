@@ -11,12 +11,13 @@ extern FILE* yyin;
 extern int yylex();
 extern char* yytext;
 
+FILE *DEST_FILE = NULL;
+
 int main (int argc, char ** argv)
 {
 	FILE *srcFilePointer = NULL;
-	FILE *dstFilePointer = NULL;
 	
-	if (argc != 2)
+	if (argc != 3)
 	{
 		fprintf(stderr, "ERROR! Input and output files must be defined! \nUsage: etapa3 inputFile outputFile\n");
 		exit(2);
@@ -39,16 +40,16 @@ int main (int argc, char ** argv)
 		exit(3);
 	}
 
-	/*dstFilePointer = fopen(argv[2], "w");
+	DEST_FILE = fopen(argv[2], "w");
 
-	if (dstFilePointer == NULL)
+	if (DEST_FILE == NULL)
 	{
 		fprintf(stderr, "ERROR! The output file could not be opened! \nUsage: etapa3 inputFile outputFile\n");
 		exit(2);
-	}*/
+	}
 
 	descompileTree(astTree);
 
-	printf("Program sucessful!\n\n");
+	printf("\n\nProgram sucessful!\n\n");
 	exit(0);
 }
