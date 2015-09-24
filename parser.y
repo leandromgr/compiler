@@ -116,10 +116,10 @@ function_header:  KW_INT  TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCre
 				;
 
 function_parameters: parameter optional_parameter_list			{$$ = astCreate(AST_PARAMETER_LIST, NULL, $1, $2, NULL, NULL);}
-					| %empty									{$$ = astCreate(AST_PARAMETER_LIST, NULL, NULL, NULL, NULL, NULL);}
+					| 									{$$ = astCreate(AST_PARAMETER_LIST, NULL, NULL, NULL, NULL, NULL);}
 					;
 optional_parameter_list: ',' parameter optional_parameter_list	{$$ = astCreate(AST_PARAMETER_LIST, NULL, $2, $3, NULL, NULL);}
-						| %empty								{$$ = NULL;}
+						| 								{$$ = NULL;}
 						;
 
 parameter: KW_INT  TK_IDENTIFIER 	{$$ = astCreate(AST_INT, $2, NULL, NULL, NULL, NULL);}
@@ -129,7 +129,7 @@ parameter: KW_INT  TK_IDENTIFIER 	{$$ = astCreate(AST_INT, $2, NULL, NULL, NULL,
 		 ;
 
 function_variable_list: function_variable function_variable_list	{$$ = astCreate(AST_LOCAL_VAR_LIST, NULL, $1, $2, NULL, NULL);}
-						| %empty									{$$ = NULL;}
+						| 									{$$ = NULL;}
 						;
 
 function_variable:    KW_INT TK_IDENTIFIER  ':' initial_value ';'	{AST_NODE* newSymbol = astCreate(AST_SYMBOL, $4, NULL, NULL, NULL, NULL);
@@ -153,7 +153,7 @@ simple_command:   attribution_command	{$$ = $1;}
 				| input_command			{$$ = $1;}
 				| output_command		{$$ = $1;}
 				| return_command		{$$ = $1;}
-				| %empty				{$$ = NULL;}
+				| 				{$$ = NULL;}
 				;
 
 attribution_command: attribution_variable ':' '=' expression 	{$$ = astCreate(AST_ATTRIBUTION, NULL, $1, $4, NULL, NULL);}
@@ -163,7 +163,7 @@ attribution_command: attribution_variable ':' '=' expression 	{$$ = astCreate(AS
 attribution_variable: TK_IDENTIFIER optional_variable_index		{$$ = astCreate(AST_SYMBOL, $1, $2, NULL, NULL, NULL);}
 				;
 optional_variable_index: '[' expression ']'	{$$ = $2;}
-					   	| %empty			{$$ = NULL;}
+					   	| 			{$$ = NULL;}
 						;
 
 
@@ -176,7 +176,7 @@ output_command: KW_OUTPUT output_list 	{$$ = astCreate(AST_OUTPUT_CMD, NULL, $2,
 output_list: output_element optional_output_list {$$ = astCreate(AST_OUTPUT_LIST, NULL, $1, $2, NULL, NULL);}
 		   ;
 optional_output_list : ',' output_element optional_output_list	{$$ = astCreate(AST_OUTPUT_LIST, NULL, $2, $3, NULL, NULL);}
-					 | %empty									{$$ = NULL;}
+					 | 									{$$ = NULL;}
 					 ;
 
 output_element: LIT_STRING 	{$$ = astCreate(AST_SYMBOL, $1, NULL, NULL, NULL, NULL);}
@@ -196,7 +196,7 @@ command_block: '{' command_block_list '}' {$$ = $2;}
 command_block_list: command optional_command {$$ = astCreate(AST_CMD_LIST, NULL, $1, $2, NULL, NULL);}
 				  ;
 optional_command: ';'  command optional_command {$$ = astCreate(AST_CMD_LIST, NULL, $2, $3, NULL, NULL);}
-				| %empty						{$$ = NULL;}
+				| 						{$$ = NULL;}
 				;
 
 // ------------ Expression parsing -----------------
@@ -227,11 +227,11 @@ parse_tk_identifier: TK_IDENTIFIER '(' function_arguments ')' { $$ = astCreate(A
 			;
 
 function_arguments: argument optional_argument_list	{$$ = astCreate(AST_SYMBOL, $1, $2, NULL, NULL, NULL);}
-					| %empty						{$$ = NULL;}
+					| 						{$$ = NULL;}
 					;
 
 optional_argument_list: ',' argument optional_argument_list {$$ = astCreate(AST_SYMBOL, $2, $3, NULL, NULL, NULL);}
-						| %empty							{$$ = NULL;}
+						| 							{$$ = NULL;}
 						;
 
 argument: TK_IDENTIFIER {$$ = $1;}
@@ -244,7 +244,7 @@ argument: TK_IDENTIFIER {$$ = $1;}
 // ------------ Global variables parsing -----------------
 
 global_variable_list: global_variable global_variable_list 	{ $$ = astCreate(AST_GLOBAL_VAR_LIST, NULL, $1, $2, NULL, NULL);}
-					| %empty								{ $$ = NULL;}
+					| 								{ $$ = NULL;}
 					;
 
 
@@ -265,7 +265,7 @@ global_vector_initialization: ':' global_vector_initial_values ';' 	{$$ = $2;}
 							;
 
 global_vector_initial_values: initial_value global_vector_initial_values {$$ = astCreate(AST_SYMBOL, $1, $2, NULL, NULL, NULL);}
-							| %empty									 {$$ = NULL;}
+							| 									 {$$ = NULL;}
 							;
 
 // ------------ General purpose -----------------

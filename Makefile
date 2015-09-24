@@ -12,7 +12,7 @@ y.tab.o: y.tab.c hash.o ast.o
 	gcc -c y.tab.c
 
 y.tab.c: parser.y
-	yacc -d -v -Wall parser.y
+	yacc -d parser.y
 
 lex.yy.o: lex.yy.c
 	gcc -c lex.yy.c
