@@ -56,7 +56,7 @@ real lvarD:'c';;
 
 int funcK(int paramA, bool paramB, char paramC, real paramD)
 int lvarA:FALSE;
-bool lvarB:TRUE;
+int lvarB:TRUE;
 char lvarC:174;
 real lvarD:'c';
 ;

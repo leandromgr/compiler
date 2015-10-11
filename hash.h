@@ -15,6 +15,7 @@ typedef struct hash_node
 {
 	char *symbol;
 	int symbolType;
+    int dataType;
 	struct hash_node *nextNode;
 } HASH_NODE;
 

@@ -2,8 +2,8 @@
 #Leandro Mateus Giacomini Rocha
 #Luciano Farias Puhl
 
-etapa3: y.tab.o lex.yy.o main.o
-	gcc main.o lex.yy.o hash.o ast.o y.tab.o -o etapa3
+etapa3: y.tab.o semantic.o lex.yy.o main.o
+	gcc main.o lex.yy.o hash.o ast.o semantic.o y.tab.o -o etapa4
 
 main.o: main.c 
 	gcc -c main.c
@@ -25,6 +25,9 @@ hash.o: hash.c
 
 ast.o: ast.c
 	gcc -c ast.c
+
+semantic.o: semantic.c
+	gcc -c semantic.c
 
 clean:
 	rm -rf *.o lex* y.tab* etapa[1-9]

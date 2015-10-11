@@ -98,6 +98,91 @@ void hashPrint(void)
 				case LIT_STRING: printf("\t\tLIT_STRING\n"); break;
 				case LIT_TRUE: printf("\t\tLIT_TRUE\n"); break;
 				case LIT_FALSE: printf("\t\tLIT_FALSE\n"); break;
+                case 1000:
+                    printf("\t\tSYMBOL_LOCAL_VARIABLE : ");
+                    switch (currentNode->dataType) {
+                        case 0:
+                            printf("INT\n");
+                            break;
+                        case 1:
+                            printf("CHAR\n");
+                            break;
+                        case 2:
+                            printf("BOOL\n");
+                            break;
+                        case 3:
+                            printf("REAL\n");
+                            break;
+                    }
+                    break;
+                case 1001:
+                    printf("\t\tSYMBOL_GLOBAL_VARIABLE : ");
+                    switch (currentNode->dataType) {
+                        case 0:
+                            printf("INT\n");
+                            break;
+                        case 1:
+                            printf("CHAR\n");
+                            break;
+                        case 2:
+                            printf("BOOL\n");
+                            break;
+                        case 3:
+                            printf("REAL\n");
+                            break;
+                    }
+                    break;
+                case 1002:
+                    printf("\t\tSYMBOL_GLOBAL_VECTOR : ");
+                    switch (currentNode->dataType) {
+                        case 0:
+                            printf("INT\n");
+                            break;
+                        case 1:
+                            printf("CHAR\n");
+                            break;
+                        case 2:
+                            printf("BOOL\n");
+                            break;
+                        case 3:
+                            printf("REAL\n");
+                            break;
+                    }
+                    break;
+                case 1003:
+                    printf("\t\tFUNCTION : ");
+                    switch (currentNode->dataType) {
+                        case 0:
+                            printf("INT\n");
+                            break;
+                        case 1:
+                            printf("CHAR\n");
+                            break;
+                        case 2:
+                            printf("BOOL\n");
+                            break;
+                        case 3:
+                            printf("REAL\n");
+                            break;
+                    }
+                    break;
+                case 1004:
+                    printf("\t\tFUNCTION PARAMETER : ");
+                    switch (currentNode->dataType) {
+                        case 0:
+                            printf("INT\n");
+                            break;
+                        case 1:
+                            printf("CHAR\n");
+                            break;
+                        case 2:
+                            printf("BOOL\n");
+                            break;
+                        case 3:
+                            printf("REAL\n");
+                            break;
+                    }
+                    break;
 				default: printf("\t\tUNKNOWN TYPE\n");
 			}
 		}

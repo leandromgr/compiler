@@ -7,6 +7,7 @@ Luciano Farias Puhl
     #include <stdio.h>
     #include "hash.h"
     #include "ast.h"
+    #include "semantic.h"
 	//int yydebug = 1;
 %}
 
@@ -98,7 +99,9 @@ Luciano Farias Puhl
 %%
 
 // ------------ The definition of lang152 ---------------
-initial_symbol: lang152 {astTree = $1;}
+initial_symbol: lang152 {astTree = $1;
+                         setDeclarations(astTree);
+                         checkUndeclared();}
 
 // ------------ Function processing ---------------
 lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); }

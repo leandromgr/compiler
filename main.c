@@ -6,6 +6,7 @@ Luciano Farias Puhl
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast.h"
+#include "semantic.h"
 
 extern FILE* yyin;
 extern int yylex();
@@ -49,7 +50,12 @@ int main (int argc, char ** argv)
 	}
 
 	descompileTree(astTree);
+    astPrint(astTree, 0);
+    hashPrint();
 
-	printf("\n\nProgram sucessful!\n\n");
+    if (semanticErrors > 0)
+        printf("\n\nSemantic error!\n");
+    else
+        printf("\n\nProgram sucessful!\n\n");
 	exit(0);
 }
