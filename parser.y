@@ -101,7 +101,8 @@ Luciano Farias Puhl
 // ------------ The definition of lang152 ---------------
 initial_symbol: lang152 {astTree = $1;
                          setDeclarations(astTree);
-                         checkUndeclared();}
+                         checkUndeclared();
+                         checkTypes(astTree);}
 
 // ------------ Function processing ---------------
 lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); }

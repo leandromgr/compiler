@@ -80,6 +80,7 @@ void setDeclarations(AST_NODE *astNode)
             {
                 // Set node type as function identifier
                 functionNode->hashNode->symbolType = SYMBOL_FUNCTION;
+                functionNode->hashNode->functionLink = (void *) functionNode;
 
                 // Set the variable type in the hash
                 switch (functionNode->type)
@@ -171,5 +172,234 @@ void checkUndeclared()
                 semanticErrors++;
             }
         }
+    }
+}
+
+int checkTypes (AST_NODE * astNode)
+{
+    if (!astNode)
+        return DATATYPE_UNTYPED;
+
+    printf("\t\tNode type: %i\n\n", astNode->type);
+    // Testing types on attribution
+    switch (astNode->type)
+    {
+        case AST_ATTRIBUTION:
+            checkAttribution(astNode);
+            return DATATYPE_UNTYPED;
+        case AST_SUM:
+        case AST_SUB:
+        case AST_MULT:
+        case AST_DIV:
+        case AST_LT:
+        case AST_GT:
+        case AST_LET:
+        case AST_GET:
+        case AST_EQ:
+        case AST_NE:
+        case AST_AND:
+        case AST_OR:
+            return checkDataTypeCompatibility(checkTypes(astNode->children[0]), checkTypes(astNode->children[1]));
+        case AST_FUNCALL:
+            return checkFunctionCall(astNode);
+        case AST_INPUT_CMD:
+            return DATATYPE_UNTYPED;
+        case AST_OUTPUT_CMD:
+            return DATATYPE_UNTYPED;
+        case AST_RETURN_CMD:
+            return DATATYPE_UNTYPED;
+        case AST_IF:
+            return DATATYPE_UNTYPED;
+        case AST_IFELSE:
+            return DATATYPE_UNTYPED;
+        case AST_LOOP:
+            return DATATYPE_UNTYPED;
+        case AST_SYMBOL:
+            return astNode->hashNode->dataType;
+        default:
+            break;
+    }
+
+    int indexNode;
+    for (indexNode = 0; indexNode < MAX_CHILDREN; indexNode++)
+    {
+        checkTypes(astNode->children[indexNode]);
+    }
+
+    return DATATYPE_UNTYPED;
+}
+
+char * printDataType(int dataType)
+{
+    switch (dataType)
+    {
+        case DATATYPE_INT:
+            return "int";
+        case DATATYPE_CHAR:
+            return "char";
+        case DATATYPE_BOOL:
+            return "bool";
+        case DATATYPE_REAL:
+            return "real";
+        default:
+            return "unkown";
+    }
+}
+
+int checkFunctionCall(AST_NODE * astNode)
+{
+    AST_NODE * currentArgument = astNode->children[0];
+    AST_NODE * functionDefinition = (AST_NODE *) astNode->hashNode->functionLink;
+    AST_NODE * currentParameterList = functionDefinition->children[0];
+
+    while ((currentArgument && currentParameterList) && currentParameterList->children[0])
+    {
+        if (checkDataTypeCompatibility(currentArgument->hashNode->dataType, currentParameterList->children[0]->hashNode->dataType) == DATATYPE_INCOMPATIBLE)
+        {
+            fprintf(stderr, "Error: invalid argument type for function '%s'. Expected: '%s', found '%s'!\n", astNode->hashNode->symbol, printDataType(currentParameterList->children[0]->hashNode->dataType), printDataType(currentArgument->hashNode->dataType));
+            semanticErrors++;
+            return DATATYPE_INCOMPATIBLE;
+        }
+        currentArgument = currentArgument->children[0];
+        currentParameterList = currentParameterList->children[1];
+    }
+
+    if (currentArgument || currentParameterList->children[0])
+    {
+        fprintf(stderr, "Error: number of arguments does not match number of parameters on function '%s'!\n", astNode->hashNode->symbol);
+        semanticErrors++;
+    }
+
+    return functionDefinition->hashNode->dataType;
+}
+
+void checkAttribution(AST_NODE * astNode)
+{
+    AST_NODE * destinationNode = astNode->children[0];
+    // Check if it is a variable or a vector
+    if ((destinationNode->hashNode->symbolType == SYMBOL_LOCAL_VARIABLE) ||
+        (destinationNode->hashNode->symbolType == SYMBOL_GLOBAL_VARIABLE))
+    {
+        // Check if the variable was misused, i.e, with index
+        if (destinationNode->children[0])
+        {
+            fprintf(stderr, "Error: variable '%s' is not a vector!\n", destinationNode->hashNode->symbol);
+            semanticErrors++;
+        }
+        else
+        {
+            // Check expression data type
+            if (checkDataTypeCompatibility(destinationNode->hashNode->dataType, checkTypes(astNode->children[1])) == DATATYPE_INCOMPATIBLE)
+            {
+                fprintf(stderr, "Error: variable '%s' attribution has invalid data type!\n", destinationNode->hashNode->symbol);
+                semanticErrors++;
+            }
+        }
+    }
+    else if (destinationNode->hashNode->symbolType == SYMBOL_GLOBAL_VECTOR)
+    {
+        // Check if the variable was misused, i.e, without index
+        if (!destinationNode->children[0])
+        {
+            fprintf(stderr, "Error: vector '%s' used without index!\n", destinationNode->hashNode->symbol);
+            semanticErrors++;
+        }
+        else
+        {
+            // Check index type
+            // TODO: check array bounds?
+            if (checkDataTypeCompatibility(DATATYPE_INT, checkTypes(destinationNode->children[0])) != DATATYPE_INT)
+            {
+                fprintf(stderr, "Error: index of vector '%s' has invalid data type!\n", destinationNode->hashNode->symbol);
+                semanticErrors++;
+            }
+            else
+            {
+                // Check expression data type
+                if (checkDataTypeCompatibility(destinationNode->hashNode->dataType, checkTypes(astNode->children[1])) == DATATYPE_INCOMPATIBLE)
+                {
+                    fprintf(stderr, "Error: vector '%s' attribution has invalid data type!\n", destinationNode->hashNode->symbol);
+                    semanticErrors++;
+                }
+            }
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Error: symbol '%s' is not a variable or vector!\n", destinationNode->hashNode->symbol);
+        semanticErrors++;
+    }
+}
+
+// Return the 'highest' data type
+int checkDataTypeCompatibility(int dataType1, int dataType2)
+{
+    if (dataType1 == DATATYPE_INT)
+    {
+        switch (dataType2)
+        {
+            case DATATYPE_INT:
+                return DATATYPE_INT;
+            case DATATYPE_CHAR:
+                return DATATYPE_INT;
+            case DATATYPE_BOOL:
+                return DATATYPE_INCOMPATIBLE;
+            case DATATYPE_REAL:
+                return DATATYPE_REAL;
+            default:
+                return DATATYPE_INCOMPATIBLE;
+        }
+    }
+    else if (dataType1 == DATATYPE_CHAR)
+    {
+        switch (dataType2)
+        {
+            case DATATYPE_INT:
+                return DATATYPE_INT;
+            case DATATYPE_CHAR:
+                return DATATYPE_CHAR;
+            case DATATYPE_BOOL:
+                return DATATYPE_INCOMPATIBLE;
+            case DATATYPE_REAL:
+                return DATATYPE_REAL;
+            default:
+                return DATATYPE_INCOMPATIBLE;
+        }
+    }
+    else if (dataType1 == DATATYPE_BOOL)
+    {
+        switch (dataType2)
+        {
+            case DATATYPE_INT:
+                return DATATYPE_INCOMPATIBLE;
+            case DATATYPE_CHAR:
+                return DATATYPE_INCOMPATIBLE;
+            case DATATYPE_BOOL:
+                return DATATYPE_BOOL;
+            case DATATYPE_REAL:
+                return DATATYPE_INCOMPATIBLE;
+            default:
+                return DATATYPE_INCOMPATIBLE;
+        }
+    }
+    else if (dataType1 == DATATYPE_REAL)
+    {
+        switch (dataType2)
+        {
+            case DATATYPE_INT:
+                return DATATYPE_REAL;
+            case DATATYPE_CHAR:
+                return DATATYPE_REAL;
+            case DATATYPE_BOOL:
+                return DATATYPE_INCOMPATIBLE;
+            case DATATYPE_REAL:
+                return DATATYPE_REAL;
+            default:
+                return DATATYPE_INCOMPATIBLE;
+        }
+    }
+    else
+    {
+        return DATATYPE_INCOMPATIBLE;
     }
 }

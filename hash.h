@@ -16,6 +16,7 @@ typedef struct hash_node
 	char *symbol;
 	int symbolType;
     int dataType;
+    void * functionLink;
 	struct hash_node *nextNode;
 } HASH_NODE;
 
