@@ -1,4 +1,4 @@
-int incn (int xy, int xx)
+real incn (int xy, int xx)
 {
   return xy + xx;
 };
@@ -6,11 +6,15 @@ int main()
 int i:0;
 int j:1;
 bool bla:TRUE;
+char lala:'a';
 {
   output "Digite um numero: ";
-    a[0] := incn(bla,1);
-    a[1] := incn(0,1, 2);
+  if (lala)
+  {
+    a[0] := incn(j,1);
+    a[1] := incn(0,1);
     i + 1 =: i;
+  };
   output "Incrementado algumas vezes fica ",a,"\n";
 };
 

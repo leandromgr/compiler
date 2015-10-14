@@ -209,9 +209,8 @@ int checkTypes (AST_NODE * astNode)
         case AST_RETURN_CMD:
             return DATATYPE_UNTYPED;
         case AST_IF:
-            return DATATYPE_UNTYPED;
         case AST_IFELSE:
-            return DATATYPE_UNTYPED;
+            return checkDataTypeCompatibility(DATATYPE_BOOL, checkTypes(astNode->children[0]));
         case AST_LOOP:
             return DATATYPE_UNTYPED;
         case AST_SYMBOL:
@@ -264,7 +263,7 @@ int checkFunctionCall(AST_NODE * astNode)
         currentParameterList = currentParameterList->children[1];
     }
 
-    if (currentArgument || currentParameterList->children[0])
+    if (currentArgument || currentParameterList)
     {
         fprintf(stderr, "Error: number of arguments does not match number of parameters on function '%s'!\n", astNode->hashNode->symbol);
         semanticErrors++;
