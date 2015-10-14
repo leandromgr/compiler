@@ -9,6 +9,7 @@
 #define DATATYPE_CHAR           1
 #define DATATYPE_BOOL           2
 #define DATATYPE_REAL           3
+#define DATATYPE_EXPRESSION     4   // Used only to validate IF-ELSE-LOOP
 #define DATATYPE_UNTYPED        -1
 #define DATATYPE_INCOMPATIBLE   -2
 
@@ -27,4 +28,6 @@ void checkUndeclared();
 int checkTypes(AST_NODE * astNode);
 void checkAttribution(AST_NODE * astNode);
 int checkFunctionCall(AST_NODE * astNode);
+int checkVariable(AST_NODE * astNode);
+int checkOutputCommand(AST_NODE * astNode);
 #endif // SEMANTIC_H
