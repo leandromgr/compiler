@@ -13,6 +13,18 @@ char lala:'b';
     a[1+1] := incn(0,1);
     a[5+5] + 1 =: i;
   output "Incrementado algumas vezes fica ",a[0+9],"\n";
+  bla := incn(j,1);
+  if (a[3])
+  {
+ 	a[0] := incn(j,1);
+    a[5+a[0]] + 1 =: i;
+  }
+  else
+  {
+  	a[4] := incn(j,1);
+    a[2] := incn(0,1);
+    a[4] + 1 =: i;
+  };
 };
 
 int a[5];

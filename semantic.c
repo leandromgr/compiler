@@ -177,11 +177,9 @@ void checkUndeclared()
 
 int checkTypes (AST_NODE * astNode)
 {
-    int result;
     if (!astNode)
         return DATATYPE_UNTYPED;
 
-    printf("\t\tNode type: %i\n\n", astNode->type);
     // Testing types on attribution
     switch (astNode->type)
     {
@@ -227,13 +225,24 @@ int checkTypes (AST_NODE * astNode)
         case AST_IF:
         case AST_IFELSE:
         case AST_LOOP:
-            /*if (checkDataTypeCompatibility(DATATYPE_EXPRESSION, checkTypes(astNode->children[0])) == DATATYPE_INCOMPATIBLE)
+            if (checkDataTypeCompatibility(DATATYPE_EXPRESSION, checkTypes(astNode->children[0])) < 0)
             {
                 semanticErrors++;
-                fprintf(stderr, "Error: conditional expression must return a boolean value!");
+                fprintf(stderr, "Error: invalid expression in the conditional command!");
                 return DATATYPE_INCOMPATIBLE;
-            }*/
-            return DATATYPE_UNTYPED;
+            }
+            else
+            {
+                if(astNode->children[1])
+                {
+                    checkTypes(astNode->children[1]);
+                }
+                if (astNode->children[2])
+                {
+                    checkTypes(astNode->children[2]);
+                }
+                return DATATYPE_UNTYPED;
+            }
         case AST_SYMBOL:
             switch (astNode->hashNode->symbolType)
             {
@@ -247,9 +256,7 @@ int checkTypes (AST_NODE * astNode)
                 case LIT_STRING:
                     return DATATYPE_UNTYPED;
                 default:
-                    result = checkVariable(astNode);
-                    fprintf(stderr, "Result: %i\n", result);
-                    return result;
+                    return checkVariable(astNode);
             }
         default:
             break;
@@ -308,9 +315,9 @@ char * printDataType(int dataType)
 
 int checkVariable(AST_NODE * astNode)
 {
-    fprintf(stderr, "Variable name: %s   type: %d\n", astNode->hashNode->symbol, astNode->hashNode->dataType);
     if ((astNode->hashNode->symbolType == SYMBOL_LOCAL_VARIABLE) ||
-        (astNode->hashNode->symbolType == SYMBOL_GLOBAL_VARIABLE))
+        (astNode->hashNode->symbolType == SYMBOL_GLOBAL_VARIABLE) ||
+        (astNode->hashNode->symbolType == SYMBOL_FUNCTION_PARAMETER))
     {
         // Check if the variable was misused, i.e, with index
         if (astNode->children[0])
