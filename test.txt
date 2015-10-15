@@ -22,6 +22,7 @@ char lala:'b';
   else
   {
   	a[4] := incn(j,1);
+    a[4] := incn(j,1);
     a[2] := incn(0,1);
     a[4] + 1 =: i;
   };

@@ -364,27 +364,37 @@ int checkFunctionCall(AST_NODE * astNode)
 {
     AST_NODE * currentArgument = astNode->children[0];
     AST_NODE * functionDefinition = (AST_NODE *) astNode->hashNode->functionLink;
-    AST_NODE * currentParameterList = functionDefinition->children[0];
-
-    while ((currentArgument && currentParameterList) && currentParameterList->children[0])
+    
+    //test the function link, if this link does not exist, the function called is not defined.
+    if(functionDefinition)
     {
-        if (checkDataTypeCompatibility(currentArgument->hashNode->dataType, currentParameterList->children[0]->hashNode->dataType) == DATATYPE_INCOMPATIBLE)
+        AST_NODE * currentParameterList = functionDefinition->children[0];
+        while ((currentArgument && currentParameterList) && currentParameterList->children[0])
         {
-            fprintf(stderr, "Error: invalid argument type for function '%s'. Expected: '%s', found '%s'!\n", astNode->hashNode->symbol, printDataType(currentParameterList->children[0]->hashNode->dataType), printDataType(currentArgument->hashNode->dataType));
+            if (checkDataTypeCompatibility(currentArgument->hashNode->dataType, currentParameterList->children[0]->hashNode->dataType) == DATATYPE_INCOMPATIBLE)
+            {
+                fprintf(stderr, "Error: invalid argument type for function '%s'. Expected: '%s', found '%s'!\n", astNode->hashNode->symbol, printDataType(currentParameterList->children[0]->hashNode->dataType), printDataType(currentArgument->hashNode->dataType));
+                semanticErrors++;
+                return DATATYPE_INCOMPATIBLE;
+            }
+            currentArgument = currentArgument->children[0];
+            currentParameterList = currentParameterList->children[1];
+        }
+
+        if (currentArgument || currentParameterList)
+        {
+            fprintf(stderr, "Error: number of arguments does not match number of parameters on function '%s'!\n", astNode->hashNode->symbol);
+            semanticErrors++;
+        }
+        return functionDefinition->hashNode->dataType;
+    }
+    else
+    {
+            fprintf(stderr, "Error: the function '%s'! is not defined!\n", astNode->hashNode->symbol);
             semanticErrors++;
             return DATATYPE_INCOMPATIBLE;
-        }
-        currentArgument = currentArgument->children[0];
-        currentParameterList = currentParameterList->children[1];
     }
-
-    if (currentArgument || currentParameterList)
-    {
-        fprintf(stderr, "Error: number of arguments does not match number of parameters on function '%s'!\n", astNode->hashNode->symbol);
-        semanticErrors++;
-    }
-
-    return functionDefinition->hashNode->dataType;
+    
 }
 
 void checkAttribution(AST_NODE * astNode)
