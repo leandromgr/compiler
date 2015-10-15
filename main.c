@@ -54,8 +54,13 @@ int main (int argc, char ** argv)
     //hashPrint();
 
     if (semanticErrors > 0)
+	{
         printf("\n\nSemantic error!\n");
+		exit(4);
+	}
     else
+	{
         printf("\n\nProgram sucessful!\n\n");
-	exit(0);
+		exit(0);
+	}
 }
