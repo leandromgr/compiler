@@ -82,21 +82,32 @@ TAC* generateTacs(AST* astNode)
 	{
 		case AST_SYMBOL:
 			return tacCreate(TAC_SYMBOL, astNode->hashNode, 0,0);
-			break;
-
 		case AST_SUM:
+			return generateBinaryOperation(TAC_SUM, generateChild[0], generateChild[1]);
 		case AST_SUB:
+			return generateBinaryOperation(TAC_SUB, generateChild[0], generateChild[1]);
 		case AST_MULT:
+			return generateBinaryOperation(TAC_MULT, generateChild[0], generateChild[1]);
 		case AST_DIV:
+			return generateBinaryOperation(TAC_DIV, generateChild[0], generateChild[1]);
 		case AST_LT:
+			return generateBinaryOperation(TAC_LT, generateChild[0], generateChild[1]);
 		case AST_GT:
+			return generateBinaryOperation(TAC_GT, generateChild[0], generateChild[1]);
 		case AST_LET:
+			return generateBinaryOperation(TAC_LET, generateChild[0], generateChild[1]);
 		case AST_GET:
+			return generateBinaryOperation(TAC_GET, generateChild[0], generateChild[1]);
 		case AST_EQ:
+			return generateBinaryOperation(TAC_EQ, generateChild[0], generateChild[1]);
 		case AST_NE:
+			return generateBinaryOperation(TAC_NE, generateChild[0], generateChild[1]);
 		case AST_AND:
+			return generateBinaryOperation(TAC_AND, generateChild[0], generateChild[1]);
 		case AST_OR:
+			return generateBinaryOperation(TAC_OR, generateChild[0], generateChild[1]);
 		case AST_FUNCALL:
+			//- criar um TAC_CALL p/ HASH_NODE tipo FUNCTION que já existe na hash.
 		case AST_GLOBAL_VAR_LIST:
 		case AST_GLOBAL_VECTOR:
 		case AST_INT:
@@ -104,20 +115,36 @@ TAC* generateTacs(AST* astNode)
 		case AST_BOOL:
 		case AST_REAL:
 		case AST_FUNCTION_LIST:
+			//- Simplesmente itera os fillhos.
 		case AST_FUNCTION:
+			//- Temos que criar o TAC_BEGINFUN e o TAC_ENDFUN
+			//- Temos que colocar todos os comandos da função entre essas duas Tacs.
 		case AST_PARAMETER_LIST:
 		case AST_LOCAL_VAR_LIST:
+
+		case AST_CMD_LIST:
+			return tacJoin(generateChild[0], generateChild[1]);
+
 		case AST_ATTRIBUTION:
+			//The first argument is the expression to be executed.
+			//The second argument is the new node of MOV operation, moving the expression result to the desintation variable.
+			return tacJoin(generateChild[1], tacCreate(TAC_MOV, generateChild[0], generateChild[1]->res, NULL));
 		case AST_INPUT_CMD:
+			return tacCreate(TAC_READ, astNode->hashNode, NULL, NULL);
 		case AST_OUTPUT_CMD:
-		case AST_RETURN_CMD:
+			return generateChild[0];
 		case AST_OUTPUT_LIST:
+			//The first argument in the first tacJoin can be an expression or a dummie tac_symbol.
+			TAC* newPrintCmd = tacJoin(generateChild[0], tacCreate(TAC_PRINT, NULL, generateChild[0]->res));
+			return tacJoin(newPrintCmd, generateChild[1]);
+		case AST_RETURN_CMD:
+			//The return is a tacJoin between the expression to be returned and the new return command.
+			return tacJoin(generateChild[0], tacCreate(TAC_RETURN, NULL, generateChild[0]->res, NULL));
 		case AST_IF:
             return generateIfThen(generateChild[0], generateChild[1]);
 		case AST_IFELSE:
             return generateIfThenElse(generateChild[0], generateChild[1], generateChild[2]);
 		case AST_LOOP:
-		case AST_CMD_LIST:
 	}
 }
 
@@ -168,4 +195,10 @@ TAC* generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
 
     // Compute the expression, evaluate it and execute the code accordingly
     return tacJoin(tacJoin(tacJoin(tacJoin(booleanExpression, exprEvalJump), ifTrueCode), ifFalseCode), endIfPointer);
+}
+
+TAC*generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
+{
+	TAC* binaryOperationTac =  tacCreate(tacType ,makeTemp(), child0->res, child1->res);
+	return tacJoin(child0, tacJoin(child1, binaryOperationTac));
 }

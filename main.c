@@ -49,7 +49,7 @@ int main (int argc, char ** argv)
 		exit(2);
 	}
 
-	descompileTree(astTree);
+    descompileTree(astTree);
     astPrint(astTree, 0);
     hashPrint();
 
