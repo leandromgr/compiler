@@ -32,5 +32,4 @@ void tacPrint(TAC *tac)
 	}
 
 	fprintf(stderr, ")\n");
-
 }
