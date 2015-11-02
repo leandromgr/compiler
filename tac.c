@@ -1,9 +1,5 @@
-
-
 #include "tac.h"
-
-int currentLabelIndex = 0;
-int currentTempVarIndex = 0;
+#include "ast.h"
 
 TAC* tacCreate(int type, HASH_NODE* res, HASH_NODE* op1, HASH_NODE* op2)
 {
@@ -52,4 +48,63 @@ void tacPrint(TAC *tac)
 
 	fprintf(stderr, ")\n");
 
+}
+
+TAC* generateTacs(AST* astNode)
+{
+	int i;
+	TAC* result[MAX_CHILDREN];
+
+	if(!astNode)
+		return;
+
+	for(i=0 ; i<MAX_CHILDREN ; i++)
+	{
+		generateChild[i] = generateTacs(astNode->children[i]);
+	}
+
+	switch(astNode->type)
+	{
+		case AST_SYMBOL:
+			return tacCreate(TAC_SYMBOL, astNode->hashNode, 0,0);
+			break;
+
+		case AST_SUM:
+		case AST_SUB:
+		case AST_MULT:
+		case AST_DIV:
+		case AST_LT:
+		case AST_GT:
+		case AST_LET:
+		case AST_GET:
+		case AST_EQ:
+		case AST_NE:
+		case AST_AND:
+		case AST_OR:
+		case AST_FUNCALL:
+		case AST_GLOBAL_VAR_LIST:
+		case AST_GLOBAL_VECTOR:
+		case AST_INT:
+		case AST_CHAR:
+		case AST_BOOL:
+		case AST_REAL:
+		case AST_FUNCTION_LIST:
+		case AST_FUNCTION:
+		case AST_PARAMETER_LIST:
+		case AST_LOCAL_VAR_LIST:
+		case AST_ATTRIBUTION:
+		case AST_INPUT_CMD:
+		case AST_OUTPUT_CMD:
+		case AST_RETURN_CMD:
+		case AST_OUTPUT_LIST:
+		case AST_IF:
+		case AST_IFELSE:
+		case AST_LOOP:
+		case AST_CMD_LIST:
+	}
+}
+
+generateBinaryOperation(int astType, TAC* child0, TAC* child1)
+{
+	tacJoin();
 }
