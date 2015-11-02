@@ -38,3 +38,18 @@ TAC* tacJoin(TAC* tacList1, TAC* tacList2)
 
     return joinedTac;
 }
+
+void tacPrint(TAC *tac)
+{
+	if(!tac)
+		return;
+	fprintf(stderr, "TAC(");
+
+	switch(tac->type)
+	{
+        default: fprintf(stderr, "TAC_UNKNOWN");
+	}
+
+	fprintf(stderr, ")\n");
+
+}
