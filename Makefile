@@ -31,5 +31,8 @@ ast.o: ast.c
 semantic.o: semantic.c
 	gcc $(DEBUG) -c semantic.c
 
+tar:
+	tar -czvf etapa4.tgz Makefile hash.c hash.h scanner.l parser.y main.c ast.h ast.c semantic.c semantic.h
+
 clean:
-	rm -rf *.o lex* y.tab* etapa[1-9]
+	rm -rf *.o lex* y.tab* etapa[1-9] *.tgz

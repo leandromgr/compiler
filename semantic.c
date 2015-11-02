@@ -190,6 +190,7 @@ int checkTypes (AST_NODE * astNode)
         case AST_SUB:
         case AST_MULT:
         case AST_DIV:
+            return checkDataTypeCompatibility(checkTypes(astNode->children[0]), checkTypes(astNode->children[1]));
         case AST_LT:
         case AST_GT:
         case AST_LET:
@@ -198,11 +199,20 @@ int checkTypes (AST_NODE * astNode)
         case AST_NE:
         case AST_AND:
         case AST_OR:
-            return checkDataTypeCompatibility(checkTypes(astNode->children[0]), checkTypes(astNode->children[1]));
+            if( checkDataTypeCompatibility(checkTypes(astNode->children[0]), checkTypes(astNode->children[1])) >= 0)
+            {
+                return DATATYPE_BOOL;
+            }
+            else
+            {
+                semanticErrors++;
+                fprintf(stderr, "Error: the expression must be boolean!");
+                return DATATYPE_INCOMPATIBLE;
+            }
         case AST_FUNCALL:
             return checkFunctionCall(astNode);
         case AST_INPUT_CMD:
-            if (checkVariable(astNode->children[0]) == DATATYPE_UNTYPED)
+            if (checkVariable(astNode) == DATATYPE_UNTYPED)
             {
                 semanticErrors++;
                 fprintf(stderr, "Error: invalid variable!");
