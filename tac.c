@@ -19,3 +19,18 @@ TAC* tacCreate(int type, HASH_NODE* res, HASH_NODE* op1, HASH_NODE* op2)
 
     return newTac;
 }
+
+void tacPrint(TAC *tac)
+{
+	if(!tac)
+		return;
+	fprintf(stderr, "TAC(");
+
+	switch(tac->type)
+	{
+		default fprintf(stderr, "TAC_UNKNOWN");
+	}
+
+	fprintf(stderr, ")\n");
+
+}
