@@ -51,7 +51,7 @@ int main (int argc, char ** argv)
 
 	descompileTree(astTree);
     //astPrint(astTree, 0);
-    //hashPrint();
+    hashPrint();
 
     if (semanticErrors > 0)
 	{
