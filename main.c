@@ -50,8 +50,8 @@ int main (int argc, char ** argv)
 	}
 
 	descompileTree(astTree);
-    //astPrint(astTree, 0);
-    //hashPrint();
+    astPrint(astTree, 0);
+    hashPrint();
 
     if (semanticErrors > 0)
 	{
