@@ -108,23 +108,13 @@ TAC* generateTacs(AST* astNode)
 			return generateBinaryOperation(TAC_OR, generateChild[0], generateChild[1]);
 		case AST_FUNCALL:
 			//- criar um TAC_CALL p/ HASH_NODE tipo FUNCTION que já existe na hash.
-		case AST_GLOBAL_VAR_LIST:
-		case AST_GLOBAL_VECTOR:
-		case AST_INT:
-		case AST_CHAR:
-		case AST_BOOL:
-		case AST_REAL:
 		case AST_FUNCTION_LIST:
 			//- Simplesmente itera os fillhos.
 		case AST_FUNCTION:
 			//- Temos que criar o TAC_BEGINFUN e o TAC_ENDFUN
 			//- Temos que colocar todos os comandos da função entre essas duas Tacs.
-		case AST_PARAMETER_LIST:
-		case AST_LOCAL_VAR_LIST:
-
 		case AST_CMD_LIST:
 			return tacJoin(generateChild[0], generateChild[1]);
-
 		case AST_ATTRIBUTION:
 			//The first argument is the expression to be executed.
 			//The second argument is the new node of MOV operation, moving the expression result to the desintation variable.
@@ -145,6 +135,15 @@ TAC* generateTacs(AST* astNode)
 		case AST_IFELSE:
             return generateIfThenElse(generateChild[0], generateChild[1], generateChild[2]);
 		case AST_LOOP:
+
+		//[?]case AST_GLOBAL_VAR_LIST:
+		//[?]case AST_GLOBAL_VECTOR:
+		//[?]case AST_INT:
+		//[?]case AST_CHAR:
+		//[?]case AST_BOOL:
+		//[?]case AST_REAL:
+		//[?]case AST_PARAMETER_LIST:
+		//[?]case AST_LOCAL_VAR_LIST:
 	}
 }
 
