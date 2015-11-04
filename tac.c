@@ -190,7 +190,7 @@ TAC* generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
     ifFalseCode = tacJoin(elseStartPointer, codeFalse);
 
     // If the expression is true, it shall jump unconditionally to the end of the if command and DO NOT EXECUTE the else code
-    jumpBeforeElse = tacCreate(TAC_J, endIfLabel, 0, 0);
+    jumpBeforeElse = tacCreate(TAC_JUMP, endIfLabel, 0, 0);
     ifTrueCode = tacJoin(codeTrue, jumpBeforeElse);
 
     // Compute the expression, evaluate it and execute the code accordingly

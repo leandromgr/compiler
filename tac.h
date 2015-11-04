@@ -22,6 +22,7 @@
 #define TAC_READ	25
 #define TAC_PRINT	26
 #define TAC_RETURN	27
+#define
 
 ////////////////////////////
 
