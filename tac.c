@@ -196,7 +196,7 @@ TAC* generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
     return tacJoin(tacJoin(tacJoin(tacJoin(booleanExpression, exprEvalJump), ifTrueCode), ifFalseCode), endIfPointer);
 }
 
-TAC*generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
+TAC* generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
 {
 	TAC* binaryOperationTac =  tacCreate(tacType ,makeTemp(), child0->res, child1->res);
 	return tacJoin(child0, tacJoin(child1, binaryOperationTac));

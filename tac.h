@@ -22,7 +22,10 @@
 #define TAC_READ	25
 #define TAC_PRINT	26
 #define TAC_RETURN	27
-#define
+#define TAC_LABEL   28
+#define TAC_JZ      29
+#define TAC_JUMP    30
+
 
 ////////////////////////////
 
@@ -42,8 +45,6 @@
 #define AST_LOCAL_VAR_LIST	23
 
 #define AST_OUTPUT_LIST		28
-#define AST_IF 				29
-#define AST_IFELSE 			30
 #define AST_LOOP 			31
 
 #define COMMA_SEPARATOR		100
