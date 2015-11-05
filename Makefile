@@ -4,8 +4,8 @@
 
 DEBUG=
 
-etapa4: y.tab.o semantic.o lex.yy.o main.o
-	gcc $(DEBUG) main.o lex.yy.o hash.o ast.o semantic.o y.tab.o -o etapa4
+etapa5: y.tab.o semantic.o lex.yy.o tac.o main.o
+	gcc $(DEBUG) main.o lex.yy.o hash.o ast.o tac.o semantic.o y.tab.o -o etapa5
 
 main.o: main.c 
 	gcc $(DEBUG) -c main.c
@@ -31,8 +31,11 @@ ast.o: ast.c
 semantic.o: semantic.c
 	gcc $(DEBUG) -c semantic.c
 
+tac.o: ast.o
+	gcc $(DEBUG) -c tac.c
+
 tar:
-	tar -czvf etapa4.tgz Makefile hash.c hash.h scanner.l parser.y main.c ast.h ast.c semantic.c semantic.h
+	tar -czvf etapa5.tgz Makefile hash.c hash.h scanner.l parser.y main.c ast.h ast.c semantic.c semantic.h tac.c tac.h
 
 clean:
 	rm -rf *.o lex* y.tab* etapa[1-9] *.tgz

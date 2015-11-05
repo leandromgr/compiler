@@ -1,4 +1,5 @@
 #include "tac.h"
+#include "y.tab.h"
 
 int currentLabelIndex = 0;
 int currentTempVarIndex = 0;
@@ -7,13 +8,13 @@ char hashBuffer[256];
 HASH_NODE * makeTemp()
 {
     sprintf(hashBuffer, "_temp%d", currentTempVarIndex++);
-    return hashInsert(hashBuffer, SYMBOL_IDENTIFIER);
+    return hashInsert(hashBuffer, TK_IDENTIFIER);
 }
 
 HASH_NODE * makeLabel()
 {
     sprintf(hashBuffer, "_label%d", currentLabelIndex++);
-    return hashInsert(hashBuffer, SYMBOL_IDENTIFIER);
+    return hashInsert(hashBuffer, TK_IDENTIFIER);
 }
 
 TAC* tacCreate(int type, HASH_NODE* res, HASH_NODE* op1, HASH_NODE* op2)
@@ -138,7 +139,7 @@ void tacPrint(TAC *tac)
 TAC* generateTacs(AST_NODE * astNode)
 {
 	int i;
-	TAC* result[MAX_CHILDREN];
+    TAC* generateChild[MAX_CHILDREN];
 
 	if(!astNode)
 		return;
@@ -211,7 +212,7 @@ TAC* generateTacs(AST_NODE * astNode)
 		{
 			//The first argument is the expression to be executed.
 			//The second argument is the new node of MOV operation, moving the expression result to the desintation variable.
-			return tacJoin(generateChild[1], tacCreate(TAC_MOV, generateChild[0], generateChild[1]->res, NULL));
+            return tacJoin(generateChild[1], tacCreate(TAC_MOV, generateChild[0]->res, generateChild[1]->res, NULL));
 		}
 			
 		case AST_INPUT_CMD:
@@ -223,7 +224,7 @@ TAC* generateTacs(AST_NODE * astNode)
 		case AST_OUTPUT_LIST:
 		{
 			//The first argument in the first tacJoin can be an expression or a dummie tac_symbol.
-			TAC* newPrintCmd = tacJoin(generateChild[0], tacCreate(TAC_PRINT, NULL, generateChild[0]->res));
+            TAC* newPrintCmd = tacJoin(generateChild[0], tacCreate(TAC_PRINT, NULL, generateChild[0]->res, NULL));
 			return tacJoin(newPrintCmd, generateChild[1]);
 		}
 
@@ -240,7 +241,7 @@ TAC* generateTacs(AST_NODE * astNode)
             return generateIfThenElse(generateChild[0], generateChild[1], generateChild[2]);
 
 		case AST_LOOP:
-
+            return generateLoop(generateChild[0], generateChild[1]);
 		//[?]case AST_GLOBAL_VAR_LIST:
 		//[?]case AST_GLOBAL_VECTOR:
 		//[?]case AST_INT:
@@ -270,7 +271,7 @@ TAC * generateLoop(TAC* booleanExpression, TAC* code)
     endLoopPointer = tacCreate(TAC_LABEL, endLoop, NULL, NULL);
 
     // Evaluate the expression. If the expression is false, finish the loop
-    exprEvalLoop = tacCreate(TAC_JZ, endLoop, booleanExpression, NULL);
+    exprEvalLoop = tacCreate(TAC_JZ, endLoop, NULL, NULL);
 
     // Jump back to the evaluation step
     returnToEvalLoop = tacCreate(TAC_JUMP, beginLoop, NULL, NULL);

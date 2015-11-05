@@ -70,6 +70,7 @@ TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2);
 void tacPrint(TAC *tac);
 TAC * tacJoin(TAC * tacList1, TAC * tacList2);
 TAC * generateTacs(AST_NODE * astNode);
+TAC * generateLoop(TAC* booleanExpression, TAC* code);
 TAC * generateIfThen(TAC * booleanExpression, TAC * code);
 TAC * generateIfThenElse(TAC * booleanExpression, TAC * codeTrue, TAC * codeFalse);
 TAC * generateBinaryOperation(int tacType, TAC * child0, TAC * child1);
