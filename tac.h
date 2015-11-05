@@ -69,6 +69,7 @@ HASH_NODE * makeTemp();
 TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2);
 void tacPrint(TAC *tac);
 TAC * tacJoin(TAC * tacList1, TAC * tacList2);
+void tacPrintPrev(TAC * tac);
 TAC * generateTacs(AST_NODE * astNode);
 TAC * generateLoop(TAC* booleanExpression, TAC* code);
 TAC * generateIfThen(TAC * booleanExpression, TAC * code);

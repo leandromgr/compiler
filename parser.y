@@ -8,6 +8,7 @@ Luciano Farias Puhl
     #include "hash.h"
     #include "ast.h"
     #include "semantic.h"
+    #include "tac.h"
 	//int yydebug = 1;
 %}
 
@@ -102,7 +103,8 @@ Luciano Farias Puhl
 initial_symbol: lang152 {astTree = $1;
                          setDeclarations(astTree);
                          checkUndeclared();
-                         checkTypes(astTree);}
+                         checkTypes(astTree);
+                         tacPrintNext(tacReverseCode(generateTacs(astTree)));}
 
 // ------------ Function processing ---------------
 lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); }

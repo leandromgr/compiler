@@ -69,6 +69,14 @@ void tacPrintNext(TAC * tac)
         tacPrintNext(tac->next);
 }
 
+
+void tacPrintPrev(TAC * tac)
+{
+    tacPrint(tac);
+    if (tac)
+        tacPrintPrev(tac->prev);
+}
+
 void tacPrint(TAC *tac)
 {
 	if(!tac)
@@ -117,6 +125,14 @@ void tacPrint(TAC *tac)
             fprintf(stderr, "TAC_JZ"); break;
         case TAC_JUMP:
             fprintf(stderr, "TAC_JUMP"); break;
+        case TAC_CALL:
+            fprintf(stderr, "TAC_CALL"); break;
+        case TAC_ARG:
+            fprintf(stderr, "TAC_ARG"); break;
+        case TAC_FUNBEGIN:
+            fprintf(stderr, "TAC_FUNBEGIN"); break;
+        case TAC_FUNEND:
+            fprintf(stderr, "TAC_FUNEND"); break;
         default:
             fprintf(stderr, "TAC_UNKNOWN"); break;
 	}
@@ -189,6 +205,7 @@ TAC* generateTacs(AST_NODE * astNode)
 
 				AST_NODE* currentArgument = currentArgument->children[0];
 			}
+            return funcall;
 		}
 
 		case AST_FUNCTION_LIST:
@@ -199,7 +216,7 @@ TAC* generateTacs(AST_NODE * astNode)
 			TAC* newFunction = tacCreate(TAC_FUNBEGIN, NULL, astNode->hashNode, NULL);
 
 			//Inserting the TACs related to the function commands
-			newFunction = tacJoin(generateChild[3], newFunction);
+            newFunction = tacJoin(newFunction, generateChild[2]);
 
 			//Inserting the Function End TAC after the commands and returning the function.
             return  tacJoin(newFunction, tacCreate(TAC_FUNEND, NULL, NULL, NULL));
