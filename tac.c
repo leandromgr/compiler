@@ -158,7 +158,7 @@ TAC* generateTacs(AST_NODE * astNode)
     TAC* generateChild[MAX_CHILDREN];
 
 	if(!astNode)
-		return;
+        return NULL;
 
     for(i = 0; i < MAX_CHILDREN; i++)
 	{
