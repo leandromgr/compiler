@@ -150,6 +150,9 @@ void tacPrint(TAC *tac)
     else
         fprintf(stderr, "NULL)");
     fprintf(stderr, "\n");
+
+    if (tac->type == TAC_FUNEND)
+        fprintf(stderr, "\n");
 }
 
 TAC* generateTacs(AST_NODE * astNode)
@@ -169,7 +172,10 @@ TAC* generateTacs(AST_NODE * astNode)
 	{
         case AST_SYMBOL:
             // TODO: See vector index
-            return tacCreate(TAC_SYMBOL, astNode->hashNode, NULL, NULL);
+            if (generateChild[0])
+                return tacJoin(generateChild[0], tacCreate(TAC_SYMBOL, astNode->hashNode, generateChild[0]->res, NULL));
+            else
+                return tacCreate(TAC_SYMBOL, astNode->hashNode, NULL, NULL);
 		case AST_SUM:
 			return generateBinaryOperation(TAC_SUM, generateChild[0], generateChild[1]);
 		case AST_SUB:
@@ -197,13 +203,14 @@ TAC* generateTacs(AST_NODE * astNode)
 
 		case AST_FUNCALL:
 		{
-			TAC* funcall = tacCreate(TAC_CALL, astNode->hashNode, NULL, NULL);
+            HASH_NODE* functionReturn = makeTemp();
+            TAC* funcall = tacCreate(TAC_CALL, functionReturn, astNode->hashNode, NULL);
 			AST_NODE* currentArgument = astNode->children[0];
 			while(currentArgument)
 			{
-				funcall = tacJoin(funcall, tacCreate(TAC_ARG, currentArgument->hashNode, NULL, NULL));
+                funcall = tacJoin(tacCreate(TAC_ARG, currentArgument->hashNode, NULL, NULL), funcall);
 
-				AST_NODE* currentArgument = currentArgument->children[0];
+                currentArgument = currentArgument->children[0];
 			}
             return funcall;
 		}
@@ -213,7 +220,7 @@ TAC* generateTacs(AST_NODE * astNode)
 
 		case AST_FUNCTION:
 		{
-			TAC* newFunction = tacCreate(TAC_FUNBEGIN, NULL, astNode->hashNode, NULL);
+            TAC* newFunction = tacCreate(TAC_FUNBEGIN, NULL, astNode->children[0]->hashNode, NULL);
 
 			//Inserting the TACs related to the function commands
             newFunction = tacJoin(newFunction, generateChild[2]);
@@ -229,7 +236,7 @@ TAC* generateTacs(AST_NODE * astNode)
 		{
 			//The first argument is the expression to be executed.
 			//The second argument is the new node of MOV operation, moving the expression result to the desintation variable.
-            return tacJoin(generateChild[1], tacCreate(TAC_MOV, generateChild[0]->res, generateChild[1]->res, NULL));
+            return tacJoin(generateChild[1], tacJoin(generateChild[0], tacCreate(TAC_MOV, generateChild[0]->res, generateChild[1]->res, NULL)));
 		}
 			
 		case AST_INPUT_CMD:
@@ -259,6 +266,8 @@ TAC* generateTacs(AST_NODE * astNode)
 
 		case AST_LOOP:
             return generateLoop(generateChild[0], generateChild[1]);
+        default:
+            return NULL;
 		//[?]case AST_GLOBAL_VAR_LIST:
 		//[?]case AST_GLOBAL_VECTOR:
 		//[?]case AST_INT:
@@ -288,7 +297,7 @@ TAC * generateLoop(TAC* booleanExpression, TAC* code)
     endLoopPointer = tacCreate(TAC_LABEL, endLoop, NULL, NULL);
 
     // Evaluate the expression. If the expression is false, finish the loop
-    exprEvalLoop = tacCreate(TAC_JZ, endLoop, NULL, NULL);
+    exprEvalLoop = tacCreate(TAC_JZ, endLoop, booleanExpression ? booleanExpression->res : NULL, NULL);
 
     // Jump back to the evaluation step
     returnToEvalLoop = tacCreate(TAC_JUMP, beginLoop, NULL, NULL);
