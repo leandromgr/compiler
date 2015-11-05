@@ -18,6 +18,12 @@
 #define TAC_AND 	11
 #define TAC_OR 		12
 
+#define TAC_CALL	13
+#define TAC_ARG		33
+
+#define TAC_FUNBEGIN	21
+#define TAC_FUNEND		32
+
 #define TAC_MOV		24
 #define TAC_READ	25
 #define TAC_PRINT	26
@@ -29,22 +35,18 @@
 
 ////////////////////////////
 
-#define AST_FUNCALL	13
 
-#define AST_GLOBAL_VAR_LIST 14
-#define AST_GLOBAL_VECTOR 15
 
-#define AST_INT		16
-#define AST_CHAR 	17
-#define AST_BOOL	18
-#define AST_REAL	19
+//#define AST_GLOBAL_VAR_LIST 14
+//#define AST_GLOBAL_VECTOR 15
 
-#define AST_FUNCTION_LIST	20
-#define AST_FUNCTION		21
-#define AST_PARAMETER_LIST	22
-#define AST_LOCAL_VAR_LIST	23
+//#define AST_INT		16
+//#define AST_CHAR 	17
+//#define AST_BOOL	18
+//#define AST_REAL	19
 
-#define AST_OUTPUT_LIST		28
+//#define AST_PARAMETER_LIST	22
+//#define AST_LOCAL_VAR_LIST	23
 
 #define COMMA_SEPARATOR		100
 #define COLON_SEPARATOR		101
