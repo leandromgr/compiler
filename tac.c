@@ -224,14 +224,14 @@ TAC* generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
     ifFalseCode = tacJoin(elseStartPointer, codeFalse);
 
     // If the expression is true, it shall jump unconditionally to the end of the if command and DO NOT EXECUTE the else code
-    jumpBeforeElse = tacCreate(TAC_J, endIfLabel, 0, 0);
+    jumpBeforeElse = tacCreate(TAC_JUMP, endIfLabel, 0, 0);
     ifTrueCode = tacJoin(codeTrue, jumpBeforeElse);
 
     // Compute the expression, evaluate it and execute the code accordingly
     return tacJoin(tacJoin(tacJoin(tacJoin(booleanExpression, exprEvalJump), ifTrueCode), ifFalseCode), endIfPointer);
 }
 
-TAC*generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
+TAC* generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
 {
 	TAC* binaryOperationTac =  tacCreate(tacType ,makeTemp(), child0->res, child1->res);
 	return tacJoin(child0, tacJoin(child1, binaryOperationTac));

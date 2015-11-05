@@ -28,6 +28,10 @@
 #define TAC_READ	25
 #define TAC_PRINT	26
 #define TAC_RETURN	27
+#define TAC_LABEL   28
+#define TAC_JZ      29
+#define TAC_JUMP    30
+
 
 ////////////////////////////
 
