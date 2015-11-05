@@ -50,6 +50,24 @@ TAC* tacJoin(TAC* tacList1, TAC* tacList2)
     return joinedTac;
 }
 
+TAC * tacReverseCode(TAC * tac)
+{
+    if (tac->prev)
+    {
+        tac->prev->next = tac;
+        return tacReverseCode(tac->prev);
+    }
+    else
+        return tac;
+}
+
+void tacPrintNext(TAC * tac)
+{
+    tacPrint(tac);
+    if (tac)
+        tacPrintNext(tac->next);
+}
+
 void tacPrint(TAC *tac)
 {
 	if(!tac)
@@ -58,14 +76,66 @@ void tacPrint(TAC *tac)
 
 	switch(tac->type)
 	{
-        default: fprintf(stderr, "TAC_UNKNOWN");
+        case TAC_SYMBOL:
+            fprintf(stderr, "TAC_SYMBOL"); break;
+        case TAC_SUM:
+            fprintf(stderr, "TAC_SUM"); break;
+        case TAC_SUB:
+            fprintf(stderr, "TAC_SUB"); break;
+        case TAC_MULT:
+            fprintf(stderr, "TAC_MULT"); break;
+        case TAC_DIV:
+            fprintf(stderr, "TAC_DIV"); break;
+        case TAC_LT:
+            fprintf(stderr, "TAC_LT"); break;
+        case TAC_GT:
+            fprintf(stderr, "TAC_GT"); break;
+        case TAC_LET:
+            fprintf(stderr, "TAC_LET"); break;
+        case TAC_GET:
+            fprintf(stderr, "TAC_GET"); break;
+        case TAC_EQ:
+            fprintf(stderr, "TAC_EQ"); break;
+        case TAC_NE:
+            fprintf(stderr, "TAC_NE"); break;
+        case TAC_AND:
+            fprintf(stderr, "TAC_AND"); break;
+        case TAC_OR:
+            fprintf(stderr, "TAC_OR"); break;
+        case TAC_MOV:
+            fprintf(stderr, "TAC_MOV"); break;
+        case TAC_READ:
+            fprintf(stderr, "TAC_READ"); break;
+        case TAC_PRINT:
+            fprintf(stderr, "TAC_PRINT"); break;
+        case TAC_RETURN:
+            fprintf(stderr, "TAC_RETURN"); break;
+        case TAC_LABEL:
+            fprintf(stderr, "TAC_LABEL"); break;
+        case TAC_JZ:
+            fprintf(stderr, "TAC_JZ"); break;
+        case TAC_JUMP:
+            fprintf(stderr, "TAC_JUMP"); break;
+        default:
+            fprintf(stderr, "TAC_UNKNOWN"); break;
 	}
-
-	fprintf(stderr, ")\n");
-
+    fprintf(stderr, ", ");
+    if (tac->res)
+        fprintf(stderr, "%s, ", tac->res->symbol);
+    else
+        fprintf(stderr, "NULL, ");
+    if (tac->op1)
+        fprintf(stderr, "%s, ", tac->op1->symbol);
+    else
+        fprintf(stderr, "NULL, ");
+    if (tac->op2)
+        fprintf(stderr, "%s)", tac->op2->symbol);
+    else
+        fprintf(stderr, "NULL)");
+    fprintf(stderr, "\n");
 }
 
-TAC* generateTacs(AST* astNode)
+TAC* generateTacs(AST_NODE * astNode)
 {
 	int i;
 	TAC* result[MAX_CHILDREN];
@@ -81,6 +151,7 @@ TAC* generateTacs(AST* astNode)
 	switch(astNode->type)
 	{
 		case AST_SYMBOL:
+            // TODO: See vector index
 			return tacCreate(TAC_SYMBOL, astNode->hashNode, 0,0);
 		case AST_SUM:
 			return generateBinaryOperation(TAC_SUM, generateChild[0], generateChild[1]);
@@ -147,56 +218,82 @@ TAC* generateTacs(AST* astNode)
 	}
 }
 
-TAC* generateIfThen(TAC* booleanExpression, TAC* code)
+TAC * generateLoop(TAC* booleanExpression, TAC* code)
 {
-    HASH_NODE* endIfLabel = NULL;
-    TAC* exprEvalJump = NULL;
-    TAC* endIfPointer = NULL;
+    HASH_NODE * beginLoop = NULL;
+    HASH_NODE * endLoop = NULL;
+    TAC * exprEvalLoop = NULL;
+    TAC * returnToEvalLoop = NULL;
+    TAC * beginLoopPointer = NULL;
+    TAC * endLoopPointer = NULL;
+
+    // Create the label where the loop start
+    beginLoop = makeLabel();
+    beginLoopPointer = tacCreate(TAC_LABEL, beginLoop, NULL, NULL);
+
+    // Create the label to the next instruction after the loop
+    endLoop = makeLabel();
+    endLoopPointer = tacCreate(TAC_LABEL, endLoop, NULL, NULL);
+
+    // Evaluate the expression. If the expression is false, finish the loop
+    exprEvalLoop = tacCreate(TAC_JZ, endLoop, booleanExpression, NULL);
+
+    // Jump back to the evaluation step
+    returnToEvalLoop = tacCreate(TAC_JUMP, beginLoop, NULL, NULL);
+
+    return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(beginLoopPointer, booleanExpression), exprEvalLoop), code), returnToEvalLoop), endLoopPointer);
+}
+
+TAC * generateIfThen(TAC* booleanExpression, TAC* code)
+{
+    HASH_NODE * endIfLabel = NULL;
+    TAC * exprEvalJump = NULL;
+    TAC * endIfPointer = NULL;
 
     // Create the jump label that points to the first command after the end of IF COMMAND BLOCK
     endIfLabel = makeLabel();
-    endIfPointer = tacCreate(TAC_LABEL, endIfLabel, 0, 0);
+    endIfPointer = tacCreate(TAC_LABEL, endIfLabel, NULL, NULL);
 
     // Create a node to eval the boolean expression. If the expression is false, do not execute the IF code by
     // jumping to endIfLabel
-    exprEvalJump = tacCreate(TAC_JZ, endIfLabel, booleanExpression ? booleanExpression->res : 0, 0);
+    exprEvalJump = tacCreate(TAC_JZ, endIfLabel, booleanExpression ? booleanExpression->res : NULL, NULL);
 
     // Compute the expression, evaluate it and, if true, execute the "code"
     return tacJoin(tacJoin(tacJoin(booleanExpression, exprEvalJump), code), endIfPointer);
 }
 
-TAC* generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
+TAC * generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
 {
-    HASH_NODE* elseStartLabel = NULL;
-    HASH_NODE* endIfLabel = NULL;
-    TAC* exprEvalJump = NULL;
-    TAC* jumpBeforeElse = NULL;
-    TAC* endIfPointer = NULL;
-    TAC* elseStartPointer = NULL;
-    TAC* ifTrueCode = NULL;
-    TAC* ifFalseCode = NULL;
+    HASH_NODE * elseStartLabel = NULL;
+    HASH_NODE * endIfLabel = NULL;
+    TAC * exprEvalJump = NULL;
+    TAC * jumpBeforeElse = NULL;
+    TAC * endIfPointer = NULL;
+    TAC * elseStartPointer = NULL;
+    TAC * ifTrueCode = NULL;
+    TAC * ifFalseCode = NULL;
 
     // Create the jump label that points to the first command after the end of IF COMMAND BLOCK
     endIfLabel = makeLabel();
-    endIfPointer = tacCreate(TAC_LABEL, endIfLabel, 0, 0);
+    endIfPointer = tacCreate(TAC_LABEL, endIfLabel, NULL, NULL);
 
     // Create the label to where it should jump if the expression is false
     elseStartLabel = makeLabel();
-    elseStartPointer = tacCreate(TAC_LABEL, elseStartLabel, 0, 0);
+    elseStartPointer = tacCreate(TAC_LABEL, elseStartLabel, NULL, NULL);
 
     // Create a node to eval the boolean expression. If the expression is false, jump to the ELSE code
-    exprEvalJump = tacCreate(TAC_JZ, elseStartLabel, booleanExpression ? booleanExpression->res : 0, 0);
+    exprEvalJump = tacCreate(TAC_JZ, elseStartLabel, booleanExpression ? booleanExpression->res : NULL, NULL);
     ifFalseCode = tacJoin(elseStartPointer, codeFalse);
 
     // If the expression is true, it shall jump unconditionally to the end of the if command and DO NOT EXECUTE the else code
-    jumpBeforeElse = tacCreate(TAC_JUMP, endIfLabel, 0, 0);
+    jumpBeforeElse = tacCreate(TAC_JUMP, endIfLabel, NULL, NULL);
     ifTrueCode = tacJoin(codeTrue, jumpBeforeElse);
 
     // Compute the expression, evaluate it and execute the code accordingly
     return tacJoin(tacJoin(tacJoin(tacJoin(booleanExpression, exprEvalJump), ifTrueCode), ifFalseCode), endIfPointer);
 }
 
-TAC* generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
+TAC * generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
 {
 	TAC* binaryOperationTac =  tacCreate(tacType ,makeTemp(), child0->res, child1->res);
 	return tacJoin(child0, tacJoin(child1, binaryOperationTac));

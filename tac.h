@@ -2,7 +2,7 @@
 #define TAC_HEADER
 
 #include "hash.h"
-
+#include "ast.h"
 
 #define TAC_SYMBOL 	0
 #define TAC_SUM     1
@@ -45,7 +45,6 @@
 #define AST_LOCAL_VAR_LIST	23
 
 #define AST_OUTPUT_LIST		28
-#define AST_LOOP 			31
 
 #define COMMA_SEPARATOR		100
 #define COLON_SEPARATOR		101
@@ -65,12 +64,12 @@ typedef struct tac_node
 
 HASH_NODE * makeLabel();
 HASH_NODE * makeTemp();
-TAC* tacCreate(int type, HASH_NODE* res, HASH_NODE* op1, HASH_NODE* op2);
+TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2);
 void tacPrint(TAC *tac);
-TAC* tacJoin(TAC* tacList1, TAC* tacList2);
-TAC* generateTacs(AST* astNode);
-TAC* generateIfThen(TAC* booleanExpression, TAC* code);
-TAC* generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse);
-TAC* generateBinaryOperation(int tacType, TAC* child0, TAC* child1);
+TAC * tacJoin(TAC * tacList1, TAC * tacList2);
+TAC * generateTacs(AST_NODE * astNode);
+TAC * generateIfThen(TAC * booleanExpression, TAC * code);
+TAC * generateIfThenElse(TAC * booleanExpression, TAC * codeTrue, TAC * codeFalse);
+TAC * generateBinaryOperation(int tacType, TAC * child0, TAC * child1);
 
 #endif
