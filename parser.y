@@ -111,7 +111,6 @@ lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL,
 		| global_variable_list {$$ = $1;}
 		;
 
-//TODO include COMMAND in the structure
 function: function_header function_variable_list command ';'	{$$ = astCreate(AST_FUNCTION,  NULL, $1, $2, $3, NULL);}
 		;
 
@@ -125,7 +124,7 @@ function_parameters: parameter optional_parameter_list			{$$ = astCreate(AST_PAR
 					| 									{$$ = astCreate(AST_PARAMETER_LIST, NULL, NULL, NULL, NULL, NULL);}
 					;
 optional_parameter_list: ',' parameter optional_parameter_list	{$$ = astCreate(AST_PARAMETER_LIST, NULL, $2, $3, NULL, NULL);}
-						| 								{$$ = NULL;}
+						| 										{$$ = NULL;}
 						;
 
 parameter: KW_INT  TK_IDENTIFIER 	{$$ = astCreate(AST_INT, $2, NULL, NULL, NULL, NULL);}

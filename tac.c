@@ -222,12 +222,25 @@ TAC* generateTacs(AST_NODE * astNode)
 		{
             TAC* newFunction = tacCreate(TAC_FUNBEGIN, NULL, astNode->children[0]->hashNode, NULL);
 
+            //TODO Inserting the TAC_MOV related to the variable initialization.
+            newFunction = tacJoin(newFunction, generateChild[1]);
+
 			//Inserting the TACs related to the function commands
             newFunction = tacJoin(newFunction, generateChild[2]);
 
 			//Inserting the Function End TAC after the commands and returning the function.
             return  tacJoin(newFunction, tacCreate(TAC_FUNEND, NULL, NULL, NULL));
 		}
+
+        case AST_LOCAL_VAR_LIST:
+        {
+            //TAC* initialValue = tacCreate(TAC_SYMBOL, astNode->children[0]->hashNode, NULL, NULL);
+            //TAC* variableName = tacCreate(TAC_SYMBOL, astNode->hashNode, NULL, NULL);
+
+            //TAC* localVariableInitialization = tacCreate(TAC_MOV, variableName->res, initialValue->res, NULL);
+            TAC* localVariableInitialization = tacCreate(TAC_MOV, astNode->children[0]->hashNode, astNode->children[0]->children[0]->hashNode, NULL);
+            return tacJoin(localVariableInitialization, generateChild[1]);
+        }
 			
 		case AST_CMD_LIST:
 			return tacJoin(generateChild[0], generateChild[1]);
@@ -268,14 +281,14 @@ TAC* generateTacs(AST_NODE * astNode)
             return generateLoop(generateChild[0], generateChild[1]);
         default:
             return NULL;
+
+        //[?]case AST_INT:
+        //[?]case AST_CHAR:
+        //[?]case AST_BOOL:
+        //[?]case AST_REAL:
 		//[?]case AST_GLOBAL_VAR_LIST:
 		//[?]case AST_GLOBAL_VECTOR:
-		//[?]case AST_INT:
-		//[?]case AST_CHAR:
-		//[?]case AST_BOOL:
-		//[?]case AST_REAL:
 		//[?]case AST_PARAMETER_LIST:
-		//[?]case AST_LOCAL_VAR_LIST:
 	}
 }
 
