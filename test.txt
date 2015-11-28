@@ -1,40 +1,8 @@
-real incn (int xy, int xx)
-{
-  return xy + xx;
-};
-
 int main()
-int i:0;
-int j:1;
-int readint:0;
-bool bla:TRUE;
-char lala:'b';
-int b:0;
+int a:3;
+int b:2;
+int c:0;
 {
-  output "Digite um numero: ";
-    a[0+0] := incn(j,1);
-    a[1+1] := incn(0,1);
-    a[5+5] + 1 =: i;
-	b := incn(j, 1);
-  output "Incrementado algumas vezes fica ",b,"\n";
-  //bla := incn(j,1);
-  if (b>0)
-  {
- 	j := incn(j,1);
-    a[5+a[0]] + 1 =: i;
-	j + 1 =: i;
-  }
-  else
-  {
-	output "Informe o tamanho do vetor: ";
-	input readint;
-	i:= 0;
-	if (i < readint)
-	{
-  		a[i] := incn(i,1);
-	} loop;
-	j := incn(j, 3);
-  };
+	c := (a + b) * a + (b * 3) - (a * 2);
 };
 
-int a[5];
