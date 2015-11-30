@@ -9,6 +9,10 @@ int localX:0;
 	if (localX)
 	{
 		output "MOTHERFUCKAAAA";
+	}
+	else
+	{
+		output "ELSE CHUPADOR!";
 	};
 	output "Passou if";
 	return 1;

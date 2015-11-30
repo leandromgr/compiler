@@ -486,6 +486,10 @@ void parseTAC(TAC* tacList)
                 fprintf(stderr, "\tjne\t.%s\n", currentTAC->res->symbol);
                 break;
 
+            case TAC_JUMP:
+                fprintf(stderr, "\tjmp\t.%s\n", currentTAC->res->symbol);
+                break;
+
             case TAC_LABEL:
                 fprintf(stderr, ".%s:\n", currentTAC->res->symbol);
                 break;
