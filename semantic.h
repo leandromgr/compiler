@@ -30,4 +30,8 @@ void checkAttribution(AST_NODE * astNode);
 int checkFunctionCall(AST_NODE * astNode);
 int checkVariable(AST_NODE * astNode);
 int checkOutputCommand(AST_NODE * astNode);
+
+char * printDataType(int dataType);
+int checkDataTypeCompatibility(int dataType1, int dataType2);
+
 #endif // SEMANTIC_H

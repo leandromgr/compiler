@@ -53,6 +53,8 @@ TAC* tacJoin(TAC* tacList1, TAC* tacList2)
 
 TAC * tacReverseCode(TAC * tac)
 {
+    if(!tac)
+        return NULL;
     if (tac->prev)
     {
         tac->prev->next = tac;
@@ -133,6 +135,10 @@ void tacPrint(TAC *tac)
             fprintf(stderr, "TAC_FUNBEGIN"); break;
         case TAC_FUNEND:
             fprintf(stderr, "TAC_FUNEND"); break;
+        case TAC_PARAM:
+            fprintf(stderr, "TAC_PARAM"); break;
+        case TAC_MOV_INIT:
+            fprintf(stderr, "TAC_MOV_INIT"); break;
         default:
             fprintf(stderr, "TAC_UNKNOWN"); break;
 	}
@@ -221,8 +227,11 @@ TAC* generateTacs(AST_NODE * astNode)
 		case AST_FUNCTION:
 		{
             TAC* newFunction = tacCreate(TAC_FUNBEGIN, NULL, astNode->children[0]->hashNode, NULL);
+            
+            
+            newFunction = tacJoin(newFunction, generateChild[0]);
 
-            //TODO Inserting the TAC_MOV related to the variable initialization.
+            //Inserting the TAC_MOV related to the variable initialization.
             newFunction = tacJoin(newFunction, generateChild[1]);
 
 			//Inserting the TACs related to the function commands
@@ -232,14 +241,36 @@ TAC* generateTacs(AST_NODE * astNode)
             return  tacJoin(newFunction, tacCreate(TAC_FUNEND, NULL, NULL, NULL));
 		}
 
+        //Only used in the function parameter case:
+        case AST_INT:
+        case AST_CHAR:
+        case AST_BOOL:
+        case AST_REAL:
+        {
+            if ((astNode->children[0]) && (astNode->children[0]->type == AST_PARAMETER_LIST))
+            {
+                return generateChild[0];
+            }
+            return NULL;
+        }
+
+        case AST_PARAMETER_LIST:
+        {
+            TAC* newParameter = NULL;
+            if (astNode->children[0])
+                newParameter = tacCreate(TAC_PARAM, NULL, astNode->children[0]->hashNode, NULL);
+            return tacJoin(generateChild[1], newParameter);
+        }
+
         case AST_LOCAL_VAR_LIST:
         {
             //TAC* initialValue = tacCreate(TAC_SYMBOL, astNode->children[0]->hashNode, NULL, NULL);
             //TAC* variableName = tacCreate(TAC_SYMBOL, astNode->hashNode, NULL, NULL);
 
             //TAC* localVariableInitialization = tacCreate(TAC_MOV, variableName->res, initialValue->res, NULL);
-            TAC* localVariableInitialization = tacCreate(TAC_MOV, astNode->children[0]->hashNode, astNode->children[0]->children[0]->hashNode, NULL);
-            return tacJoin(localVariableInitialization, generateChild[1]);
+            TAC* localVariableInitialization = tacCreate(TAC_MOV_INIT, astNode->children[0]->hashNode, astNode->children[0]->children[0]->hashNode, NULL);
+            //return tacJoin(localVariableInitialization, generateChild[1]);
+            return tacJoin(generateChild[1], localVariableInitialization);
         }
 			
 		case AST_CMD_LIST:
@@ -282,13 +313,9 @@ TAC* generateTacs(AST_NODE * astNode)
         default:
             return NULL;
 
-        //[?]case AST_INT:
-        //[?]case AST_CHAR:
-        //[?]case AST_BOOL:
-        //[?]case AST_REAL:
+        
 		//[?]case AST_GLOBAL_VAR_LIST:
 		//[?]case AST_GLOBAL_VECTOR:
-		//[?]case AST_PARAMETER_LIST:
 	}
 }
 

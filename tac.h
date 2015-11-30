@@ -25,12 +25,15 @@
 #define TAC_FUNEND		32
 
 #define TAC_MOV		24
+#define TAC_MOV_INIT  35
 #define TAC_READ	25
 #define TAC_PRINT	26
 #define TAC_RETURN	27
 #define TAC_LABEL   28
 #define TAC_JZ      29
 #define TAC_JUMP    30
+
+#define TAC_PARAM	34
 
 
 ////////////////////////////
@@ -69,6 +72,8 @@ HASH_NODE * makeTemp();
 TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2);
 void tacPrint(TAC *tac);
 TAC * tacJoin(TAC * tacList1, TAC * tacList2);
+TAC * tacReverseCode(TAC * tac);
+void tacPrintNext(TAC * tac);
 void tacPrintPrev(TAC * tac);
 TAC * generateTacs(AST_NODE * astNode);
 TAC * generateLoop(TAC* booleanExpression, TAC* code);

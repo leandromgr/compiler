@@ -9,6 +9,7 @@ Luciano Farias Puhl
     #include "ast.h"
     #include "semantic.h"
     #include "tac.h"
+    #include "assembler.h"
 	//int yydebug = 1;
 %}
 
@@ -104,7 +105,10 @@ initial_symbol: lang152 {astTree = $1;
                          setDeclarations(astTree);
                          checkUndeclared();
                          checkTypes(astTree);
-                         tacPrintNext(tacReverseCode(generateTacs(astTree)));}
+                         TAC* tacList = tacReverseCode(generateTacs(astTree));
+                         tacPrintNext(tacList);
+                         avengersAssemble(astTree, tacList);
+                         }
 
 // ------------ Function processing ---------------
 lang152: function lang152 {$$ = astCreate(AST_FUNCTION_LIST, NULL, $1, $2, NULL, NULL); }

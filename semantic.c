@@ -284,13 +284,13 @@ int checkTypes (AST_NODE * astNode)
 int checkOutputCommand(AST_NODE * astNode)
 {
     AST_NODE * currentOutputList = astNode->children[0];
-
     while(currentOutputList)
-    {
+    { 
         // Check if there is things to check
         if (currentOutputList->children[0])
         {
-            if (currentOutputList->children[0]->hashNode->symbolType != LIT_STRING)
+            if (!(currentOutputList->children[0]->hashNode) || 
+                (currentOutputList->children[0]->hashNode && currentOutputList->children[0]->hashNode->symbolType != LIT_STRING))
             {
                 if (checkTypes(currentOutputList->children[0]) < 0)
                 {
@@ -302,7 +302,6 @@ int checkOutputCommand(AST_NODE * astNode)
             currentOutputList = currentOutputList->children[1];
         }
     }
-
     return DATATYPE_UNTYPED;
 }
 
