@@ -68,7 +68,7 @@ typedef struct tac_node
 } TAC;
 
 HASH_NODE * makeLabel();
-HASH_NODE * makeTemp();
+HASH_NODE * makeTemp(int dataType);
 TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2);
 void tacPrint(TAC *tac);
 TAC * tacJoin(TAC * tacList1, TAC * tacList2);

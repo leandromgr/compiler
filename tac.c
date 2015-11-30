@@ -5,10 +5,13 @@ int currentLabelIndex = 0;
 int currentTempVarIndex = 0;
 char hashBuffer[256];
 
-HASH_NODE * makeTemp()
+HASH_NODE * makeTemp(int dataType)
 {
+    HASH_NODE* hashNode = NULL;
     sprintf(hashBuffer, "_temp%d", currentTempVarIndex++);
-    return hashInsert(hashBuffer, TK_IDENTIFIER);
+    hashNode = hashInsert(hashBuffer, TK_IDENTIFIER);
+    hashNode->dataType = dataType;
+    return hashNode;
 }
 
 HASH_NODE * makeLabel()
@@ -209,7 +212,8 @@ TAC* generateTacs(AST_NODE * astNode)
 
 		case AST_FUNCALL:
 		{
-            HASH_NODE* functionReturn = makeTemp();
+            AST_NODE * functionReference = (AST_NODE *) astNode->hashNode->functionLink;
+            HASH_NODE* functionReturn = makeTemp(functionReference->hashNode->dataType);
             TAC* funcall = tacCreate(TAC_CALL, functionReturn, astNode->hashNode, NULL);
 			AST_NODE* currentArgument = astNode->children[0];
 			while(currentArgument)
@@ -396,6 +400,8 @@ TAC * generateIfThenElse(TAC* booleanExpression, TAC* codeTrue, TAC* codeFalse)
 
 TAC * generateBinaryOperation(int tacType, TAC* child0, TAC* child1)
 {
-	TAC* binaryOperationTac =  tacCreate(tacType ,makeTemp(), child0->res, child1->res);
+    //Get the highest Datatype of the expression
+    int resultDataType = checkDataTypeCompatibility(child0->res->dataType, child1->res->dataType);
+	TAC* binaryOperationTac =  tacCreate(tacType ,makeTemp(resultDataType), child0->res, child1->res);
 	return tacJoin(child0, tacJoin(child1, binaryOperationTac));
 }

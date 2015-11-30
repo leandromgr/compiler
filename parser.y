@@ -120,8 +120,8 @@ function: function_header function_variable_list command ';'	{$$ = astCreate(AST
 
 function_header:  KW_INT  TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_INT,  $2, $4, NULL, NULL, NULL);}
 				| KW_BOOL TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_BOOL, $2, $4, NULL, NULL, NULL);}
-				| KW_CHAR TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_REAL, $2, $4, NULL, NULL, NULL);}
-				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_CHAR, $2, $4, NULL, NULL, NULL);}
+				| KW_CHAR TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_CHAR, $2, $4, NULL, NULL, NULL);}
+				| KW_REAL TK_IDENTIFIER '(' function_parameters ')'	{$$ = astCreate(AST_REAL, $2, $4, NULL, NULL, NULL);}
 				;
 
 function_parameters: parameter optional_parameter_list			{$$ = astCreate(AST_PARAMETER_LIST, NULL, $1, $2, NULL, NULL);}

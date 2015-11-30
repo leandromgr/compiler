@@ -1,6 +1,17 @@
-int main()
-int localA:7;
-char localB:'t';
+char main(int XXX)
+char localA:'x';
+char localB:'y';
+char localC:'z';
 {
-	output  localA, localB;
+	output  localA, localB, localC;
+
+	return 1;
+};
+
+
+int potato()
+int tet:0;
+{
+	tet:=main(5);
+	return 'c';
 };
