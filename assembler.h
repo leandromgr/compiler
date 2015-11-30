@@ -3,9 +3,12 @@
 
 #include "ast.h"
 #include "tac.h"
+#include <stdlib.h>
 
 #define MAX_STRINGS 1024
 #define MAX_STACK 1024
+
+extern FILE* DEST_ASM;
 HASH_NODE* stringTable[MAX_STRINGS];
 HASH_NODE* stackOffsetControl[MAX_STACK];
 

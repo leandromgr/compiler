@@ -9,42 +9,47 @@
 #include "semantic.h"
 #include "y.tab.h"
 
+
+FILE* DEST_ASM;
+
 void avengersAssemble(AST_NODE* astTree, TAC* tacList)
 {
+    DEST_ASM = fopen("assembly.s", "w");
 	printHeaders();
 	parseGlobalVariables(astTree);
 	parseStrings();
-	fprintf(stderr, "\t.text\n");
+    fprintf(DEST_ASM, "\t.text\n");
 	parseTAC(tacList);
 	printFooter();
+    fclose(DEST_ASM);
 }
 
 void printHeaders()
 {
-	fprintf(stderr, "\t.file\t\"test1.txt\"\n");
+    fprintf(DEST_ASM, "\t.file\t\"test1.txt\"\n");
 }
 
 void printFooter()
 {
-	fprintf(stderr, ".LFE0:\n");
-	fprintf(stderr, "\t.size\tmain, .-main\n");
-	fprintf(stderr, "\t.ident\t\"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04) 4.8.4\"\n");
-	fprintf(stderr, "\t.section\t.note.GNU-stack,\"\",@progbits\n");
+    fprintf(DEST_ASM, ".LFE0:\n");
+    fprintf(DEST_ASM, "\t.size\tmain, .-main\n");
+    fprintf(DEST_ASM, "\t.ident\t\"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04) 4.8.4\"\n");
+    fprintf(DEST_ASM, "\t.section\t.note.GNU-stack,\"\",@progbits\n");
 }
 
 void parseStrings()
 {
-	int indexHash;
+    int indexHash;
 	int stringCounter = 0;
 	HASH_NODE *currentNode;
 
-	fprintf(stderr, "\t.section\t.rodata\n");
-	fprintf(stderr, ".LC0:\n");
-	fprintf(stderr, "\t.string \"%%d\"\n");
-	fprintf(stderr, ".LC1:\n");
-	fprintf(stderr, "\t.string \"%%f\"\n");
-	fprintf(stderr, ".LC2:\n");
-	fprintf(stderr, "\t.string \"%%c\"\n");
+    fprintf(DEST_ASM, "\t.section\t.rodata\n");
+    fprintf(DEST_ASM, ".LC0:\n");
+    fprintf(DEST_ASM, "\t.string \"%%d\"\n");
+    fprintf(DEST_ASM, ".LC1:\n");
+    fprintf(DEST_ASM, "\t.string \"%%f\"\n");
+    fprintf(DEST_ASM, ".LC2:\n");
+    fprintf(DEST_ASM, "\t.string \"%%c\"\n");
 
 	for(indexHash=0 ; indexHash<HASH_SIZE; indexHash++)
 	{
@@ -52,8 +57,8 @@ void parseStrings()
 		{
 			if(currentNode->symbolType == LIT_STRING)
 			{
-				fprintf(stderr, ".LC%d:\n", stringCounter+3);
-				fprintf(stderr, "\t.string \"%s\"\n", currentNode->symbol);
+                fprintf(DEST_ASM, ".LC%d:\n", stringCounter+3);
+                fprintf(DEST_ASM, "\t.string \"%s\"\n", currentNode->symbol);
 				stringTable[stringCounter] = currentNode;
 
 				stringCounter++;
@@ -87,8 +92,8 @@ void parseGlobalVariables(AST_NODE *astTree)
 void printGlobalVariableASM(AST_NODE *variableNode)
 {
 
-	fprintf(stderr, "\t.globl %s\n", variableNode->hashNode->symbol);
-	fprintf(stderr, "\t.type %s, @object\n", variableNode->hashNode->symbol);
+    fprintf(DEST_ASM, "\t.globl %s\n", variableNode->hashNode->symbol);
+    fprintf(DEST_ASM, "\t.type %s, @object\n", variableNode->hashNode->symbol);
 
 	AST_NODE *valueOrVector = variableNode->children[0];
 	if(valueOrVector->type == AST_GLOBAL_VECTOR)
@@ -99,49 +104,49 @@ void printGlobalVariableASM(AST_NODE *variableNode)
 		switch(variableNode->type)
 		{
 			case AST_INT:
-				fprintf(stderr, "\t.size %s, %d\n",variableNode->hashNode->symbol, 4*vectorSize);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, %d\n",variableNode->hashNode->symbol, 4*vectorSize);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
 				for(indexInitialValue=0; indexInitialValue<vectorSize ; indexInitialValue++)
 				{
 					if(currentInitialValue)
 					{
-						fprintf(stderr, "\t.long %s\n", currentInitialValue->hashNode->symbol);
+                        fprintf(DEST_ASM, "\t.long %s\n", currentInitialValue->hashNode->symbol);
 						currentInitialValue = currentInitialValue->children[0];
 					}
 					else
 					{
-						fprintf(stderr, "\t.long 0\n");
+                        fprintf(DEST_ASM, "\t.long 0\n");
 					}
 				}
 				break;
 			
 			case AST_CHAR:
-				fprintf(stderr, "\t.size %s, %d\n", variableNode->hashNode->symbol, 1*vectorSize);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, %d\n", variableNode->hashNode->symbol, 1*vectorSize);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
 				for(indexInitialValue=0; indexInitialValue<vectorSize ; indexInitialValue++)
 				{
 					if(currentInitialValue)
 					{
-						fprintf(stderr, "\t.byte %i\n", currentInitialValue->hashNode->symbol[0]);
+                        fprintf(DEST_ASM, "\t.byte %i\n", currentInitialValue->hashNode->symbol[0]);
 						currentInitialValue = currentInitialValue->children[0];
 					}
 					else
 					{
-						fprintf(stderr, "\t.byte 0\n");
+                        fprintf(DEST_ASM, "\t.byte 0\n");
 					}
 				}
 				break;
 
 			case AST_BOOL:
-				fprintf(stderr, "\t.size %s, %d\n", variableNode->hashNode->symbol, 1*vectorSize);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, %d\n", variableNode->hashNode->symbol, 1*vectorSize);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
 
 				while(currentInitialValue)
 				{
 					if(currentInitialValue->hashNode->symbolType == LIT_TRUE)
-						fprintf(stderr, "\t.byte 1\n");
+                        fprintf(DEST_ASM, "\t.byte 1\n");
 					else
-						fprintf(stderr, "\t.byte 0\n");
+                        fprintf(DEST_ASM, "\t.byte 0\n");
 	
 					currentInitialValue = currentInitialValue->children[0];
 				}
@@ -150,37 +155,37 @@ void printGlobalVariableASM(AST_NODE *variableNode)
 					if(currentInitialValue)
 					{
 						if(currentInitialValue->hashNode->symbolType == LIT_TRUE)
-							fprintf(stderr, "\t.byte 1\n");
+                            fprintf(DEST_ASM, "\t.byte 1\n");
 						else
-							fprintf(stderr, "\t.byte 0\n");
+                            fprintf(DEST_ASM, "\t.byte 0\n");
 	
 						currentInitialValue = currentInitialValue->children[0];
 					}
 					else
 					{
-						fprintf(stderr, "\t.byte 0\n");
+                        fprintf(DEST_ASM, "\t.byte 0\n");
 					}
 				}
 				break;
 
 			case AST_REAL:
-				fprintf(stderr, "\t.size %s, %d\n", variableNode->hashNode->symbol, 4*vectorSize);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, %d\n", variableNode->hashNode->symbol, 4*vectorSize);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
 				for(indexInitialValue=0; indexInitialValue<vectorSize ; indexInitialValue++)
 				{
 					if(currentInitialValue)
 					{
-						fprintf(stderr, "\t.single %s\n", currentInitialValue->hashNode->symbol);
+                        fprintf(DEST_ASM, "\t.single %s\n", currentInitialValue->hashNode->symbol);
 						currentInitialValue = currentInitialValue->children[0];
 					}
 					else
 					{
-						fprintf(stderr, "\t.single 0\n");
+                        fprintf(DEST_ASM, "\t.single 0\n");
 					}
 				}
 				break;
 			default:
-				fprintf(stderr, "ERROR: Varible type not valid!");
+                fprintf(DEST_ASM, "ERROR: Varible type not valid!");
 				exit(6);
 		}
 	}
@@ -189,32 +194,32 @@ void printGlobalVariableASM(AST_NODE *variableNode)
 		switch(variableNode->type)
 		{
 			case AST_INT:
-				fprintf(stderr, "\t.size %s, 4\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "\t.long %s\n", valueOrVector->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, 4\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.long %s\n", valueOrVector->hashNode->symbol);
 				break;
 			case AST_CHAR:
-				fprintf(stderr, "\t.size %s, 1\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "\t.byte %i\n", valueOrVector->hashNode->symbol[0]);
+                fprintf(DEST_ASM, "\t.size %s, 1\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.byte %i\n", valueOrVector->hashNode->symbol[0]);
 				break;
 			case AST_BOOL:
-				fprintf(stderr, "\t.size %s, 1\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, 1\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
 				if(valueOrVector->hashNode->symbolType == LIT_TRUE)
-					fprintf(stderr, "\t.byte 1\n");
+                    fprintf(DEST_ASM, "\t.byte 1\n");
 				else
-					fprintf(stderr, "\t.byte 0\n");
+                    fprintf(DEST_ASM, "\t.byte 0\n");
 					
 				break;
 
 			case AST_REAL:
-				fprintf(stderr, "\t.size %s, 4\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "%s:\n", variableNode->hashNode->symbol);
-				fprintf(stderr, "\t.single %s\n", valueOrVector->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.size %s, 4\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "%s:\n", variableNode->hashNode->symbol);
+                fprintf(DEST_ASM, "\t.single %s\n", valueOrVector->hashNode->symbol);
 				break;
 			default:
-				fprintf(stderr, "ERROR: Varible type not valid!");
+                fprintf(DEST_ASM, "ERROR: Varible type not valid!");
 				exit(6);
 		}
 	}
@@ -240,12 +245,12 @@ void parseTAC(TAC* tacList)
 		switch(currentTAC->type)
 		{
 			case TAC_FUNBEGIN:
-				fprintf(stderr, "\t.globl\t%s\n", currentTAC->op1->symbol);
-				fprintf(stderr, "\t.type\t%s, @function\n", currentTAC->op1->symbol);
-				fprintf(stderr, "%s:\n", currentTAC->op1->symbol);
-				fprintf(stderr, "\tpushq\t%%rbp\n");
-				fprintf(stderr, "\tmovq\t%%rsp, %%rbp\n");
-				fprintf(stderr, "\tsubq\t$16, %%rsp\n"); //GHOST TOSEE
+                fprintf(DEST_ASM, "\t.globl\t%s\n", currentTAC->op1->symbol);
+                fprintf(DEST_ASM, "\t.type\t%s, @function\n", currentTAC->op1->symbol);
+                fprintf(DEST_ASM, "%s:\n", currentTAC->op1->symbol);
+                fprintf(DEST_ASM, "\tpushq\t%%rbp\n");
+                fprintf(DEST_ASM, "\tmovq\t%%rsp, %%rbp\n");
+                fprintf(DEST_ASM, "\tsubq\t$16, %%rsp\n"); //GHOST TOSEE
 				stackCounter = 0;
 				localVariableCounter = 0;
 				break;
@@ -274,31 +279,31 @@ void parseTAC(TAC* tacList)
 				{
 					case LIT_INTEGER:
 						localVarInitalValue = atoi(currentTAC->op1->symbol);
-						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					case LIT_CHAR:
 						localVarInitalValue =  (int) currentTAC->op1->symbol[0];
-						fprintf(stderr, "\tmovb\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
+                        fprintf(DEST_ASM, "\tmovb\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					case LIT_TRUE:
 						localVarInitalValue = 1;
-						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					case LIT_FALSE:
 						localVarInitalValue = 0;
-						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					default:
 						localVarInitalValue = 0;
-						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 				}
 				
 				localVariableCounter++;
 				break;
 
 			case TAC_FUNEND:
-				fprintf(stderr, "\tleave\n"); //TIRAMOS O POP, GHOST, VER O NOME DA FUNçÂO
-				fprintf(stderr, "\tret\n");
+                fprintf(DEST_ASM, "\tleave\n"); //TIRAMOS O POP, GHOST, VER O NOME DA FUNçÂO
+                fprintf(DEST_ASM, "\tret\n");
 				break;
 
 			case TAC_PARAM:
@@ -319,36 +324,36 @@ void parseTAC(TAC* tacList)
 						if(currentTAC->op1 == stringTable[i])
 							break;
 					}
-					fprintf(stderr, "\tmovl\t$.LC%d, %%edi\n", i+3);
-					fprintf(stderr, "\tmovl\t$0, %%eax\n");
-					fprintf(stderr, "\tcall\tprintf\n");
+                    fprintf(DEST_ASM, "\tmovl\t$.LC%d, %%edi\n", i+3);
+                    fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                    fprintf(DEST_ASM, "\tcall\tprintf\n");
 				}
 				else if(currentTAC->op1->symbolType == SYMBOL_GLOBAL_VARIABLE)
 				{
 					switch(currentTAC->op1->dataType)
 					{
 						case DATATYPE_INT:
-							fprintf(stderr, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->op1->symbol);
-							fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-							fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
-							fprintf(stderr, "\tmovl\t$0, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->op1->symbol);
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 
 						case DATATYPE_BOOL:
 						case DATATYPE_CHAR:
-							fprintf(stderr, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->op1->symbol);
-							fprintf(stderr, "\tmovl\t%%eax, %%edi\n");
-							fprintf(stderr, "\tcall\tputchar\n");
+                            fprintf(DEST_ASM, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->op1->symbol);
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%edi\n");
+                            fprintf(DEST_ASM, "\tcall\tputchar\n");
 							break;
 
 						case DATATYPE_REAL:
-							fprintf(stderr, "\tmovss\t%s(%%rip), %%xmm0\n", currentTAC->op1->symbol);
-							fprintf(stderr, "\tunpcklps\t%%xmm0, %%xmm0\n");
-							fprintf(stderr, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
-							fprintf(stderr, "\tmovl\t$.LC1, %%edi\n");
-							fprintf(stderr, "\tmovl\t$1, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovss\t%s(%%rip), %%xmm0\n", currentTAC->op1->symbol);
+                            fprintf(DEST_ASM, "\tunpcklps\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC1, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 					}
 				}	
@@ -357,64 +362,64 @@ void parseTAC(TAC* tacList)
 					switch(currentTAC->op1->dataType)
 					{
 						case DATATYPE_INT:
-							fprintf(stderr, "\tmovl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
-							fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-							fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
-							fprintf(stderr, "\tmovl\t$0, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 
 						case DATATYPE_BOOL:
 						case DATATYPE_CHAR:
-							fprintf(stderr, "\tmovzbl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, atoi(currentTAC->prev->op1->symbol));
-							fprintf(stderr, "\tmovsbl\t%%al, %%eax\n");
-							fprintf(stderr, "\tmovl\t%%eax, %%edi\n");
-							fprintf(stderr, "\tcall\tputchar\n");
+                            fprintf(DEST_ASM, "\tmovzbl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, atoi(currentTAC->prev->op1->symbol));
+                            fprintf(DEST_ASM, "\tmovsbl\t%%al, %%eax\n");
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%edi\n");
+                            fprintf(DEST_ASM, "\tcall\tputchar\n");
 							break;
 
 						case DATATYPE_REAL:
-							fprintf(stderr, "\tmovss\t%s+%i(%%rip), %%xmm0\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
-							fprintf(stderr, "\tunpcklps\t%%xmm0, %%xmm0\n");
-							fprintf(stderr, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
-							fprintf(stderr, "\tmovl\t$.LC1, %%edi\n");
-							fprintf(stderr, "\tmovl\t$1, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovss\t%s+%i(%%rip), %%xmm0\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
+                            fprintf(DEST_ASM, "\tunpcklps\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC1, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 					}
 				}
 				else if(currentTAC->op1->symbolType == LIT_INTEGER)
 				{
 							
-					fprintf(stderr, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op1->symbol));
-					fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-					fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
-					fprintf(stderr, "\tmovl\t$0, %%eax\n");
-					fprintf(stderr, "\tcall\tprintf\n");
+                    fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op1->symbol));
+                    fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                    fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                    fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                    fprintf(DEST_ASM, "\tcall\tprintf\n");
 					break;
 				}
 				else if (currentTAC->op1->symbolType == LIT_CHAR)
 				{
-					fprintf(stderr, "\tmovl\t$%i, %%eax\n", currentTAC->op1->symbol[0]);
-					fprintf(stderr, "\tmovl\t%%eax, %%edi\n");
-					fprintf(stderr, "\tcall\tputchar\n");
+                    fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", currentTAC->op1->symbol[0]);
+                    fprintf(DEST_ASM, "\tmovl\t%%eax, %%edi\n");
+                    fprintf(DEST_ASM, "\tcall\tputchar\n");
 					break;
 				}
 				else if (currentTAC->op1->symbolType == LIT_TRUE)
 				{
-					fprintf(stderr, "\tmovl\t$%i, %%eax\n", 1);
-					fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-					fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
-					fprintf(stderr, "\tmovl\t$0, %%eax\n");
-					fprintf(stderr, "\tcall\tprintf\n");
+                    fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", 1);
+                    fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                    fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                    fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                    fprintf(DEST_ASM, "\tcall\tprintf\n");
 					break;
 				}
 				else if (currentTAC->op1->symbolType == LIT_FALSE)
 				{
-					fprintf(stderr, "\tmovl\t$%i, %%eax\n", 0);
-					fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-					fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
-					fprintf(stderr, "\tmovl\t$0, %%eax\n");
-					fprintf(stderr, "\tcall\tprintf\n");
+                    fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", 0);
+                    fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                    fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                    fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                    fprintf(DEST_ASM, "\tcall\tprintf\n");
 					break;
 				}
 				else if((currentTAC->op1->symbolType == SYMBOL_LOCAL_VARIABLE) ||
@@ -425,29 +430,29 @@ void parseTAC(TAC* tacList)
 					{
 						case DATATYPE_INT:
 						case DATATYPE_BOOL:
-							fprintf(stderr, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
-							fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-							fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
-							fprintf(stderr, "\tmovl\t$0, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 
 
 						case DATATYPE_CHAR:
-							fprintf(stderr, "\tmovsbl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
-							fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
-							fprintf(stderr, "\tmovl\t$.LC2, %%edi\n");
-							fprintf(stderr, "\tmovl\t$0, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovsbl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC2, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 
 						case DATATYPE_REAL:
-							fprintf(stderr, "\tmovss\t%i(%%rbp), %%xmm0\n", (stackIndex+1) * -4);
-							fprintf(stderr, "\tunpcklps\t%%xmm0, %%xmm0\n");
-							fprintf(stderr, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
-							fprintf(stderr, "\tmovl\t$.LC1, %%edi\n");
-							fprintf(stderr, "\tmovl\t$1, %%eax\n");
-							fprintf(stderr, "\tcall\tprintf\n");
+                            fprintf(DEST_ASM, "\tmovss\t%i(%%rbp), %%xmm0\n", (stackIndex+1) * -4);
+                            fprintf(DEST_ASM, "\tunpcklps\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC1, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
 							break;
 					}
 				}	 
@@ -459,43 +464,74 @@ void parseTAC(TAC* tacList)
                     case SYMBOL_LOCAL_VARIABLE:
                     case SYMBOL_FUNCTION_PARAMETER:
                         stackIndex = getDataStackIndex(currentTAC->op1);
-                        fprintf(stderr, "\tcmpl\t$1, %i(%%rbp)\n", (stackIndex+1) * -4);
+                        fprintf(DEST_ASM, "\tcmpl\t$1, %i(%%rbp)\n", (stackIndex+1) * -4);
                         break;
                     case SYMBOL_GLOBAL_VECTOR:
-                        fprintf(stderr, "\tcmpl\t$1, %s+%i(%%rip)\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
+                        fprintf(DEST_ASM, "\tcmpl\t$1, %s+%i(%%rip)\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
                         break;
                     case SYMBOL_GLOBAL_VARIABLE:
-                        fprintf(stderr, "\tcmpl\t$1, %s(%%rip)\n", currentTAC->op1->symbol);
+                        fprintf(DEST_ASM, "\tcmpl\t$1, %s(%%rip)\n", currentTAC->op1->symbol);
                         break;
                     case LIT_INTEGER:
-                        fprintf(stderr, "\tcmpl\t$1, %i\n", atoi(currentTAC->op1->symbol));
+                        fprintf(DEST_ASM, "\tcmpl\t$1, %i\n", atoi(currentTAC->op1->symbol));
                         break;
                     case LIT_CHAR:
-                        fprintf(stderr, "\tcmpl\t$1, %i\n", currentTAC->op1->symbol[0]);
+                        fprintf(DEST_ASM, "\tcmpl\t$1, %i\n", currentTAC->op1->symbol[0]);
                         break;
                     case LIT_TRUE:
-                        fprintf(stderr, "\tcmpl\t$1, $1\n");
+                        fprintf(DEST_ASM, "\tcmpl\t$1, $1\n");
                         break;
                     case LIT_FALSE:
-                        fprintf(stderr, "\tcmpl\t$1, $0\n");
+                        fprintf(DEST_ASM, "\tcmpl\t$1, $0\n");
                         break;
                     default:
                         break;
                 }
 
-                fprintf(stderr, "\tjne\t.%s\n", currentTAC->res->symbol);
+                fprintf(DEST_ASM, "\tjne\t.%s\n", currentTAC->res->symbol);
                 break;
 
             case TAC_JUMP:
-                fprintf(stderr, "\tjmp\t.%s\n", currentTAC->res->symbol);
+                fprintf(DEST_ASM, "\tjmp\t.%s\n", currentTAC->res->symbol);
                 break;
 
             case TAC_LABEL:
-                fprintf(stderr, ".%s:\n", currentTAC->res->symbol);
+                fprintf(DEST_ASM, ".%s:\n", currentTAC->res->symbol);
+                break;
+
+            case TAC_RETURN:
+                switch (currentTAC->op1->symbolType)
+                {
+                    case SYMBOL_LOCAL_VARIABLE:
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        stackIndex = getDataStackIndex(currentTAC->op1);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
+                        break;
+                    case SYMBOL_GLOBAL_VECTOR:
+                        fprintf(DEST_ASM, "\tmovl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
+                        break;
+                    case SYMBOL_GLOBAL_VARIABLE:
+                        fprintf(DEST_ASM, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->op1->symbol);
+                        break;
+                    case LIT_INTEGER:
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op1->symbol));
+                        break;
+                    case LIT_CHAR:
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", currentTAC->op1->symbol[0]);
+                        break;
+                    case LIT_TRUE:
+                        fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+                        break;
+                    case LIT_FALSE:
+                        fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                        break;
+                    default:
+                        break;
+                }
                 break;
 			/*case TAC_SYMBOL:
 			case TAC_SUM:
-				fprintf(stderr, "\tmovl %s\n", );
+                fprintf(DEST_ASM, "\tmovl %s\n", );
 				fprintf();
 			case TAC_SUM     
 			case TAC_SUB   	
@@ -513,10 +549,7 @@ void parseTAC(TAC* tacList)
 			case TAC_CALL	
 			case TAC_ARG		
 		
-			case TAC_READ	
-			case TAC_RETURN	
-			case TAC_LABEL         
-			case TAC_JUMP*/    
+            case TAC_READ*/
 			default:
 				break;
 		}

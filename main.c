@@ -13,14 +13,15 @@ extern int yylex();
 extern char* yytext;
 
 FILE *DEST_FILE = NULL;
+FILE *DEST_ASM = NULL;
 
 int main (int argc, char ** argv)
 {
 	FILE *srcFilePointer = NULL;
 	
-	if (argc != 3)
+    if (argc != 3)
 	{
-		fprintf(stderr, "ERROR! Input and output files must be defined! \nUsage: etapa3 inputFile outputFile\n");
+        fprintf(stderr, "ERROR! Input and output files must be defined! \nUsage: etapa6 inputFile outputFile\n");
 		exit(2);
 	}
 
@@ -30,7 +31,7 @@ int main (int argc, char ** argv)
 
 	if (srcFilePointer == NULL)
 	{
-		fprintf(stderr, "ERROR! The input file could not be opened! \nUsage: etapa3 inputFile outputFile\n");
+        fprintf(stderr, "ERROR! The input file could not be opened! \nUsage: etapa6 inputFile outputFile\n");
 		exit(2);
 	}
 	
@@ -45,7 +46,7 @@ int main (int argc, char ** argv)
 
 	if (DEST_FILE == NULL)
 	{
-		fprintf(stderr, "ERROR! The output file could not be opened! \nUsage: etapa3 inputFile outputFile\n");
+        fprintf(stderr, "ERROR! The output file could not be opened! \nUsage: etapa6 inputFile outputFile\n");
 		exit(2);
 	}
 
