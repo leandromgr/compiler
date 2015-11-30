@@ -1,14 +1,6 @@
-int main(int argA, char argB)
-int localA:5;
+int main()
+int localA:7;
 char localB:'t';
 {
-	//output "Valor", a, cut, te, dois[1], "\n", tres[1], doisreal[1], "\n", 100, "\n", TRUE, FALSE, "\n", 'w', "\n";
-	output  localA, "\n", localB, "\n", argA, "\n";
+	output  localA, localB;
 };
-
-int a:0;
-char cut:'b';
-real te:1;
-int dois[2]:2 4;
-char tres[2]:'x' 'z';
-real doisreal[2]:5 10;

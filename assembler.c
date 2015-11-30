@@ -43,6 +43,8 @@ void parseStrings()
 	fprintf(stderr, "\t.string \"%%d\"\n");
 	fprintf(stderr, ".LC1:\n");
 	fprintf(stderr, "\t.string \"%%f\"\n");
+	fprintf(stderr, ".LC2:\n");
+	fprintf(stderr, "\t.string \"%%c\"\n");
 
 	for(indexHash=0 ; indexHash<HASH_SIZE; indexHash++)
 	{
@@ -50,7 +52,7 @@ void parseStrings()
 		{
 			if(currentNode->symbolType == LIT_STRING)
 			{
-				fprintf(stderr, ".LC%d:\n", stringCounter+2);
+				fprintf(stderr, ".LC%d:\n", stringCounter+3);
 				fprintf(stderr, "\t.string \"%s\"\n", currentNode->symbol);
 				stringTable[stringCounter] = currentNode;
 
@@ -242,6 +244,7 @@ void parseTAC(TAC* tacList)
 				fprintf(stderr, "%s:\n", currentTAC->op1->symbol);
 				fprintf(stderr, "\tpushq\t%%rbp\n");
 				fprintf(stderr, "\tmovq\t%%rsp, %%rbp\n");
+				fprintf(stderr, "\tsubq\t$16, %%rsp\n"); //GHOST TOSEE
 				stackCounter = 0;
 				localVariableCounter = 0;
 				break;
@@ -270,25 +273,30 @@ void parseTAC(TAC* tacList)
 				{
 					case LIT_INTEGER:
 						localVarInitalValue = atoi(currentTAC->op1->symbol);
+						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					case LIT_CHAR:
 						localVarInitalValue =  (int) currentTAC->op1->symbol[0];
+						fprintf(stderr, "\tmovb\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					case LIT_TRUE:
 						localVarInitalValue = 1;
+						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					case LIT_FALSE:
 						localVarInitalValue = 0;
+						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 						break;
 					default:
 						localVarInitalValue = 0;
+						fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
 				}
-				fprintf(stderr, "\tmovl\t$%i, %i(%%rbp)\n", localVarInitalValue, -4*(localVariableCounter+1));
+				
 				localVariableCounter++;
 				break;
 
 			case TAC_FUNEND:
-				fprintf(stderr, "\tpopq\t%%rbp\n");
+				fprintf(stderr, "\tleave\n"); //TIRAMOS O POP, GHOST, VER O NOME DA FUNçÂO
 				fprintf(stderr, "\tret\n");
 				break;
 
@@ -310,7 +318,7 @@ void parseTAC(TAC* tacList)
 						if(currentTAC->op1 == stringTable[i])
 							break;
 					}
-					fprintf(stderr, "\tmovl\t$.LC%d, %%edi\n", i+2);
+					fprintf(stderr, "\tmovl\t$.LC%d, %%edi\n", i+3);
 					fprintf(stderr, "\tmovl\t$0, %%eax\n");
 					fprintf(stderr, "\tcall\tprintf\n");
 				}
@@ -361,7 +369,6 @@ void parseTAC(TAC* tacList)
 							fprintf(stderr, "\tmovsbl\t%%al, %%eax\n");
 							fprintf(stderr, "\tmovl\t%%eax, %%edi\n");
 							fprintf(stderr, "\tcall\tputchar\n");
-							break;
 							break;
 
 						case DATATYPE_REAL:
@@ -416,6 +423,7 @@ void parseTAC(TAC* tacList)
 					switch(currentTAC->op1->dataType)
 					{
 						case DATATYPE_INT:
+						case DATATYPE_BOOL:
 							fprintf(stderr, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
 							fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
 							fprintf(stderr, "\tmovl\t$.LC0, %%edi\n");
@@ -423,11 +431,13 @@ void parseTAC(TAC* tacList)
 							fprintf(stderr, "\tcall\tprintf\n");
 							break;
 
-						case DATATYPE_BOOL:
+
 						case DATATYPE_CHAR:
-							fprintf(stderr, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
-							fprintf(stderr, "\tmovl\t%%eax, %%edi\n");
-							fprintf(stderr, "\tcall\tputchar\n");
+							fprintf(stderr, "\tmovsbl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
+							fprintf(stderr, "\tmovl\t%%eax, %%esi\n");
+							fprintf(stderr, "\tmovl\t$.LC2, %%edi\n");
+							fprintf(stderr, "\tmovl\t$0, %%eax\n");
+							fprintf(stderr, "\tcall\tprintf\n");
 							break;
 
 						case DATATYPE_REAL:
