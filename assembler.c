@@ -227,6 +227,7 @@ void parseTAC(TAC* tacList)
 	TAC * currentTAC;
 	int stackCounter;
 	int localVariableCounter;
+    int stackIndex;
 	int i;
 
 	if(!tacList)
@@ -419,7 +420,7 @@ void parseTAC(TAC* tacList)
 				else if((currentTAC->op1->symbolType == SYMBOL_LOCAL_VARIABLE) ||
 						(currentTAC->op1->symbolType == SYMBOL_FUNCTION_PARAMETER))
 				{
-					int stackIndex = getDataStackIndex(currentTAC->op1);
+                    stackIndex = getDataStackIndex(currentTAC->op1);
 					switch(currentTAC->op1->dataType)
 					{
 						case DATATYPE_INT:
@@ -450,10 +451,44 @@ void parseTAC(TAC* tacList)
 							break;
 					}
 				}	 
-						
-				
 				break;
 
+            case TAC_JZ:
+                switch (currentTAC->op1->symbolType)
+                {
+                    case SYMBOL_LOCAL_VARIABLE:
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        stackIndex = getDataStackIndex(currentTAC->op1);
+                        fprintf(stderr, "\tcmpl\t$1, %i(%%rbp)\n", (stackIndex+1) * -4);
+                        break;
+                    case SYMBOL_GLOBAL_VECTOR:
+                        fprintf(stderr, "\tcmpl\t$1, %s+%i(%%rip)\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
+                        break;
+                    case SYMBOL_GLOBAL_VARIABLE:
+                        fprintf(stderr, "\tcmpl\t$1, %s(%%rip)\n", currentTAC->op1->symbol);
+                        break;
+                    case LIT_INTEGER:
+                        fprintf(stderr, "\tcmpl\t$1, %i\n", atoi(currentTAC->op1->symbol));
+                        break;
+                    case LIT_CHAR:
+                        fprintf(stderr, "\tcmpl\t$1, %i\n", currentTAC->op1->symbol[0]);
+                        break;
+                    case LIT_TRUE:
+                        fprintf(stderr, "\tcmpl\t$1, $1\n");
+                        break;
+                    case LIT_FALSE:
+                        fprintf(stderr, "\tcmpl\t$1, $0\n");
+                        break;
+                    default:
+                        break;
+                }
+
+                fprintf(stderr, "\tjne\t.%s\n", currentTAC->res->symbol);
+                break;
+
+            case TAC_LABEL:
+                fprintf(stderr, ".%s:\n", currentTAC->res->symbol);
+                break;
 			/*case TAC_SYMBOL:
 			case TAC_SUM:
 				fprintf(stderr, "\tmovl %s\n", );
@@ -476,8 +511,7 @@ void parseTAC(TAC* tacList)
 		
 			case TAC_READ	
 			case TAC_RETURN	
-			case TAC_LABEL   
-			case TAC_JZ      
+			case TAC_LABEL         
 			case TAC_JUMP*/    
 			default:
 				break;

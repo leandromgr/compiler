@@ -2,9 +2,15 @@ char main(int XXX)
 char localA:'x';
 char localB:'y';
 char localC:'z';
+int localX:0;
 {
 	output  localA, localB, localC;
-
+	
+	if (localX)
+	{
+		output "MOTHERFUCKAAAA";
+	};
+	output "Passou if";
 	return 1;
 };
 
@@ -12,6 +18,11 @@ char localC:'z';
 int potato()
 int tet:0;
 {
-	tet:=main(5);
+	if (tet)
+	{
+		tet:=main(5);
+		output tet, "hahahaha";
+	};
+
 	return 'c';
 };
