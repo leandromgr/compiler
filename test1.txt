@@ -13,6 +13,34 @@ int tet:1;
 	} loop;
 	return tet;
 };
+
+int main()
+int d:11;
+int c:6;
+int localX:1;
+int localAB:1;
+int retFun:0;
+{	
+	output "Informe o valor \n";
+	input localX;
+	output "\nValor informado: ", localX, "\n";
+	retFun:=potato(1);
+	if (localX)
+	{
+		output "\nEntrou if     ", retFun, "   hahaha\n";
+	}
+	else
+	{
+		output "ELSE\n";
+	};
+	output (10 + 5), "\n";
+	output (d - c), "\n";
+	output 7 + ('A' + 'U') / (d - c), "\n";
+	output 7 + ('A' + 'U') * (10), "\n";
+	output "Passou if";
+	return 0;
+};
+
 /*
 int main ()
 int a:5;
@@ -39,24 +67,3 @@ int d:11;
 	};	
 };
 */
-int main()
-char localA:'x';
-char localB:'y';
-char localC:'z';
-int localX:1;
-int retFun:0;
-{
-	output  localA, localB, localC;
-	retFun:=potato(1);
-	if (localX)
-	{
-		output "MOTHERFUCKAAAA     ", retFun, "   hahaha";
-	}
-	else
-	{
-		output "ELSE CHUPADOR!";
-	};
-	output "Passou if";
-	return 0;
-};
-

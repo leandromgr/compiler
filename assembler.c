@@ -903,6 +903,40 @@ void parseTAC(TAC* tacList)
 				logicOpLabelCounter++;
 				break;
 
+			case TAC_READ:
+				switch (currentTAC->res->symbolType)
+                {
+                    case SYMBOL_LOCAL_VARIABLE:
+                        stackIndex = getDataStackIndex(currentTAC->res);
+                        fprintf(DEST_ASM, "\tleaq\t%i(%%rbp), %%rax\n", (stackIndex+1) * -4);
+                        fprintf(DEST_ASM, "\tmovq\t%%rax, %%rsi\n");
+						
+                        break;
+                    case SYMBOL_GLOBAL_VARIABLE:
+                        fprintf(DEST_ASM, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->res->symbol);
+                        break;
+                    default:
+                        break;
+                }
+                switch(currentTAC->res->dataType)
+            	{
+            		case DATATYPE_INT:
+                        fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                        break;
+            		case DATATYPE_CHAR:
+            		case DATATYPE_BOOL:
+                        fprintf(DEST_ASM, "\tmovl\t$.LC2, %%edi\n");
+                        break;
+            		case DATATYPE_REAL:
+            			//TODO
+                        break;
+            		default:
+            		break;
+            	}
+            	fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+				fprintf(DEST_ASM, "\tcall\t__isoc99_scanf\n");
+				break;
+
 			default:
 				break;
 		}
