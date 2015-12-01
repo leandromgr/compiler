@@ -12,6 +12,7 @@
 int stackCounter;
 int localVariableCounter;
 int stackIndex;
+int logicOpLabelCounter;
 
 FILE* DEST_ASM;
 
@@ -259,6 +260,7 @@ void parseTAC(TAC* tacList)
                 fprintf(DEST_ASM, "\tsubq\t$16, %%rsp\n"); //GHOST TOSEE
 				stackCounter = 0;
 				localVariableCounter = 0;
+				logicOpLabelCounter = 2;
 				break;
 
 			case TAC_MOV_INIT:
@@ -586,6 +588,12 @@ void parseTAC(TAC* tacList)
             case TAC_SUB:
             case TAC_MULT:
             case TAC_DIV:
+            case TAC_EQ:
+            case TAC_LT: 		
+			case TAC_GT: 
+			case TAC_LET:
+			case TAC_GET:
+			case TAC_NE:
             	op1StackIndex = -4 * (getDataStackIndex(currentTAC->op1) +1);
 				op2StackIndex = -4 * (getDataStackIndex(currentTAC->op2) +1);
 				resStackIndex = -4 * (getDataStackIndex(currentTAC->res) +1);
@@ -700,6 +708,42 @@ void parseTAC(TAC* tacList)
 						fprintf(DEST_ASM, "\tidivl\t%%ecx\n");
 						break;
 
+					case TAC_EQ:
+						fprintf(DEST_ASM, "\tcmpl\t%%edx, %%eax\n");
+						fprintf(DEST_ASM, "\tsete\t%%al\n");
+						fprintf(DEST_ASM, "\tmovzbl\t%%al, %%eax\n");
+						break;
+
+            		case TAC_LT: 	
+						fprintf(DEST_ASM, "\tcmpl\t%%eax, %%edx\n");
+						fprintf(DEST_ASM, "\tsetl\t%%al\n");
+						fprintf(DEST_ASM, "\tmovzbl\t%%al, %%eax\n");
+						break;
+
+					case TAC_GT:
+						fprintf(DEST_ASM, "\tcmpl\t%%eax, %%edx\n");
+						fprintf(DEST_ASM, "\tsetg\t%%al\n");
+						fprintf(DEST_ASM, "\tmovzbl\t%%al, %%eax\n");
+						break;
+						
+					case TAC_LET:
+						fprintf(DEST_ASM, "\tcmpl\t%%eax, %%edx\n");
+						fprintf(DEST_ASM, "\tsetle\t%%al\n");
+						fprintf(DEST_ASM, "\tmovzbl\t%%al, %%eax\n");
+						break;
+
+					case TAC_GET: 
+						fprintf(DEST_ASM, "\tcmpl\t%%eax, %%edx\n");
+						fprintf(DEST_ASM, "\tsetge\t%%al\n");
+						fprintf(DEST_ASM, "\tmovzbl\t%%al, %%eax\n");
+						break;
+
+					case TAC_NE: 
+						fprintf(DEST_ASM, "\tcmpl\t%%eax, %%edx\n");
+						fprintf(DEST_ASM, "\tsetne\t%%al\n");
+						fprintf(DEST_ASM, "\tmovzbl\t%%al, %%eax\n");
+						break;
+
             		default:
             			break;
             	}
@@ -725,26 +769,58 @@ void parseTAC(TAC* tacList)
             		break;
             	}
 
-			/*case TAC_SYMBOL:
-			case TAC_SUM:
-                fprintf(DEST_ASM, "\tmovl %s\n", );
-				fprintf();
-			case TAC_SUM     
-			case TAC_SUB   	
-			case TAC_MULT    
-			case TAC_DIV		
-			case TAC_LT 		
-			case TAC_GT 		
-			case TAC_LET 	
-			case TAC_GET 	
-			case TAC_EQ 		
-			case TAC_NE 		
-			case TAC_AND 	
-			case TAC_OR 		
+            case TAC_AND:
+            	op1StackIndex = -4 * (getDataStackIndex(currentTAC->op1) +1);
+				op2StackIndex = -4 * (getDataStackIndex(currentTAC->op2) +1);
+				resStackIndex = -4 * (getDataStackIndex(currentTAC->res) +1);
 
-			case TAC_CALL	
-			case TAC_ARG		
-		
+            	fprintf(DEST_ASM, "\tcmpl\t$0, %d(%%rbp)\n", op1StackIndex);
+				fprintf(DEST_ASM, "\tje	.L%d\n", logicOpLabelCounter); 
+				fprintf(DEST_ASM, "\tcmpl\t$0, %d(%%rbp)\n", op2StackIndex);
+				fprintf(DEST_ASM, "\tje	.L%d\n", logicOpLabelCounter);  logicOpLabelCounter++;
+				fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+				fprintf(DEST_ASM, "\tjmp\t.L%d\n", logicOpLabelCounter); 
+				fprintf(DEST_ASM, ".L%d:\n", logicOpLabelCounter-1);
+				fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+				fprintf(DEST_ASM, ".L%d:\n", logicOpLabelCounter);
+				if(currentTAC->res->symbolType == TK_IDENTIFIER)
+            	{	
+            		//Hyp: There is space allocated for this in the stack
+            		resStackIndex = -4*(1+insertTempInStack(currentTAC->res));
+            	}
+				fprintf(DEST_ASM, "\tmovl\t%%eax, %d(%%rbp)\n", resStackIndex);
+				logicOpLabelCounter++;
+				break;
+
+
+			case TAC_OR:
+            	op1StackIndex = -4 * (getDataStackIndex(currentTAC->op1) +1);
+				op2StackIndex = -4 * (getDataStackIndex(currentTAC->op2) +1);
+				resStackIndex = -4 * (getDataStackIndex(currentTAC->res) +1);
+
+            	fprintf(DEST_ASM, "\tcmpl\t$0, %d(%%rbp)\n", op1StackIndex);
+				fprintf(DEST_ASM, "\tjne	.L%d\n", logicOpLabelCounter);  logicOpLabelCounter++; //L2
+				fprintf(DEST_ASM, "\tcmpl\t$0, %d(%%rbp)\n", op2StackIndex);
+				fprintf(DEST_ASM, "\tje	.L%d\n", logicOpLabelCounter);  //l3
+				fprintf(DEST_ASM, ".L%d:\n", logicOpLabelCounter-1); 		logicOpLabelCounter++;  //l2: 
+				fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+				fprintf(DEST_ASM, "\tjmp\t.L%d\n", logicOpLabelCounter); 
+				fprintf(DEST_ASM, ".L%d:\n", logicOpLabelCounter-1);
+				fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+				fprintf(DEST_ASM, ".L%d:\n", logicOpLabelCounter);
+				if(currentTAC->res->symbolType == TK_IDENTIFIER)
+            	{	
+            		//Hyp: There is space allocated for this in the stack
+            		resStackIndex = -4*(1+insertTempInStack(currentTAC->res));
+            	}
+				fprintf(DEST_ASM, "\tmovl\t%%eax, %d(%%rbp)\n", resStackIndex);
+				logicOpLabelCounter++;
+				break;
+
+
+
+			/*case 
+			TAC_SYMBOL:
             case TAC_READ*/
 			default:
 				break;
