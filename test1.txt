@@ -8,8 +8,33 @@ int tet:1;
 	};
 
 	return 1+1;
-};
+}
+/*
+int main ()
+int a:5;
+int b:5;
+int c:6;
+int d:11;
+{
+	if(a || b)
+	{
+		output "POSITIVO1";	
+	}
+	else
+	{
+		output "NEGATIVO1";
+	};
 
+	if(c || d)
+	{
+		output "POSITIVO2";	
+	}
+	else
+	{
+		output "NEGATIVO2";
+	};	
+};
+*/
 int main()
 char localA:'x';
 char localB:'y';
