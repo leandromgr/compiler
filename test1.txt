@@ -1,32 +1,7 @@
-char main(int XXX)
-char localA:'x';
-char localB:'y';
-char localC:'z';
-int localX:0;
+int main ()
+int a:10;
+int b:2;
+int c:90;
 {
-	output  localA, localB, localC;
-	
-	if (localX)
-	{
-		output "MOTHERFUCKAAAA";
-	}
-	else
-	{
-		output "ELSE CHUPADOR!";
-	};
-	output "Passou if";
-	return 1;
-};
-
-
-int potato()
-int tet:0;
-{
-	if (tet)
-	{
-		tet:=main(5);
-		output tet, "hahahaha";
-	};
-
-	return 'c';
+	output a + b + c;
 };

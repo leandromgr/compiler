@@ -9,6 +9,10 @@
 #include "semantic.h"
 #include "y.tab.h"
 
+int stackCounter;
+int localVariableCounter;
+int stackIndex;
+
 void avengersAssemble(AST_NODE* astTree, TAC* tacList)
 {
 	printHeaders();
@@ -225,10 +229,12 @@ void printGlobalVariableASM(AST_NODE *variableNode)
 void parseTAC(TAC* tacList)
 {
 	TAC * currentTAC;
-	int stackCounter;
-	int localVariableCounter;
-    int stackIndex;
 	int i;
+
+	//TAC_SUM Variables		
+	int op1StackIndex;
+	int op2StackIndex;
+	int resStackIndex;
 
 	if(!tacList)
 		return;
@@ -418,6 +424,7 @@ void parseTAC(TAC* tacList)
 					break;
 				}
 				else if((currentTAC->op1->symbolType == SYMBOL_LOCAL_VARIABLE) ||
+						(currentTAC->op1->symbolType == TK_IDENTIFIER) ||
 						(currentTAC->op1->symbolType == SYMBOL_FUNCTION_PARAMETER))
 				{
                     stackIndex = getDataStackIndex(currentTAC->op1);
@@ -493,6 +500,85 @@ void parseTAC(TAC* tacList)
             case TAC_LABEL:
                 fprintf(stderr, ".%s:\n", currentTAC->res->symbol);
                 break;
+
+            case TAC_SUM:
+            case TAC_SUB:
+            case TAC_MULT:
+            	op1StackIndex = -4 * (getDataStackIndex(currentTAC->op1) +1);
+				op2StackIndex = -4 * (getDataStackIndex(currentTAC->op2) +1);
+				resStackIndex = -4 * (getDataStackIndex(currentTAC->res) +1);
+
+            	switch(currentTAC->op2->dataType)
+            	{
+            		case DATATYPE_INT:
+            		fprintf(stderr, "\tmovl\t%d(%%rbp), %%eax\n", op2StackIndex);
+            		break;
+
+            		case DATATYPE_CHAR:
+            		case DATATYPE_BOOL:
+            		fprintf(stderr, "\tmovsbl\t%d(%%rbp), %%eax\n", op2StackIndex);
+            		break;
+
+            		case DATATYPE_REAL:
+            			//TODO
+            		default:
+            		break;
+            	}
+            	switch(currentTAC->op1->dataType)
+            	{
+            		case DATATYPE_INT:
+            		fprintf(stderr, "\tmovl\t%d(%%rbp), %%edx\n", op1StackIndex);
+            		break;
+
+            		case DATATYPE_CHAR:
+            		case DATATYPE_BOOL:
+            		fprintf(stderr, "\tmovsbl\t%d(%%rbp), %%edx\n", op1StackIndex);
+            		break;
+
+            		case DATATYPE_REAL:
+            			//TODO
+            		default:
+            		break;
+            	}
+            	switch(currentTAC->type)
+            	{
+            		case TAC_SUM:
+            			fprintf(stderr, "\taddl\t%%edx, %%eax\n");
+            			break;
+
+            		case TAC_SUB:
+            			fprintf(stderr, "\tsubl\t%%edx, %%eax\n");
+            			break;
+
+            		case TAC_MULT:
+            			fprintf(stderr, "\timull\t%%edx, %%eax\n");
+            			break;
+
+            		default:
+            			break;
+            	}
+            	if(currentTAC->res->symbolType == TK_IDENTIFIER)
+            	{	
+            		//Hyp: There is space allocated for this in the stack
+            		resStackIndex = -4*(1+insertTempInStack(currentTAC->res));
+            	}
+            	switch(currentTAC->res->dataType)
+            	{
+            		case DATATYPE_INT:
+            		fprintf(stderr, "\tmovl\t%%eax, %d(%%rbp)\n", resStackIndex);
+            		break;
+
+            		case DATATYPE_CHAR:
+            		case DATATYPE_BOOL:
+            		fprintf(stderr, "\tmovb\t%%eax, %d(%%rbp)\n", resStackIndex);
+            		break;
+
+            		case DATATYPE_REAL:
+            			//TODO
+            		default:
+            		break;
+            	}
+            
 			/*case TAC_SYMBOL:
 			case TAC_SUM:
 				fprintf(stderr, "\tmovl %s\n", );
@@ -532,4 +618,11 @@ int getDataStackIndex(HASH_NODE* hashNode)
 		if(stackOffsetControl[i] == hashNode)
 			return i;
 	}
+}
+
+int insertTempInStack(HASH_NODE* hashNode)
+{
+	stackOffsetControl[stackCounter+1] = hashNode;
+	stackCounter++;
+	return stackCounter;
 }
