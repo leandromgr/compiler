@@ -22,7 +22,8 @@ int convert(int arg1, int arg2)
 int convert2(int a, int b, int c, int d, int e, int f, int g, int h, int i, int k)
 {
 	int local1 = 3;
-	return a + b + k;
+	local1 = a + b + g;
+	return local1;
 }
 
 
@@ -30,7 +31,6 @@ int convert3(int ax, int bx)
 {
 	int a = 10;
 	int b = 50;
-	return a + 1;
 }
 
 void func(int a, int b)

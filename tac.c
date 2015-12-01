@@ -215,13 +215,16 @@ TAC* generateTacs(AST_NODE * astNode)
             AST_NODE * functionReference = (AST_NODE *) astNode->hashNode->functionLink;
             HASH_NODE* functionReturn = makeTemp(functionReference->hashNode->dataType);
             TAC* funcall = tacCreate(TAC_CALL, functionReturn, astNode->hashNode, NULL);
-			AST_NODE* currentArgument = astNode->children[0];
+            AST_NODE* currentArgument = astNode->children[0];
+            TAC* argumentList = NULL;
 			while(currentArgument)
 			{
-                funcall = tacJoin(tacCreate(TAC_ARG, currentArgument->hashNode, NULL, NULL), funcall);
+                argumentList = tacJoin(argumentList, tacCreate(TAC_ARG, currentArgument->hashNode, NULL, NULL));
 
                 currentArgument = currentArgument->children[0];
-			}
+            }
+
+            funcall = tacJoin(argumentList, funcall);
             return funcall;
 		}
 

@@ -234,6 +234,7 @@ void parseTAC(TAC* tacList)
 	int localVariableCounter;
     int stackIndex;
 	int i;
+    int argumentIndex = 0;
 
 	if(!tacList)
 		return;
@@ -528,6 +529,49 @@ void parseTAC(TAC* tacList)
                     default:
                         break;
                 }
+                break;
+
+            case TAC_ARG:
+                switch (currentTAC->res->symbolType)
+                {
+                    case SYMBOL_LOCAL_VARIABLE:
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        stackIndex = getDataStackIndex(currentTAC->res);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %i(%%rsp)\n", (stackIndex+1) * -4, 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    case SYMBOL_GLOBAL_VECTOR:
+                        fprintf(DEST_ASM, "\tmovl\t%s+%i(%%rip), %i(%%rsp)\n", currentTAC->res->symbol, 4*atoi(currentTAC->prev->res->symbol), 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    case SYMBOL_GLOBAL_VARIABLE:
+                        fprintf(DEST_ASM, "\tmovl\t%s(%%rip), %i(%%rsp)\n", currentTAC->res->symbol, 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    case LIT_INTEGER:
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %i(%%rsp)\n", atoi(currentTAC->res->symbol), 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    case LIT_CHAR:
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %i(%%rsp)\n", currentTAC->res->symbol[0], 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    case LIT_TRUE:
+                        fprintf(DEST_ASM, "\tmovl\t$1, %i(%%rsp)\n", 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    case LIT_FALSE:
+                        fprintf(DEST_ASM, "\tmovl\t$0, %i(%%rsp)\n", 8*argumentIndex);
+                        argumentIndex++;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TAC_CALL:
+                fprintf(DEST_ASM, "\tcall\t%s\n", currentTAC->op1->symbol);
+                stackIndex = getDataStackIndex(currentTAC->res);
+                fprintf(DEST_ASM, "\tmovl\t%%eax, %i(%%rbp)\n", (stackIndex+1) * -4);
                 break;
 			/*case TAC_SYMBOL:
 			case TAC_SUM:

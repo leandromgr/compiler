@@ -1,11 +1,25 @@
-char main(int XXX)
+int potato(int a)
+int tet:0;
+{
+	output "entrou";
+	tet:=a;
+	if (tet)
+	{
+		output tet, "hahahaha";
+	};
+
+	return 'c';
+};
+
+int main()
 char localA:'x';
 char localB:'y';
 char localC:'z';
-int localX:0;
+int localX:1;
+int retFun:0;
 {
 	output  localA, localB, localC;
-	
+	retFun:=potato(1);
 	if (localX)
 	{
 		output "MOTHERFUCKAAAA";
@@ -18,15 +32,3 @@ int localX:0;
 	return 1;
 };
 
-
-int potato()
-int tet:0;
-{
-	if (tet)
-	{
-		tet:=main(5);
-		output tet, "hahahaha";
-	};
-
-	return 'c';
-};

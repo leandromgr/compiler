@@ -20,8 +20,10 @@ convert2:
 	movl	-24(%rbp), %eax
 	movl	-20(%rbp), %edx
 	addl	%eax, %edx
-	movl	40(%rbp), %eax
+	movl	16(%rbp), %eax
 	addl	%edx, %eax
+	movl	%eax, -4(%rbp)
+	movl	-4(%rbp), %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
@@ -42,8 +44,6 @@ convert3:
 	movl	%esi, -24(%rbp)
 	movl	$10, -8(%rbp)
 	movl	$50, -4(%rbp)
-	movl	-8(%rbp), %eax
-	addl	$1, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
