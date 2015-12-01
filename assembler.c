@@ -579,6 +579,7 @@ void parseTAC(TAC* tacList)
                 fprintf(DEST_ASM, "\tcall\t%s\n", currentTAC->op1->symbol);
                 stackIndex = getDataStackIndex(currentTAC->res);
                 fprintf(DEST_ASM, "\tmovl\t%%eax, %i(%%rbp)\n", (stackIndex+1) * -4);
+                argumentIndex = 0;
                 break;
 
             case TAC_SUM:
