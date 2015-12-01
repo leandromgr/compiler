@@ -572,7 +572,61 @@ void parseTAC(TAC* tacList)
                         break;
                 }
                 break;
-
+            case TAC_MOV:
+                switch (currentTAC->op1->symbolType)
+                {
+                    case TK_IDENTIFIER:
+                    case SYMBOL_LOCAL_VARIABLE:
+                        stackIndex = getDataStackIndex(currentTAC->op1);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
+                        break;
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        argumentIndex = getParamStackIndex(currentTAC->op1);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", argumentIndex*8 + 16);
+                        break;
+                    case SYMBOL_GLOBAL_VECTOR:
+                        fprintf(DEST_ASM, "\tmovl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
+                        break;
+                    case SYMBOL_GLOBAL_VARIABLE:
+                        fprintf(DEST_ASM, "\tmovl\t%s(%%rip), %%eax\n", currentTAC->op1->symbol);
+                        break;
+                    case LIT_INTEGER:
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op1->symbol));
+                        break;
+                    case LIT_CHAR:
+                        fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", currentTAC->op1->symbol[0]);
+                        break;
+                    case LIT_TRUE:
+                        fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+                        break;
+                    case LIT_FALSE:
+                        fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                        break;
+                    default:
+                        break;
+                }
+                switch (currentTAC->res->symbolType)
+                {
+                    case TK_IDENTIFIER:
+                    case SYMBOL_LOCAL_VARIABLE:
+                        stackIndex = getDataStackIndex(currentTAC->res);
+                        fprintf(DEST_ASM, "\tmovl\t%%eax, %i(%%rbp)\n", (stackIndex+1) * -4);
+                        break;
+                    /*
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        argumentIndex = getDataStackIndex(currentTAC->res);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %i(%%rsp)\n", (stackIndex+1) * -4, 8*argumentIndex);
+                        argumentIndex++;*/
+                    case SYMBOL_GLOBAL_VECTOR:
+                        fprintf(DEST_ASM, "\tmovl\t%%eax, %s+%i(%%rip)\n", currentTAC->res->symbol, 4*atoi(currentTAC->prev->res->symbol));
+                        break;
+                    case SYMBOL_GLOBAL_VARIABLE:
+                        fprintf(DEST_ASM, "\tmovl\t%%eax, %s(%%rip)", currentTAC->res->symbol);
+                        break;
+                    default:
+                        break;
+                }
+                break;
             case TAC_ARG:
                 switch (currentTAC->res->symbolType)
                 {
@@ -640,47 +694,44 @@ void parseTAC(TAC* tacList)
             	switch(currentTAC->op2->dataType)
             	{
             		case DATATYPE_INT:
-            		if (currentTAC->op2->symbolType == LIT_INTEGER)
-            		{
-            			if(currentTAC->type == TAC_DIV)
-            				fprintf(DEST_ASM, "\tmovl\t$%i, %%ecx\n", atoi(currentTAC->op2->symbol));
-        				else
-            				fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op2->symbol));
-            		}
-            		else
-            		{
-            			if(currentTAC->type == TAC_DIV)
-            				fprintf(DEST_ASM, "\tmovl\t%d(%%rbp), %%ecx\n", op2StackIndex);
-        				else
-            				fprintf(DEST_ASM, "\tmovl\t%d(%%rbp), %%eax\n", op2StackIndex);
-            		}
-            		break;
-
+                        if (currentTAC->op2->symbolType == LIT_INTEGER)
+                        {
+                            if(currentTAC->type == TAC_DIV)
+                                fprintf(DEST_ASM, "\tmovl\t$%i, %%ecx\n", atoi(currentTAC->op2->symbol));
+                            else
+                                fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op2->symbol));
+                        }
+                        else
+                        {
+                            if(currentTAC->type == TAC_DIV)
+                                fprintf(DEST_ASM, "\tmovl\t%d(%%rbp), %%ecx\n", op2StackIndex);
+                            else
+                                fprintf(DEST_ASM, "\tmovl\t%d(%%rbp), %%eax\n", op2StackIndex);
+                        }
+                        break;
             		case DATATYPE_CHAR:
             		case DATATYPE_BOOL:
-            		if ((currentTAC->op2->symbolType == LIT_CHAR) ||
-            			(currentTAC->op2->symbolType == LIT_TRUE) ||
-            			(currentTAC->op2->symbolType == LIT_FALSE) )
-            		{
-            			if(currentTAC->type == TAC_DIV)
-            				fprintf(DEST_ASM, "\tmovl\t$%i, %%ecx\n", currentTAC->op2->symbol[0]);
-        				else
-            				fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", currentTAC->op2->symbol[0]);
-            		}
-            		else
-            		{
-            			if(currentTAC->type == TAC_DIV)
-            				fprintf(DEST_ASM, "\tmovzbl\t%d(%%rbp), %%ecx\n", op2StackIndex);
-        				else
-            				fprintf(DEST_ASM, "\tmovzbl\t%d(%%rbp), %%eax\n", op2StackIndex);
-            		}
-            			
-            		break;
-
+                        if ((currentTAC->op2->symbolType == LIT_CHAR) ||
+                            (currentTAC->op2->symbolType == LIT_TRUE) ||
+                            (currentTAC->op2->symbolType == LIT_FALSE) )
+                        {
+                            if(currentTAC->type == TAC_DIV)
+                                fprintf(DEST_ASM, "\tmovl\t$%i, %%ecx\n", currentTAC->op2->symbol[0]);
+                            else
+                                fprintf(DEST_ASM, "\tmovl\t$%i, %%eax\n", currentTAC->op2->symbol[0]);
+                        }
+                        else
+                        {
+                            if(currentTAC->type == TAC_DIV)
+                                fprintf(DEST_ASM, "\tmovzbl\t%d(%%rbp), %%ecx\n", op2StackIndex);
+                            else
+                                fprintf(DEST_ASM, "\tmovzbl\t%d(%%rbp), %%eax\n", op2StackIndex);
+                        }
+                        break;
             		case DATATYPE_REAL:
             			//TODO
             		default:
-            		break;
+                        break;
             	}
             	switch(currentTAC->op1->dataType)
             	{
@@ -699,9 +750,8 @@ void parseTAC(TAC* tacList)
 	        				else
 	            				fprintf(DEST_ASM, "\tmovl\t%d(%%rbp), %%edx\n", op1StackIndex);
 	            		}
-            		break;
-
-            		case DATATYPE_CHAR:
+                        break;
+                    case DATATYPE_CHAR:
             		case DATATYPE_BOOL:
 	            		if ((currentTAC->op1->symbolType == LIT_CHAR) ||
 	            			(currentTAC->op1->symbolType == LIT_TRUE) ||
@@ -719,13 +769,11 @@ void parseTAC(TAC* tacList)
 	        				else
 	            				fprintf(DEST_ASM, "\tmovzbl\t%d(%%rbp), %%edx\n", op1StackIndex);
 	            		}
-	            			
-            		break;
-
+                        break;
             		case DATATYPE_REAL:
             			//TODO
             		default:
-            		break;
+                        break;
             	}
             	switch(currentTAC->type)
             	{
@@ -806,7 +854,7 @@ void parseTAC(TAC* tacList)
             		default:
             		break;
             	}
-
+                break;
             case TAC_AND:
             	op1StackIndex = -4 * (getDataStackIndex(currentTAC->op1) +1);
 				op2StackIndex = -4 * (getDataStackIndex(currentTAC->op2) +1);
