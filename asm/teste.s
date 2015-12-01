@@ -21,6 +21,8 @@ convert2:
 	movl	-20(%rbp), %edx
 	addl	%eax, %edx
 	movl	16(%rbp), %eax
+	addl	%eax, %edx
+	movl	24(%rbp), %eax
 	addl	%edx, %eax
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax

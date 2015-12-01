@@ -10,8 +10,10 @@
 #include "y.tab.h"
 
 int stackCounter;
+int paramCounter;
 int localVariableCounter;
 int stackIndex;
+int offsetFunctionCall;
 
 FILE* DEST_ASM;
 
@@ -232,9 +234,10 @@ void printGlobalVariableASM(AST_NODE *variableNode)
 
 void parseTAC(TAC* tacList)
 {
-	TAC * currentTAC;
+    TAC* currentTAC;
 	int i;
     int argumentIndex = 0;
+    //int offsetFunctionCall = 0;
 
 	//TAC_SUM Variables		
 	int op1StackIndex;
@@ -258,20 +261,11 @@ void parseTAC(TAC* tacList)
                 fprintf(DEST_ASM, "\tmovq\t%%rsp, %%rbp\n");
                 fprintf(DEST_ASM, "\tsubq\t$16, %%rsp\n"); //GHOST TOSEE
 				stackCounter = 0;
-				localVariableCounter = 0;
+                paramCounter = 0;
+                localVariableCounter = 0;
 				break;
 
-			case TAC_MOV_INIT:
-				if((localVariableCounter == 0)&&(stackCounter != 0))
-				{	
-					//Shifting the already existent parameters by 2 spaces
-					for (i = stackCounter ; i > 0; i--)
-					{
-						stackOffsetControl[i+1] = stackOffsetControl[i-1];
-					}
-					stackCounter+=2;
-				}
-
+            case TAC_MOV_INIT:
 				for (i = stackCounter; i > (localVariableCounter + 1); i--)
 				{
 					stackOffsetControl[i] = stackOffsetControl[i-1];
@@ -312,14 +306,14 @@ void parseTAC(TAC* tacList)
                 fprintf(DEST_ASM, "\tret\n");
 				break;
 
-			case TAC_PARAM:
-				for (i = stackCounter ; i > 0; i--)
+            case TAC_PARAM:
+                for (i = paramCounter ; i > 0; i--)
 				{
-					stackOffsetControl[i] = stackOffsetControl[i-1];
+                    paramOffsetControl[i] = paramOffsetControl[i-1];
 				}
-				stackOffsetControl[0] = currentTAC->op1;
+                paramOffsetControl[0] = currentTAC->op1;
 
-				stackCounter++;
+                paramCounter++;
 				break;
 
 			case TAC_PRINT:
@@ -428,9 +422,41 @@ void parseTAC(TAC* tacList)
                     fprintf(DEST_ASM, "\tcall\tprintf\n");
 					break;
 				}
+                else if (currentTAC->op1->symbolType == SYMBOL_FUNCTION_PARAMETER)
+                {
+                    argumentIndex = getParamStackIndex(currentTAC->op1);
+                    switch(currentTAC->op1->dataType)
+                    {
+                        case DATATYPE_INT:
+                        case DATATYPE_BOOL:
+                            fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", argumentIndex * 8 + 16);
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC0, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
+                            break;
+
+
+                        case DATATYPE_CHAR:
+                            fprintf(DEST_ASM, "\tmovsbl\t%i(%%rbp), %%eax\n", argumentIndex * 8 + 16);
+                            fprintf(DEST_ASM, "\tmovl\t%%eax, %%esi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC2, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$0, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
+                            break;
+
+                        case DATATYPE_REAL:
+                            fprintf(DEST_ASM, "\tmovss\t%i(%%rbp), %%xmm0\n", argumentIndex * 8 + 16);
+                            fprintf(DEST_ASM, "\tunpcklps\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tcvtps2pd\t%%xmm0, %%xmm0\n");
+                            fprintf(DEST_ASM, "\tmovl\t$.LC1, %%edi\n");
+                            fprintf(DEST_ASM, "\tmovl\t$1, %%eax\n");
+                            fprintf(DEST_ASM, "\tcall\tprintf\n");
+                            break;
+                    }
+                }
 				else if((currentTAC->op1->symbolType == SYMBOL_LOCAL_VARIABLE) ||
-						(currentTAC->op1->symbolType == TK_IDENTIFIER) ||
-						(currentTAC->op1->symbolType == SYMBOL_FUNCTION_PARAMETER))
+                        (currentTAC->op1->symbolType == TK_IDENTIFIER))
 				{
                     stackIndex = getDataStackIndex(currentTAC->op1);
 					switch(currentTAC->op1->dataType)
@@ -468,10 +494,14 @@ void parseTAC(TAC* tacList)
             case TAC_JZ:
                 switch (currentTAC->op1->symbolType)
                 {
+                    case TK_IDENTIFIER:
                     case SYMBOL_LOCAL_VARIABLE:
-                    case SYMBOL_FUNCTION_PARAMETER:
                         stackIndex = getDataStackIndex(currentTAC->op1);
                         fprintf(DEST_ASM, "\tcmpl\t$1, %i(%%rbp)\n", (stackIndex+1) * -4);
+                        break;
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        argumentIndex = getParamStackIndex(currentTAC->op1);
+                        fprintf(DEST_ASM, "\tcmpl\t$1, %i(%%rbp)\n", argumentIndex*8 + 16);
                         break;
                     case SYMBOL_GLOBAL_VECTOR:
                         fprintf(DEST_ASM, "\tcmpl\t$1, %s+%i(%%rip)\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
@@ -509,10 +539,14 @@ void parseTAC(TAC* tacList)
             case TAC_RETURN:
                 switch (currentTAC->op1->symbolType)
                 {
+                    case TK_IDENTIFIER:
                     case SYMBOL_LOCAL_VARIABLE:
-                    case SYMBOL_FUNCTION_PARAMETER:
                         stackIndex = getDataStackIndex(currentTAC->op1);
                         fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", (stackIndex+1) * -4);
+                        break;
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        argumentIndex = getParamStackIndex(currentTAC->op1);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %%eax\n", argumentIndex*8 + 16);
                         break;
                     case SYMBOL_GLOBAL_VECTOR:
                         fprintf(DEST_ASM, "\tmovl\t%s+%i(%%rip), %%eax\n", currentTAC->op1->symbol, 4*atoi(currentTAC->prev->op1->symbol));
@@ -540,12 +574,17 @@ void parseTAC(TAC* tacList)
             case TAC_ARG:
                 switch (currentTAC->res->symbolType)
                 {
+                    case TK_IDENTIFIER:
                     case SYMBOL_LOCAL_VARIABLE:
-                    case SYMBOL_FUNCTION_PARAMETER:
                         stackIndex = getDataStackIndex(currentTAC->res);
                         fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %i(%%rsp)\n", (stackIndex+1) * -4, 8*argumentIndex);
                         argumentIndex++;
                         break;
+                    /*
+                    case SYMBOL_FUNCTION_PARAMETER:
+                        argumentIndex = getDataStackIndex(currentTAC->res);
+                        fprintf(DEST_ASM, "\tmovl\t%i(%%rbp), %i(%%rsp)\n", (stackIndex+1) * -4, 8*argumentIndex);
+                        argumentIndex++;*/
                     case SYMBOL_GLOBAL_VECTOR:
                         fprintf(DEST_ASM, "\tmovl\t%s+%i(%%rip), %i(%%rsp)\n", currentTAC->res->symbol, 4*atoi(currentTAC->prev->res->symbol), 8*argumentIndex);
                         argumentIndex++;
@@ -711,40 +750,20 @@ void parseTAC(TAC* tacList)
             	switch(currentTAC->res->dataType)
             	{
             		case DATATYPE_INT:
-            		fprintf(DEST_ASM, "\tmovl\t%%eax, %d(%%rbp)\n", resStackIndex);
-            		break;
-
+                        fprintf(DEST_ASM, "\tmovl\t%%eax, %d(%%rbp)\n", resStackIndex);
+                        break;
             		case DATATYPE_CHAR:
             		case DATATYPE_BOOL:
-            		fprintf(DEST_ASM, "\tmovb\t%%al, %d(%%rbp)\n", resStackIndex);
-            		break;
-
+                        fprintf(DEST_ASM, "\tmovb\t%%al, %d(%%rbp)\n", resStackIndex);
+                        break;
             		case DATATYPE_REAL:
             			//TODO
+                        break;
             		default:
             		break;
             	}
 
-			/*case TAC_SYMBOL:
-			case TAC_SUM:
-                fprintf(DEST_ASM, "\tmovl %s\n", );
-				fprintf();
-			case TAC_SUM     
-			case TAC_SUB   	
-			case TAC_MULT    
-			case TAC_DIV		
-			case TAC_LT 		
-			case TAC_GT 		
-			case TAC_LET 	
-			case TAC_GET 	
-			case TAC_EQ 		
-			case TAC_NE 		
-			case TAC_AND 	
-			case TAC_OR 		
-
-			case TAC_CALL	
-			case TAC_ARG		
-		
+			/*case TAC_SYMBOL:		
             case TAC_READ*/
 			default:
 				break;
@@ -761,6 +780,16 @@ int getDataStackIndex(HASH_NODE* hashNode)
 		if(stackOffsetControl[i] == hashNode)
 			return i;
 	}
+}
+
+int getParamStackIndex(HASH_NODE* hashNode)
+{
+    int i;
+    for (i = 0; i < MAX_STACK; i++)
+    {
+        if(paramOffsetControl[i] == hashNode)
+            return i;
+    }
 }
 
 int insertTempInStack(HASH_NODE* hashNode)

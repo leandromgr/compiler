@@ -10,6 +10,7 @@
 
 HASH_NODE* stringTable[MAX_STRINGS];
 HASH_NODE* stackOffsetControl[MAX_STACK];
+HASH_NODE* paramOffsetControl[MAX_STACK];
 
 
 void printHeaders();

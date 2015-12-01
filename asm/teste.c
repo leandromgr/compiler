@@ -22,7 +22,7 @@ int convert(int arg1, int arg2)
 int convert2(int a, int b, int c, int d, int e, int f, int g, int h, int i, int k)
 {
 	int local1 = 3;
-	local1 = a + b + g;
+	local1 = a + b + g + h;
 	return local1;
 }
 

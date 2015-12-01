@@ -1,11 +1,33 @@
-int main ()
-char a:'A';
-char b:'U';
-int c:6;
-int d:11;
+int potato(int a)
+int tet:1;
 {
-	output (10 + 5), "\n";
-	output (d - c), "\n";
-	output 7 + ('A' + 'U') / (d - c), "\n";
-	output 7 + ('A' + 'U') * (10), "\n";
+	output a,"    entrou";
+	if (tet)
+	{
+		output tet, "hahahaha";
+	};
+
+	return 1+1;
 };
+
+int main()
+char localA:'x';
+char localB:'y';
+char localC:'z';
+int localX:1;
+int retFun:0;
+{
+	output  localA, localB, localC;
+	retFun:=potato(1);
+	if (localX)
+	{
+		output "MOTHERFUCKAAAA     ", retFun, "   hahaha";
+	}
+	else
+	{
+		output "ELSE CHUPADOR!";
+	};
+	output "Passou if";
+	return 0;
+};
+
