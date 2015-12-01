@@ -504,6 +504,7 @@ void parseTAC(TAC* tacList)
             case TAC_SUM:
             case TAC_SUB:
             case TAC_MULT:
+            case TAC_DIV:
             	op1StackIndex = -4 * (getDataStackIndex(currentTAC->op1) +1);
 				op2StackIndex = -4 * (getDataStackIndex(currentTAC->op2) +1);
 				resStackIndex = -4 * (getDataStackIndex(currentTAC->res) +1);
@@ -511,12 +512,41 @@ void parseTAC(TAC* tacList)
             	switch(currentTAC->op2->dataType)
             	{
             		case DATATYPE_INT:
-            		fprintf(stderr, "\tmovl\t%d(%%rbp), %%eax\n", op2StackIndex);
+            		if (currentTAC->op2->symbolType == LIT_INTEGER)
+            		{
+            			if(currentTAC->type == TAC_DIV)
+            				fprintf(stderr, "\tmovl\t$%i, %%ecx\n", atoi(currentTAC->op2->symbol));
+        				else
+            				fprintf(stderr, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op2->symbol));
+            		}
+            		else
+            		{
+            			if(currentTAC->type == TAC_DIV)
+            				fprintf(stderr, "\tmovl\t%d(%%rbp), %%ecx\n", op2StackIndex);
+        				else
+            				fprintf(stderr, "\tmovl\t%d(%%rbp), %%eax\n", op2StackIndex);
+            		}
             		break;
 
             		case DATATYPE_CHAR:
             		case DATATYPE_BOOL:
-            		fprintf(stderr, "\tmovsbl\t%d(%%rbp), %%eax\n", op2StackIndex);
+            		if ((currentTAC->op2->symbolType == LIT_CHAR) ||
+            			(currentTAC->op2->symbolType == LIT_TRUE) ||
+            			(currentTAC->op2->symbolType == LIT_FALSE) )
+            		{
+            			if(currentTAC->type == TAC_DIV)
+            				fprintf(stderr, "\tmovl\t$%i, %%ecx\n", currentTAC->op2->symbol[0]);
+        				else
+            				fprintf(stderr, "\tmovl\t$%i, %%eax\n", currentTAC->op2->symbol[0]);
+            		}
+            		else
+            		{
+            			if(currentTAC->type == TAC_DIV)
+            				fprintf(stderr, "\tmovzbl\t%d(%%rbp), %%ecx\n", op2StackIndex);
+        				else
+            				fprintf(stderr, "\tmovzbl\t%d(%%rbp), %%eax\n", op2StackIndex);
+            		}
+            			
             		break;
 
             		case DATATYPE_REAL:
@@ -527,12 +557,41 @@ void parseTAC(TAC* tacList)
             	switch(currentTAC->op1->dataType)
             	{
             		case DATATYPE_INT:
-            		fprintf(stderr, "\tmovl\t%d(%%rbp), %%edx\n", op1StackIndex);
+            			if (currentTAC->op1->symbolType == LIT_INTEGER)
+            			{
+            				if(currentTAC->type == TAC_DIV)
+            					fprintf(stderr, "\tmovl\t$%i, %%eax\n", atoi(currentTAC->op1->symbol));
+	        				else
+            					fprintf(stderr, "\tmovl\t$%i, %%edx\n", atoi(currentTAC->op1->symbol));
+            			}
+            			else
+            			{
+	            			if(currentTAC->type == TAC_DIV)
+	            				fprintf(stderr, "\tmovl\t%d(%%rbp), %%eax\n", op1StackIndex);
+	        				else
+	            				fprintf(stderr, "\tmovl\t%d(%%rbp), %%edx\n", op1StackIndex);
+	            		}
             		break;
 
             		case DATATYPE_CHAR:
             		case DATATYPE_BOOL:
-            		fprintf(stderr, "\tmovsbl\t%d(%%rbp), %%edx\n", op1StackIndex);
+	            		if ((currentTAC->op1->symbolType == LIT_CHAR) ||
+	            			(currentTAC->op1->symbolType == LIT_TRUE) ||
+	            			(currentTAC->op1->symbolType == LIT_FALSE) )
+	            		{
+	            			if(currentTAC->type == TAC_DIV)
+	            				fprintf(stderr, "\tmovl\t$%i, %%eax\n", currentTAC->op1->symbol[0]);
+	        				else
+	            				fprintf(stderr, "\tmovl\t$%i, %%edx\n", currentTAC->op1->symbol[0]);
+	            		}
+	            		else
+	            		{
+	            			if(currentTAC->type == TAC_DIV)
+	            				fprintf(stderr, "\tmovzbl\t%d(%%rbp), %%eax\n", op1StackIndex);
+	        				else
+	            				fprintf(stderr, "\tmovzbl\t%d(%%rbp), %%edx\n", op1StackIndex);
+	            		}
+	            			
             		break;
 
             		case DATATYPE_REAL:
@@ -547,12 +606,18 @@ void parseTAC(TAC* tacList)
             			break;
 
             		case TAC_SUB:
-            			fprintf(stderr, "\tsubl\t%%edx, %%eax\n");
+            			fprintf(stderr, "\tsubl\t%%eax, %%edx\n");
+            			fprintf(stderr, "\tmovl\t%%edx, %%eax\n");
             			break;
 
             		case TAC_MULT:
             			fprintf(stderr, "\timull\t%%edx, %%eax\n");
             			break;
+
+            		case TAC_DIV:
+						fprintf(stderr, "\tcltd\n");
+						fprintf(stderr, "\tidivl\t%%ecx\n");
+						break;
 
             		default:
             			break;
@@ -570,7 +635,7 @@ void parseTAC(TAC* tacList)
 
             		case DATATYPE_CHAR:
             		case DATATYPE_BOOL:
-            		fprintf(stderr, "\tmovb\t%%eax, %d(%%rbp)\n", resStackIndex);
+            		fprintf(stderr, "\tmovb\t%%al, %d(%%rbp)\n", resStackIndex);
             		break;
 
             		case DATATYPE_REAL:
