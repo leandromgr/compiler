@@ -257,11 +257,14 @@ int checkTypes (AST_NODE * astNode)
             switch (astNode->hashNode->symbolType)
             {
                 case LIT_CHAR:
+                    astNode->hashNode->dataType = DATATYPE_CHAR;
                     return DATATYPE_CHAR;
                 case LIT_INTEGER:
+                    astNode->hashNode->dataType = DATATYPE_INT;
                     return DATATYPE_INT;
                 case LIT_FALSE:
                 case LIT_TRUE:
+                    astNode->hashNode->dataType = DATATYPE_CHAR;
                     return DATATYPE_BOOL;
                 case LIT_STRING:
                     return DATATYPE_UNTYPED;

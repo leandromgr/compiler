@@ -80,7 +80,7 @@ FALSE			{ yylval.hashNode = hashInsert(yytext, LIT_FALSE); return LIT_FALSE; }
 				  return TOKEN_ERROR;
 				}
 
-<STRING_ESCAPE>.	{ char processedChar[2] = {'\\', yytext[0]};
+<STRING_ESCAPE>.	{ char processedChar[3] = {'\\', yytext[0],'\0'};
 					  copyStringToBuffer(processedChar);
 					  BEGIN(STRING); }
 
